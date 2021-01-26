@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"shoujiaxin.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#EA6E39","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="DH 建模法 DH 建模方法是由 Denavit 和 Hartenberg 提出的一种建模方法，主要用在机器人运动学上。此方法在机器人的每个连杆上建立一个坐标系，通过齐次坐标变换实现两个连杆上的坐标变换，建立多连杆串联系统中首末坐标系的变换关系。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="5 自由度机械臂的建模 (2) —— DH 建模法">
+<meta property="og:url" content="https://shoujiaxin.github.io/2018/10/02/5-%E8%87%AA%E7%94%B1%E5%BA%A6%E6%9C%BA%E6%A2%B0%E8%87%82%E7%9A%84%E5%BB%BA%E6%A8%A1-2-%E2%80%94%E2%80%94-DH-%E5%BB%BA%E6%A8%A1%E6%B3%95/index.html">
+<meta property="og:site_name" content="Jiaxin&#39;s Blog">
+<meta property="og:description" content="DH 建模法 DH 建模方法是由 Denavit 和 Hartenberg 提出的一种建模方法，主要用在机器人运动学上。此方法在机器人的每个连杆上建立一个坐标系，通过齐次坐标变换实现两个连杆上的坐标变换，建立多连杆串联系统中首末坐标系的变换关系。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://drive.google.com/uc?export=view&id=1GYql9eMiNaknHYI69XB3dMeQubryIiPe">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/d/d8/DHParameter.png">
+<meta property="og:image" content="https://drive.google.com/uc?export=view&id=1wSbJ4LteBvaAXjykoVqwe91GlwGkcuYD">
+<meta property="og:image" content="https://drive.google.com/uc?export=view&id=1nGTlKyJhLxSZSBxhsYxiTPvYqL3axcPZ">
+<meta property="article:published_time" content="2018-10-02T17:00:00.000Z">
+<meta property="article:modified_time" content="2021-01-26T10:00:14.625Z">
+<meta property="article:author" content="Jiaxin Shou">
+<meta property="article:tag" content="机器人">
+<meta property="article:tag" content="DH 建模法">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://drive.google.com/uc?export=view&id=1GYql9eMiNaknHYI69XB3dMeQubryIiPe">
+
+<link rel="canonical" href="https://shoujiaxin.github.io/2018/10/02/5-%E8%87%AA%E7%94%B1%E5%BA%A6%E6%9C%BA%E6%A2%B0%E8%87%82%E7%9A%84%E5%BB%BA%E6%A8%A1-2-%E2%80%94%E2%80%94-DH-%E5%BB%BA%E6%A8%A1%E6%B3%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>5 自由度机械臂的建模 (2) —— DH 建模法 | Jiaxin's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-127104980-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-127104980-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Jiaxin's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">4</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">12</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://shoujiaxin.github.io/2018/10/02/5-%E8%87%AA%E7%94%B1%E5%BA%A6%E6%9C%BA%E6%A2%B0%E8%87%82%E7%9A%84%E5%BB%BA%E6%A8%A1-2-%E2%80%94%E2%80%94-DH-%E5%BB%BA%E6%A8%A1%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://drive.google.com/uc?export=view&id=1TclFU5uu2Ole6scPy9kTzGSTYvs_7mUY">
+      <meta itemprop="name" content="Jiaxin Shou">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jiaxin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          5 自由度机械臂的建模 (2) —— DH 建模法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-10-02 17:00:00" itemprop="dateCreated datePublished" datetime="2018-10-02T17:00:00+00:00">2018-10-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-26 10:00:14" itemprop="dateModified" datetime="2021-01-26T10:00:14+00:00">2021-01-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E4%BA%BA/" itemprop="url" rel="index"><span itemprop="name">机器人</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2018/10/02/5-%E8%87%AA%E7%94%B1%E5%BA%A6%E6%9C%BA%E6%A2%B0%E8%87%82%E7%9A%84%E5%BB%BA%E6%A8%A1-2-%E2%80%94%E2%80%94-DH-%E5%BB%BA%E6%A8%A1%E6%B3%95/" class="post-meta-item leancloud_visitors" data-flag-title="5 自由度机械臂的建模 (2) —— DH 建模法" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2018/10/02/5-%E8%87%AA%E7%94%B1%E5%BA%A6%E6%9C%BA%E6%A2%B0%E8%87%82%E7%9A%84%E5%BB%BA%E6%A8%A1-2-%E2%80%94%E2%80%94-DH-%E5%BB%BA%E6%A8%A1%E6%B3%95/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2018/10/02/5-%E8%87%AA%E7%94%B1%E5%BA%A6%E6%9C%BA%E6%A2%B0%E8%87%82%E7%9A%84%E5%BB%BA%E6%A8%A1-2-%E2%80%94%E2%80%94-DH-%E5%BB%BA%E6%A8%A1%E6%B3%95/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="dh-建模法">DH 建模法</h2>
+<p>DH 建模方法是由 Denavit 和 Hartenberg 提出的一种建模方法，主要用在机器人运动学上。此方法在机器人的每个连杆上建立一个坐标系，通过齐次坐标变换实现两个连杆上的坐标变换，建立多连杆串联系统中首末坐标系的变换关系。</p>
+<a id="more"></a>
+<p>DH 建模方法的几个要点如下：</p>
+<ul>
+<li>建立连杆坐标系</li>
+<li>确定四个参数 <span class="math inline">\(\alpha\)</span>、<span class="math inline">\(a\)</span>、<span class="math inline">\(d\)</span>、<span class="math inline">\(\theta\)</span></li>
+<li>列 DH 参数表</li>
+<li>由参数表得到变换矩阵</li>
+</ul>
+<p>DH 建模方法中，每个连杆使用 4 个参数 <span class="math inline">\(\alpha\)</span>、<span class="math inline">\(a\)</span>、<span class="math inline">\(d\)</span> 和 <span class="math inline">\(\theta\)</span> 来描述，2 个描述连杆本身，另外 2 个描述与相邻连杆的位姿（连接或几何关系）。对于转动关节，其中 <span class="math inline">\(\theta\)</span> 为关节变量，其他三个参数固定不变，为连杆参数；对于移动关节，<span class="math inline">\(d\)</span> 为关节变量，其他三个为关节参数。</p>
+<p>根据连杆坐标系和关节对应关系的不同，DH 建模法可以分为传统 DH (Classic DH) 和改进 DH (Modified DH)，二者的主要区别如下表所示。</p>
+<table>
+<thead>
+<tr class="header">
+<th>区别</th>
+<th>Classic DH</th>
+<th>Modified DH</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>连杆固定坐标系的位置</td>
+<td>后一个关节坐标系</td>
+<td>前一个关节坐标系</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(X\)</span> 轴的确定方式</td>
+<td>当前坐标系 <span class="math inline">\(Z\)</span> 轴和前一个坐标系 <span class="math inline">\(Z\)</span> 轴的向量积</td>
+<td>后一个坐标系 <span class="math inline">\(Z\)</span> 轴与当前坐标系 <span class="math inline">\(Z\)</span> 轴的向量积</td>
+</tr>
+<tr class="odd">
+<td>坐标系间的参数变换顺序</td>
+<td><span class="math inline">\(\theta\)</span>、<span class="math inline">\(d\)</span>、<span class="math inline">\(a\)</span>、<span class="math inline">\(\alpha\)</span></td>
+<td><span class="math inline">\(\alpha\)</span>、<span class="math inline">\(a\)</span>、<span class="math inline">\(\theta\)</span>、<span class="math inline">\(d\)</span></td>
+</tr>
+</tbody>
+</table>
+<h3 id="classic-dh">Classic DH</h3>
+<div data-align="center">
+<img src="https://drive.google.com/uc?export=view&id=1GYql9eMiNaknHYI69XB3dMeQubryIiPe" alt="Classic DH" width="40%"/>
+</div>
+<p>Classic DH 的关节和坐标系关系如图所示，其中各个参数的含义如下：</p>
+<ul>
+<li><span class="math inline">\(\theta_{i}\)</span>：<span class="math inline">\(X_{i-1}\)</span> 到 <span class="math inline">\(X_{i}\)</span> 绕 <span class="math inline">\(Z_{i-1}\)</span> 旋转的角度</li>
+<li><span class="math inline">\(d_{i}\)</span>：<span class="math inline">\(X_{i-1}\)</span> 到 <span class="math inline">\(X_{i}\)</span> 沿 <span class="math inline">\(Z_{i-1}\)</span> 方向的距离</li>
+<li><span class="math inline">\(a_{i}\)</span>：<span class="math inline">\(Z_{i-1}\)</span> 到 <span class="math inline">\(Z_{i}\)</span> 沿 <span class="math inline">\(X_{i-1}\)</span> 方向的距离</li>
+<li><span class="math inline">\(\alpha_{i}\)</span>：<span class="math inline">\(Z_{i-1}\)</span> 到 <span class="math inline">\(Z_{i}\)</span> 绕 <span class="math inline">\(X_{i-1}\)</span> 旋转的角度</li>
+</ul>
+<p>坐标系 <span class="math inline">\(O_{i-1}\)</span> 与关节 <span class="math inline">\(i\)</span> 对齐，其 DH 参数矩阵为 <span class="math display">\[
+_{i}^{i-1}T =
+\begin{bmatrix}
+\cos{\theta_{i}} &amp; -\sin{\theta_{i}} \cos{\alpha_{i}} &amp; \sin{\theta_{i}}  \sin{\alpha_{i}} &amp; a_{i} \cos{\theta_{i}} \\
+\sin{\theta_{i}} &amp; \cos{\theta_{i}} \cos{\alpha_{i}}  &amp; -\cos{\theta_{i}} \sin{\alpha_{i}} &amp; a_{i} \sin{\theta_{i}} \\
+0                &amp; \sin{\alpha_{i}}                   &amp; \cos{\alpha_{i}}                   &amp; d_{i}                  \\
+0                &amp; 0                                  &amp; 0                                  &amp; 1
+\end{bmatrix}
+\]</span></p>
+<h3 id="modified-dh">Modified DH</h3>
+<div data-align="center">
+<img src="https://upload.wikimedia.org/wikipedia/commons/d/d8/DHParameter.png" alt="Modified DH" width="40%"/>
+</div>
+<p>Modified DH 的关节和坐标系关系如图所示，其中各个参数的含义如下：</p>
+<ul>
+<li><span class="math inline">\(\alpha_{i-1}\)</span>：<span class="math inline">\(Z_{i-1}\)</span> 到 <span class="math inline">\(Z_{i}\)</span> 绕 <span class="math inline">\(X_{i-1}\)</span> 旋转的角度</li>
+<li><span class="math inline">\(a_{i-1}\)</span>：<span class="math inline">\(Z_{i-1}\)</span> 到 <span class="math inline">\(Z_{i}\)</span> 沿 <span class="math inline">\(X_{i-1}\)</span> 方向的距离</li>
+<li><span class="math inline">\(\theta_{i}\)</span>：<span class="math inline">\(X_{i-1}\)</span> 到 <span class="math inline">\(X_{i}\)</span> 绕 <span class="math inline">\(Z_{i}\)</span> 旋转的角度</li>
+<li><span class="math inline">\(d_{i}\)</span>：<span class="math inline">\(X_{i-1}\)</span> 到 <span class="math inline">\(X_{i}\)</span> 沿 <span class="math inline">\(Z_{i}\)</span> 方向的距离</li>
+</ul>
+<p>坐标系 <span class="math inline">\(O_{i-1}\)</span> 与关节 <span class="math inline">\(i-1\)</span> 对齐，其 DH 参数矩阵为 <span class="math display">\[
+_{i}^{i-1}T =
+\begin{bmatrix}
+\cos{\theta_{i}}                    &amp; -\sin{\theta_{i}}                   &amp; 0                   &amp; a_{i-1}                   \\
+\sin{\theta_{i}} \cos{\alpha_{i-1}} &amp; \cos{\theta_{i}} \cos{\alpha_{i-1}} &amp; -\sin{\alpha_{i-1}} &amp; -d_{i} \sin{\alpha_{i-1}} \\
+\sin{\theta_{i}} \sin{\alpha_{i-1}} &amp; \cos{\theta_{i}} \sin{\alpha_{i-1}} &amp; \cos{\alpha_{i-1}}  &amp; d_{i} \cos{\alpha_{i-1}}  \\
+0                                   &amp; 0                                   &amp; 0                   &amp; 1
+\end{bmatrix}
+\]</span></p>
+<p>Modified DH 克服了 Classic DH 在用于树型结构机器人时可能出现的问题，比较常用，故之后主要介绍这种方法，并使用该方法进行建模。</p>
+<h2 id="机械臂连杆坐标系的建立">机械臂连杆坐标系的建立</h2>
+<p>建立机械臂连杆坐标系的步骤：</p>
+<ol type="1">
+<li>确定各个关节轴和连杆，坐标系的 <span class="math inline">\(Z\)</span> 轴沿关节轴线方向</li>
+<li>找出相邻两关节轴线的交点或公垂线，用于确定坐标系 <span class="math inline">\(\{i\}\)</span> 的原点：以关节轴 <span class="math inline">\(i\)</span> 和 <span class="math inline">\(i+1\)</span> 的交点或公垂线与关节轴 <span class="math inline">\(i\)</span> 的交点为原点</li>
+<li>确定 <span class="math inline">\(X\)</span> 轴：两轴线相交时，<span class="math inline">\(\vec{X_{i}} = \pm \vec{Z_{i+1}} \times \vec{Z_{i}}\)</span>；两轴线不相交时，<span class="math inline">\(X_{i}\)</span> 轴与公垂线重合，方向为 <span class="math inline">\(i\)</span> 到 <span class="math inline">\(i+1\)</span></li>
+<li>右手定则确定 <span class="math inline">\(Y_{i}\)</span> 轴</li>
+<li>确定基坐标系 <span class="math inline">\(\{0\}\)</span>：为了简化问题，<span class="math inline">\(Z_0\)</span> 通常与关节 1 的轴线方向重合，且当关节变量 1 为 0 时，坐标系 <span class="math inline">\(\{0\}\)</span> 与 <span class="math inline">\(\{1\}\)</span> 重合</li>
+<li>确定末端坐标系 <span class="math inline">\(\{n\}\)</span>：对于转动关节，<span class="math inline">\(\theta_n = 0\)</span> 时，<span class="math inline">\(X_n\)</span> 与 <span class="math inline">\(X_{n-1}\)</span> 方向相同，选取原点使 <span class="math inline">\(d_n = 0\)</span>；对于移动关节，取 <span class="math inline">\(X_n\)</span> 方向使 <span class="math inline">\(\theta_n = 0\)</span>，当 <span class="math inline">\(d_n = 0\)</span> 时，取 <span class="math inline">\(X_{n-1}\)</span> 与 <span class="math inline">\(X_n\)</span> 的交点为原点</li>
+</ol>
+<div data-align="center">
+<img src="https://drive.google.com/uc?export=view&id=1wSbJ4LteBvaAXjykoVqwe91GlwGkcuYD" alt="机械臂" width="40%"/>
+</div>
+<p>这里我使用的 5 自由度机械臂的实物如上图所示，根据如上所述的步骤建立坐标系，结果如下图所示。</p>
+<a name="坐标系"></a>
+<div data-align="center">
+<img src="https://drive.google.com/uc?export=view&id=1nGTlKyJhLxSZSBxhsYxiTPvYqL3axcPZ" alt="坐标系 1" width="50%"/>
+</div>
+<h2 id="dh-参数表">DH 参数表</h2>
+<p>根据机械臂各个连杆间坐标系的关系，采用 Modified DH 形式，得到的参数表如下。</p>
+<table>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(i\)</span></th>
+<th><span class="math inline">\(\alpha_{i-1}\)</span></th>
+<th><span class="math inline">\(a_{i-1}\)</span></th>
+<th><span class="math inline">\(\theta_{i-1}\)</span></th>
+<th><span class="math inline">\(d_{i}\)</span></th>
+<th><span class="math inline">\(\theta\)</span> 的范围</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td><span class="math inline">\(0^{\circ}\)</span></td>
+<td><span class="math inline">\(0\)</span></td>
+<td><span class="math inline">\(\theta_{1}\)</span></td>
+<td><span class="math inline">\(0\)</span></td>
+<td><span class="math inline">\((-\frac{2 \pi}{3}, \frac{2 \pi}{3})\)</span></td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td><span class="math inline">\(-90^{\circ}\)</span></td>
+<td><span class="math inline">\(a_{1}\)</span></td>
+<td><span class="math inline">\(\theta_{2}\)</span></td>
+<td><span class="math inline">\(0\)</span></td>
+<td><span class="math inline">\((-\frac{\pi}{2}, 0)\)</span></td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td><span class="math inline">\(0^{\circ}\)</span></td>
+<td><span class="math inline">\(a_{2}\)</span></td>
+<td><span class="math inline">\(\theta_{3}\)</span></td>
+<td><span class="math inline">\(0\)</span></td>
+<td><span class="math inline">\((-\frac{2 \pi}{3}, \frac{2 \pi}{3})\)</span></td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td><span class="math inline">\(0^{\circ}\)</span></td>
+<td><span class="math inline">\(a_{3}\)</span></td>
+<td><span class="math inline">\(\theta_{4}\)</span></td>
+<td><span class="math inline">\(0\)</span></td>
+<td><span class="math inline">\((-\frac{7 \pi}{6}, \frac{\pi}{6})\)</span></td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td><span class="math inline">\(-90^{\circ}\)</span></td>
+<td><span class="math inline">\(0\)</span></td>
+<td><span class="math inline">\(\theta_{5}\)</span></td>
+<td><span class="math inline">\(0\)</span></td>
+<td><span class="math inline">\((-\frac{2 \pi}{3}, \frac{2 \pi}{3})\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>其中，<span class="math inline">\(a_{1} = 3\ mm\)</span>，<span class="math inline">\(a_{2} = 96\ mm\)</span>，<span class="math inline">\(a_{3} = 96\ mm\)</span>，<span class="math inline">\(\theta_{1}\)</span>～<span class="math inline">\(\theta_{5}\)</span> 为关节 1～5 的旋转角度。初始时刻，<span class="math inline">\(\theta_{1} = 0\)</span>，<span class="math inline">\(\theta_{2} = 0\)</span>，<span class="math inline">\(\theta_{3} = 0\)</span>，<span class="math inline">\(\theta_{4} = -\frac{pi}{2}\)</span>，<span class="math inline">\(\theta_{5} = 0\)</span>。</p>
+<h2 id="齐次变换矩阵">齐次变换矩阵</h2>
+<p>将 DH 参数表代入 Modified DH 的 DH 参数矩阵，可以得到各个坐标系间的齐次变换矩阵 <span class="math inline">\(_{1}^{0}T\)</span>、<span class="math inline">\(_{2}^{1}T\)</span>、<span class="math inline">\(_{3}^{2}T\)</span>、<span class="math inline">\(_{4}^{3}T\)</span> 和 <span class="math inline">\(_{5}^{4}T\)</span>，则可得基坐标系到末端坐标系的齐次变换矩阵 <a name="运动学方程"></a> <span class="math display">\[
+_{5}^{0}T = {_{1}^{0}T} {_{2}^{1}T} {_{3}^{2}T} {_{4}^{3}T} {_{5}^{4}T} =
+\begin{bmatrix}
+n_{x} &amp; o_{x} &amp; a_{x} &amp; p_{x} \\
+n_{y} &amp; o_{y} &amp; a_{y} &amp; p_{y} \\
+n_{z} &amp; o_{z} &amp; a_{z} &amp; p_{z} \\
+0   &amp; 0   &amp; 0   &amp; 1
+\end{bmatrix}
+\]</span></p>
+<p>其中，<span class="math inline">\(\begin{bmatrix} p_{x} &amp; p_{y} &amp; p_{z} \end{bmatrix}^T\)</span> 为机械臂末端在基坐标系中的位置，<span class="math inline">\(\begin{bmatrix} n_{x} &amp; n_{y} &amp; n_{z} \end{bmatrix}^T\)</span> 为机械臂末端坐标系 <span class="math inline">\(X\)</span> 轴在基坐标系中的方向矢量，<span class="math inline">\(\begin{bmatrix} o_{x} &amp; o_{y} &amp; o_{z} \end{bmatrix}^T\)</span> 为机械臂末端坐标系 <span class="math inline">\(Y\)</span> 轴在基坐标系中的方向矢量，<span class="math inline">\(\begin{bmatrix} a_{x} &amp; a_{y} &amp; a_{z} \end{bmatrix}^T\)</span> 为机械臂末端坐标系 <span class="math inline">\(Z\)</span> 轴在基坐标系中的方向矢量。</p>
+<p>代入 DH 参数，可得 <span class="math display">\[
+\begin{aligned}
+n_{x} = &amp; \ s_{1} s_{5} + c_{1} c_{2} c_{3} c_{4} c_{5} - c_{1} c_{2} c_{5} s_{3} s_{4} - c_{1} c_{3} c_{5} s_{2} s_{4} - c_{1} c_{4} c_{5} s_{2} s_{3} \\
+n_{y} = &amp; \ c_{2} c_{3} c_{4} c_{5} s_{1} - c_{1} s_{5} - c_{2} c_{5} s_{1} s_{3} s_{4} - c_{3} c_{5} s_{1} s_{2} s_{4} - c_{4} c_{5} s_{1} s_{2} s_{3} \\
+n_{z} = &amp; \ c_{5} s_{2} s_{3} s_{4} - c_{2} c_{4} c_{5} s_{3} - c_{3} c_{4} c_{5} s_{2} - c_{2} c_{3} c_{5} s_{4}                                       \\
+o_{x} = &amp; \ c_{5} s_{1} - c_{1} c_{2} c_{3} c_{4} s_{5} + c_{1} c_{2} s_{3} s_{4} s_{5} + c_{1} c_{3} s_{2} s_{4} s_{5} + c_{1} c_{4} s_{2} s_{3} s_{5} \\
+o_{y} = &amp; \ c_{2} s_{1} s_{3} s_{4} s_{5} - c_{2} c_{3} c_{4} s_{1} s_{5} - c_{1} c_{5} + c_{3} s_{1} s_{2} s_{4} s_{5} + c_{4} s_{1} s_{2} s_{3} s_{5} \\
+o_{z} = &amp; \ c_{2} c_{3} s_{4} s_{5} + c_{2} c_{4} s_{3} s_{5} + c_{3} c_{4} s_{2} s_{5} - s_{2} s_{3} s_{4} s_{5}                                       \\
+a_{x} = &amp; \ c_{1} s_{2} s_{3} s_{4} - c_{1} c_{2} c_{4} s_{3} - c_{1} c_{3} c_{4} s_{2} - c_{1} c_{2} c_{3} s_{4}                                       \\
+a_{y} = &amp; \ s_{1} s_{2} s_{3} s_{4} - c_{2} c_{4} s_{1} s_{3} - c_{3} c_{4} s_{1} s_{2} - c_{2} c_{3} s_{1} s_{4}                                       \\
+a_{z} = &amp; \ c_{2} s_{3} s_{4} + c_{3} s_{2} s_{4} + c_{4} s_{2} s_{3} - c_{2} c_{3} c_{4}                                                               \\
+p_{x} = &amp; \ a_{1} c_{1} + a_{2} c_{1} c_{2} + a_{3} c_{1} c_{2} c_{3} - a_{3} c_{1} s_{2} s_{3}                                                         \\
+p_{y} = &amp; \ a_{1} s_{1} + a_{2} c_{2} s_{1} + a_{3} c_{2} c_{3} s_{1} - a_{3} s_{1} s_{2} s_{3}                                                         \\
+p_{z} = &amp; \ -a_{2} s_{2} - a_{3} c_{2} s_{3} - a_{3} c_{3} s_{2}
+\end{aligned}
+\]</span> 其中，<span class="math inline">\(s_{i} = \sin{\theta_{i}}\)</span>，<span class="math inline">\(c_{i} = \cos{\theta_{i}}\)</span>。</p>
+<hr />
+<h2 id="参考链接">参考链接</h2>
+<ul>
+<li><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/pengjc2001/article/details/70156333">Puma560 机器人 DH 变换 - pengjc2001 的博客</a></p></li>
+<li><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_27170195/article/details/79936518">MATLAB-Robot (2)：标准 DH 和改进 DH 的区别 - 陈记小铺的博客</a></p></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%9C%BA%E5%99%A8%E4%BA%BA/" rel="tag"># 机器人</a>
+              <a href="/tags/DH-%E5%BB%BA%E6%A8%A1%E6%B3%95/" rel="tag"># DH 建模法</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/10/01/5-%E8%87%AA%E7%94%B1%E5%BA%A6%E6%9C%BA%E6%A2%B0%E8%87%82%E7%9A%84%E5%BB%BA%E6%A8%A1-1-%E2%80%94%E2%80%94-%E9%BD%90%E6%AC%A1%E5%9D%90%E6%A0%87%E5%8F%8A%E5%85%B6%E5%8F%98%E6%8D%A2%E7%9F%A9%E9%98%B5/" rel="prev" title="5 自由度机械臂的建模 (1) —— 齐次坐标及其变换矩阵">
+      <i class="fa fa-chevron-left"></i> 5 自由度机械臂的建模 (1) —— 齐次坐标及其变换矩阵
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/10/03/5-%E8%87%AA%E7%94%B1%E5%BA%A6%E6%9C%BA%E6%A2%B0%E8%87%82%E7%9A%84%E5%BB%BA%E6%A8%A1-3-%E2%80%94%E2%80%94-%E9%80%86%E8%BF%90%E5%8A%A8%E5%AD%A6%E6%B1%82%E8%A7%A3/" rel="next" title="5 自由度机械臂的建模 (3) —— 逆运动学求解">
+      5 自由度机械臂的建模 (3) —— 逆运动学求解 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#dh-%E5%BB%BA%E6%A8%A1%E6%B3%95"><span class="nav-text">DH 建模法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#classic-dh"><span class="nav-text">Classic DH</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#modified-dh"><span class="nav-text">Modified DH</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%BA%E6%A2%B0%E8%87%82%E8%BF%9E%E6%9D%86%E5%9D%90%E6%A0%87%E7%B3%BB%E7%9A%84%E5%BB%BA%E7%AB%8B"><span class="nav-text">机械臂连杆坐标系的建立</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dh-%E5%8F%82%E6%95%B0%E8%A1%A8"><span class="nav-text">DH 参数表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%BD%90%E6%AC%A1%E5%8F%98%E6%8D%A2%E7%9F%A9%E9%98%B5"><span class="nav-text">齐次变换矩阵</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-text">参考链接</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jiaxin Shou"
+      src="https://drive.google.com/uc?export=view&id=1TclFU5uu2Ole6scPy9kTzGSTYvs_7mUY">
+  <p class="site-author-name" itemprop="name">Jiaxin Shou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/shoujiaxin" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;shoujiaxin" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:shoujiaxin@gmail.com" title="E-Mail → mailto:shoujiaxin@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Sjx_96" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Sjx_96" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://instagram.com/shoujiaxin" title="Instagram → https:&#x2F;&#x2F;instagram.com&#x2F;shoujiaxin" rel="noopener" target="_blank"><i class="fab fa-instagram fa-fw"></i>Instagram</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="far fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jiaxin Shou</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = decodeURI(visitors.id);
+      var title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              leancloudSelector(url).innerText = 'Counter not initialized! More info at console err msg.';
+              console.error('ATTENTION! LeanCloud counter has security bug, see how to solve it here: https://github.com/theme-next/hexo-leancloud-counter-security. \n However, you can still use LeanCloud without security, by setting `security` option to `false`.');
+            
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"XbcFfHEXn1luNOnUrtizHfzW-MdYXbMMI","app_key":"JbKohvPsKEYaHgjNSvRfcOIn","server_url":null,"security":true};
+    function fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'XbcFfHEXn1luNOnUrtizHfzW-MdYXbMMI',
+      appKey     : 'JbKohvPsKEYaHgjNSvRfcOIn',
+      placeholder: "Just go go",
+      avatar     : 'retro',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

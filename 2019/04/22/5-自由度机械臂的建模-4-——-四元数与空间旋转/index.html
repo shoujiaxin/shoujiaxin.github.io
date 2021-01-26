@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"shoujiaxin.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#EA6E39","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="四元数 (Quaternion) 是由爱尔兰数学家威廉·卢云·哈密顿在 1843 年提出的数学概念。从明确地角度而言，四元数是复数的不可交换延伸。相对于复数为二维空间，如果把四元数的集合考虑成多维实数空间，四元数就代表着一个四维空间。它可以用于描述现实空间的坐标。单位四元数 (Unit Quaternion) 可以用于表示三维空间中的旋转，它与常用的另外两种表示方式，即三维正交矩阵和欧拉角是等价的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="5 自由度机械臂的建模 (4) —— 四元数与空间旋转">
+<meta property="og:url" content="https://shoujiaxin.github.io/2019/04/22/5-%E8%87%AA%E7%94%B1%E5%BA%A6%E6%9C%BA%E6%A2%B0%E8%87%82%E7%9A%84%E5%BB%BA%E6%A8%A1-4-%E2%80%94%E2%80%94-%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E7%A9%BA%E9%97%B4%E6%97%8B%E8%BD%AC/index.html">
+<meta property="og:site_name" content="Jiaxin&#39;s Blog">
+<meta property="og:description" content="四元数 (Quaternion) 是由爱尔兰数学家威廉·卢云·哈密顿在 1843 年提出的数学概念。从明确地角度而言，四元数是复数的不可交换延伸。相对于复数为二维空间，如果把四元数的集合考虑成多维实数空间，四元数就代表着一个四维空间。它可以用于描述现实空间的坐标。单位四元数 (Unit Quaternion) 可以用于表示三维空间中的旋转，它与常用的另外两种表示方式，即三维正交矩阵和欧拉角是等价的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/a/a1/Eulerangles.svg">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/8/85/Euler2a.gif">
+<meta property="article:published_time" content="2019-04-22T11:24:08.000Z">
+<meta property="article:modified_time" content="2021-01-26T10:00:14.625Z">
+<meta property="article:author" content="Jiaxin Shou">
+<meta property="article:tag" content="机器人">
+<meta property="article:tag" content="四元数">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/a/a1/Eulerangles.svg">
+
+<link rel="canonical" href="https://shoujiaxin.github.io/2019/04/22/5-%E8%87%AA%E7%94%B1%E5%BA%A6%E6%9C%BA%E6%A2%B0%E8%87%82%E7%9A%84%E5%BB%BA%E6%A8%A1-4-%E2%80%94%E2%80%94-%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E7%A9%BA%E9%97%B4%E6%97%8B%E8%BD%AC/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>5 自由度机械臂的建模 (4) —— 四元数与空间旋转 | Jiaxin's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-127104980-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-127104980-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Jiaxin's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">4</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">12</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://shoujiaxin.github.io/2019/04/22/5-%E8%87%AA%E7%94%B1%E5%BA%A6%E6%9C%BA%E6%A2%B0%E8%87%82%E7%9A%84%E5%BB%BA%E6%A8%A1-4-%E2%80%94%E2%80%94-%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E7%A9%BA%E9%97%B4%E6%97%8B%E8%BD%AC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://drive.google.com/uc?export=view&id=1TclFU5uu2Ole6scPy9kTzGSTYvs_7mUY">
+      <meta itemprop="name" content="Jiaxin Shou">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jiaxin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          5 自由度机械臂的建模 (4) —— 四元数与空间旋转
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-04-22 11:24:08" itemprop="dateCreated datePublished" datetime="2019-04-22T11:24:08+00:00">2019-04-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-26 10:00:14" itemprop="dateModified" datetime="2021-01-26T10:00:14+00:00">2021-01-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E4%BA%BA/" itemprop="url" rel="index"><span itemprop="name">机器人</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/04/22/5-%E8%87%AA%E7%94%B1%E5%BA%A6%E6%9C%BA%E6%A2%B0%E8%87%82%E7%9A%84%E5%BB%BA%E6%A8%A1-4-%E2%80%94%E2%80%94-%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E7%A9%BA%E9%97%B4%E6%97%8B%E8%BD%AC/" class="post-meta-item leancloud_visitors" data-flag-title="5 自由度机械臂的建模 (4) —— 四元数与空间旋转" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/04/22/5-%E8%87%AA%E7%94%B1%E5%BA%A6%E6%9C%BA%E6%A2%B0%E8%87%82%E7%9A%84%E5%BB%BA%E6%A8%A1-4-%E2%80%94%E2%80%94-%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E7%A9%BA%E9%97%B4%E6%97%8B%E8%BD%AC/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/04/22/5-%E8%87%AA%E7%94%B1%E5%BA%A6%E6%9C%BA%E6%A2%B0%E8%87%82%E7%9A%84%E5%BB%BA%E6%A8%A1-4-%E2%80%94%E2%80%94-%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E7%A9%BA%E9%97%B4%E6%97%8B%E8%BD%AC/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>四元数 (Quaternion) 是由爱尔兰数学家威廉·卢云·哈密顿在 1843 年提出的数学概念。从明确地角度而言，四元数是复数的不可交换延伸。相对于复数为二维空间，如果把四元数的集合考虑成多维实数空间，四元数就代表着一个四维空间。它可以用于描述现实空间的坐标。单位四元数 (Unit Quaternion) 可以用于表示三维空间中的旋转，它与常用的另外两种表示方式，即三维正交矩阵和欧拉角是等价的，但是避免了欧拉角表示法中的万向锁问题。</p>
+<a id="more"></a>
+<h2 id="四元数">1. 四元数</h2>
+<h3 id="定义">1.1. 定义</h3>
+<p>复数是由实数加上虚数单位 <span class="math inline">\(i\)</span> 组成，其中 <span class="math inline">\(i^{2} = -1\)</span>。类似地，四元数是由实数加上三个元素 <span class="math inline">\(i\)</span>、<span class="math inline">\(j\)</span>、<span class="math inline">\(k\)</span> 组成，且这三个元素满足 <span class="math display">\[
+i^{2} = j^{2} = k^{2} = ijk = -1
+\]</span></p>
+<p>每个四元数都是 <span class="math inline">\(1\)</span>、<span class="math inline">\(i\)</span>、<span class="math inline">\(j\)</span>、<span class="math inline">\(k\)</span> 的线性组合，即四元数一般可以表示为 <span class="math display">\[
+h = a + bi + cj + dk
+\]</span></p>
+<p>为了便于说明和计算，这里也将四元数 <span class="math inline">\(h\)</span> 表示为 <span class="math inline">\(h = (a, b, c, d)\)</span>。</p>
+<h3 id="性质">1.2. 性质</h3>
+<ul>
+<li><p><strong>乘法不可交换</strong> <span class="math display">\[
+\begin{aligned}
+&amp; ij = k, ji = -k \\
+&amp; jk = i, kj = -i \\
+&amp; ki = j, ik = -j
+\end{aligned}
+\]</span></p></li>
+<li><p><strong>共轭</strong>：四元数 <span class="math inline">\(h = a + bi + cj + dk\)</span> 的共轭定义为 <span class="math display">\[
+h^{*} = a - bi - cj - dk
+\]</span> 且一般情况下 <span class="math display">\[
+(hk)^{*} = k^{*} h^{*} = h^{*} k^{*}
+\]</span></p></li>
+<li><p><strong>模（绝对值）</strong> <span class="math display">\[
+|h| = \sqrt{h \cdot h} =\sqrt{h \cdot h^{*}} = \sqrt{a^{2} + b^{2} + c^{2} + d^{2}}
+\]</span></p></li>
+<li><p><strong>乘逆</strong> <span class="math display">\[
+h^{-1} = \frac{h^{*}}{|h|^{2}}
+\]</span></p></li>
+</ul>
+<h3 id="四元数运算">1.3. 四元数运算</h3>
+<p>定义两个四元数 <span class="math display">\[
+\begin{aligned}
+q &amp; = a + \vec{u} = a + bi + cj + dk \\
+p &amp; = t + \vec{v} = t + xj + yj + zk
+\end{aligned}
+\]</span></p>
+<ul>
+<li><p><strong>加法</strong> <span class="math display">\[
+p + q = a + t + \vec{u} + \vec{v} = (a + t) + (b + x)j + (c + y)j + (d + z)k
+\]</span> 加法遵循实数和复数的所有交换律和结合律。</p></li>
+<li><p><strong>乘法（格拉斯曼积）</strong> <span class="math display">\[
+\begin{aligned}
+pq &amp; = at - \vec{u} \cdot \vec{v} + a \vec{v} + t \vec{u} + \vec{u} \times \vec{v}             \\
+&amp; = (at - bx - cy - dz) + (bt + ax + dy -cz)i + (ct + ay + bz - dx)j + (dt + za + cx - by)k
+\end{aligned}
+\]</span></p></li>
+<li><p><strong>点积（欧几里得内积）</strong>：四元数的点积等同于一个四维矢量的点积，是一个标量 <span class="math display">\[
+p \cdot q = at + \vec{u} \cdot \vec{v} = at + bx + cy + dz
+\]</span> 可以用格拉斯曼积表示为 <span class="math display">\[
+p \cdot q = \frac{pq + qp}{2}
+\]</span></p></li>
+</ul>
+<h2 id="单位四元数与空间旋转">2. 单位四元数与空间旋转</h2>
+<p>单位四元数 (Unit Quaternion) 可以用于表示三维空间中的旋转，它与常用的另外两种表示方式，即三维正交矩阵和欧拉角是等价的，但是避免了欧拉角表示法中的万向锁问题。用四元数来表示旋转要解决两个问题：一是如何用四元数表示三维空间里的点；二是如何用四元数表示三维空间的旋转。</p>
+<h3 id="点的表示">2.1. 点的表示</h3>
+<p>对于三维空间中的一点 <span class="math inline">\(p\)</span> 的笛卡尔坐标为 <span class="math inline">\((x, y, z)\)</span>，其可用纯四元数（即实部为 <span class="math inline">\(0\)</span> 的四元数）表示为 <span class="math display">\[
+p = xj + yj + zk
+\]</span></p>
+<h3 id="旋转的表示">2.2. 旋转的表示</h3>
+<p>设 <span class="math inline">\(q\)</span> 为一个单位四元数，<span class="math inline">\(p\)</span> 是一个纯四元数（即空间中的一个点），定义纯四元数 <span class="math display">\[
+R_{q}(p) = q p q^{-1}
+\]</span> 表示空间中的点 <span class="math inline">\(p\)</span> 经过旋转 <span class="math inline">\(q\)</span> 后得到的空间中的另一个点。</p>
+<h3 id="旋转的复合">2.3. 旋转的复合</h3>
+<p>根据四元数表示空间旋转的定义，有 <span class="math display">\[
+R_{q_{1} q_{2}} (p) = (q_{1} q_{2}) p (q_{1} q_{2})^{-1} = q_{1} q_{2} p q_{2}^{-1} q_{1}^{-1} = R_{q_{1}} \left[ R_{q_{2}} (p) \right]
+\]</span> 因此，对于两个旋转的复合，只需要将对应的单位四元数相乘。</p>
+<h2 id="旋转矩阵与单位四元数">3. 旋转矩阵与单位四元数</h2>
+<h3 id="旋转矩阵欧拉角和-rpy-角">3.1. 旋转矩阵、欧拉角和 RPY 角</h3>
+<h4 id="旋转矩阵">3.1.1. 旋转矩阵</h4>
+<p>空间中一点绕 <span class="math inline">\(x\)</span>、<span class="math inline">\(y\)</span>、<span class="math inline">\(z\)</span> 轴旋转的旋转矩阵分别为 <span class="math display">\[
+\begin{aligned}
+&amp; R_{x}(\theta_{1}) =
+\begin{bmatrix}
+1 &amp; 0                &amp; 0                 \\
+0 &amp; \cos{\theta_{1}} &amp; -\sin{\theta_{1}} \\
+0 &amp; \sin{\theta_{1}} &amp; \cos{\theta_{1}}
+\end{bmatrix}   \\
+&amp; R_{y}(\theta_{2}) =
+\begin{bmatrix}
+\cos{\theta_{2}}  &amp; 0 &amp; \sin{\theta_{2}} \\
+0                 &amp; 1 &amp; 0                \\
+-\sin{\theta_{2}} &amp; 0 &amp; \cos{\theta_{2}}
+\end{bmatrix}   \\
+&amp; R_{z}(\theta_{3}) =
+\begin{bmatrix}
+\cos{\theta_{3}} &amp; -\sin{\theta_{3}} &amp; 0 \\
+\sin{\theta_{3}} &amp; \cos{\theta_{3}}  &amp; 0 \\
+0                &amp; 0                 &amp; 1
+\end{bmatrix}
+\end{aligned}
+\]</span> 其中，有三个独立变量 <span class="math inline">\(\theta_{1}\)</span>、<span class="math inline">\(\theta_{2}\)</span> 和 <span class="math inline">\(\theta_{3}\)</span>，通常有两种表示方式，即欧拉角和 RPY 角。</p>
+<h4 id="欧拉角">3.1.2. 欧拉角</h4>
+<p>下图所示为常用的 ZXZ 顺规欧拉角的定义</p>
+<div data-align="center">
+<img src="https://upload.wikimedia.org/wikipedia/commons/a/a1/Eulerangles.svg" alt="ZXZ 顺规欧拉角" width="35%"/>
+</div>
+<p>设 <span class="math inline">\(xyz\)</span> 轴为参考坐标系的坐标轴，<span class="math inline">\(xy\)</span> 平面与 <span class="math inline">\(XY\)</span> 平面的交线 <span class="math inline">\(N\)</span> 称为交点线。则 ZXZ 顺规的欧拉角可以静态地定义为：</p>
+<ul>
+<li><span class="math inline">\(\alpha\)</span>：<span class="math inline">\(x\)</span> 轴与 <span class="math inline">\(N\)</span> 的夹角</li>
+<li><span class="math inline">\(\beta\)</span>：<span class="math inline">\(z\)</span> 轴与 <span class="math inline">\(Z\)</span> 轴的夹角</li>
+<li><span class="math inline">\(\gamma\)</span>：<span class="math inline">\(N\)</span> 与 <span class="math inline">\(X\)</span> 轴的夹角</li>
+</ul>
+<p>其旋转矩阵为 <span class="math display">\[
+\begin{aligned}
+R &amp; = R_{z}(\alpha) R_{x}(\beta) R_{z}(\gamma) \\
+&amp; =
+\begin{bmatrix}
+\cos{\alpha} &amp; -\sin{\alpha} &amp; 0 \\
+\sin{\alpha} &amp; \cos{\alpha}  &amp; 0 \\
+0            &amp; 0             &amp; 1
+\end{bmatrix}
+\begin{bmatrix}
+1 &amp; 0           &amp; 0            \\
+0 &amp; \cos{\beta} &amp; -\sin{\beta} \\
+0 &amp; \sin{\beta} &amp; \cos{\beta}
+\end{bmatrix}
+\begin{bmatrix}
+\cos{\gamma} &amp; -\sin{\gamma} &amp; 0 \\
+\sin{\gamma} &amp; \cos{\gamma}  &amp; 0 \\
+0            &amp; 0             &amp; 1
+\end{bmatrix}
+\end{aligned}
+\]</span></p>
+<p>ZXZ 顺规欧拉角的动态演示如下图所示</p>
+<div data-align="center">
+<img src="https://upload.wikimedia.org/wikipedia/commons/8/85/Euler2a.gif" alt="ZXZ 顺规欧拉角动态" width="35%"/>
+</div>
+<h4 id="rpy-角">3.1.3. RPY 角</h4>
+<p>RPY 角即绕 <span class="math inline">\(X\)</span> 轴摇摆 (Roll) <span class="math inline">\(\gamma\)</span>、绕 <span class="math inline">\(Y\)</span> 轴俯仰 (Pitch) <span class="math inline">\(\beta\)</span>、绕 <span class="math inline">\(Z\)</span> 轴偏转 (Yaw) <span class="math inline">\(\alpha\)</span>，这三个变量互相独立。RPY 角表示法与 ZYX 顺规的欧拉角表示方式等价，其旋转矩阵为 <span class="math display">\[
+\begin{aligned}
+R &amp; = R_{z}(\alpha) R_{y}(\beta) R_{x}(\gamma) \\
+&amp; =
+\begin{bmatrix}
+\cos{\alpha} &amp; -\sin{\alpha} &amp; 0 \\
+\sin{\alpha} &amp; \cos{\alpha}  &amp; 0 \\
+0            &amp; 0             &amp; 1
+\end{bmatrix}
+\begin{bmatrix}
+\cos{\beta}  &amp; 0 &amp; \sin{\beta} \\
+0            &amp; 1 &amp; 0           \\
+-\sin{\beta} &amp; 0 &amp; \cos{\beta}
+\end{bmatrix}
+\begin{bmatrix}
+1 &amp; 0            &amp; 0             \\
+0 &amp; \cos{\gamma} &amp; -\sin{\gamma} \\
+0 &amp; \sin{\gamma} &amp; \cos{\gamma}
+\end{bmatrix}
+\end{aligned}
+\]</span></p>
+<h3 id="旋转矩阵转换为四元数">3.2. 旋转矩阵转换为四元数</h3>
+<p>已知旋转矩阵 <span class="math display">\[
+R =
+\begin{bmatrix}
+r_{11} &amp; r_{12} &amp; r_{13} \\
+r_{21} &amp; r_{12} &amp; r_{13} \\
+r_{31} &amp; r_{12} &amp; r_{13}
+\end{bmatrix}
+\]</span> 其对应的四元数 <span class="math inline">\(q = w + xi + yj + zk\)</span> 或 <span class="math inline">\(q = (w, x, y, z)\)</span>，其中 <span class="math display">\[
+\begin{aligned}
+w &amp; = \frac{1}{2} \sqrt{1 + r_{11} + r_{22} + r_{33}} \\
+x &amp; = \frac{r_{32} - r_{23}}{4 w}                     \\
+y &amp; = \frac{r_{13} - r_{31}}{4 w}                     \\
+z &amp; = \frac{r_{21} - r_{12}}{4 w}
+\end{aligned}
+\]</span></p>
+<p>故可得空间中一点绕 <span class="math inline">\(x\)</span>、<span class="math inline">\(y\)</span>、<span class="math inline">\(z\)</span> 轴旋转的四元数表示为 <span class="math display">\[
+\begin{aligned}
+q_x(\theta_{1}) &amp; = (\cos{\frac{\theta_{1}}{2}}, \sin{\frac{\theta_{1}}{2}}, 0, 0) \\
+q_y(\theta_{2}) &amp; = (\cos{\frac{\theta_{2}}{2}}, 0, \sin{\frac{\theta_{2}}{2}}, 0) \\
+q_z(\theta_{3}) &amp; = (\cos{\frac{\theta_{3}}{2}}, 0, 0, \sin{\frac{\theta_{3}}{2}})
+\end{aligned}
+\]</span></p>
+<h3 id="四元数转换为旋转矩阵">3.3. 四元数转换为旋转矩阵</h3>
+<p>对于四元数 <span class="math inline">\(q = (w, x, y, z)\)</span>，可以得到对应的旋转矩阵 <span class="math display">\[
+R =
+\begin{bmatrix}
+r_{11} &amp; r_{12} &amp; r_{13} \\
+r_{21} &amp; r_{12} &amp; r_{13} \\
+r_{31} &amp; r_{12} &amp; r_{13}
+\end{bmatrix}
+\]</span> 其中， <span class="math display">\[
+\begin{aligned}
+r_{11} &amp; = w^{2} + x^{2} - y^{2} -z^{2}  \\
+r_{12} &amp; = 2xy - 2wz             \\
+r_{13} &amp; = 2xz + 2wy             \\
+r_{21} &amp; = 2xy + 2wz             \\
+r_{22} &amp; = w^{2} - x^{2} + y^{2} - z^{2} \\
+r_{23} &amp; = 2yz - 2wx             \\
+r_{31} &amp; = 2xz - 2wy             \\
+r_{32} &amp; = 2yz + 2wx             \\
+r_{33} &amp; = w^{2} - x^{2} - y^{2} + z^{2}
+\end{aligned}
+\]</span></p>
+<h3 id="rpy-角转换为四元数">3.4. RPY 角转换为四元数</h3>
+<p>若旋转由 RPY 角（或 ZYX 顺规的欧拉角）表示，即绕参考坐标系的 <span class="math inline">\(Z\)</span>、<span class="math inline">\(Y\)</span> 和 <span class="math inline">\(X\)</span> 轴依次旋转 <span class="math inline">\(\gamma\)</span>、<span class="math inline">\(\beta\)</span> 和 <span class="math inline">\(\alpha\)</span> 角，则此旋转的四元数表示为 <span class="math inline">\(q = (w, x, y, z)\)</span>，其中 <span class="math display">\[
+\begin{aligned}
+w &amp; = \cos{\frac{\alpha}{2}} \cos{\frac{\beta}{2}} \cos{\frac{\gamma}{2}} + \sin{\frac{\alpha}{2}} \sin{\frac{\beta}{2}} \sin{\frac{\gamma}{2}} \\
+x &amp; = \sin{\frac{\alpha}{2}} \cos{\frac{\beta}{2}} \cos{\frac{\gamma}{2}} - \cos{\frac{\alpha}{2}} \sin{\frac{\beta}{2}} \sin{\frac{\gamma}{2}} \\
+y &amp; = \cos{\frac{\alpha}{2}} \sin{\frac{\beta}{2}} \cos{\frac{\gamma}{2}} + \sin{\frac{\alpha}{2}} \cos{\frac{\beta}{2}} \sin{\frac{\gamma}{2}} \\
+z &amp; = \cos{\frac{\alpha}{2}} \cos{\frac{\beta}{2}} \sin{\frac{\gamma}{2}} + \sin{\frac{\alpha}{2}} \sin{\frac{\beta}{2}} \cos{\frac{\gamma}{2}} \\
+\end{aligned}
+\]</span></p>
+<h3 id="四元数转换为-rpy-角">3.5. 四元数转换为 RPY 角</h3>
+<p>对于四元数 <span class="math inline">\(q = (w, x, y, z)\)</span>，可以得到对应的 RPY 角 <span class="math display">\[
+\begin{aligned}
+\theta_{R} &amp; = \arctan{\left[ \frac{2(yz+wx)}{w^{2} - x^{2} - y^{2} + z^{2}} \right]}   \\
+\theta_{P} &amp; = \arcsin{[-2(xz - wy)]}                                           \\
+\theta_{Y} &amp; = \arctan{\left[ \frac{2(xy + wz)}{w^{2} + x^{2} - y^{2} - z^{2}} \right]}
+\end{aligned}
+\]</span></p>
+<hr />
+<h2 id="参考链接">参考链接</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/21207-iHome/p/6894128.html">四元数与欧拉角（RPY 角）的相互转换</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%9C%BA%E5%99%A8%E4%BA%BA/" rel="tag"># 机器人</a>
+              <a href="/tags/%E5%9B%9B%E5%85%83%E6%95%B0/" rel="tag"># 四元数</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/03/02/%E5%BC%BA%E5%88%B6-macOS-%E5%BC%80%E5%90%AF-2K-%E6%98%BE%E7%A4%BA%E5%99%A8%E7%9A%84-HiDPI/" rel="prev" title="强制 macOS 开启 2K 显示器的 HiDPI">
+      <i class="fa fa-chevron-left"></i> 强制 macOS 开启 2K 显示器的 HiDPI
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/03/04/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AC%94%E8%AE%B0-1-%E2%80%94%E2%80%94-%E8%BF%9B%E7%A8%8B%E5%92%8C%E7%BA%BF%E7%A8%8B/" rel="next" title="操作系统笔记 (1) —— 进程和线程">
+      操作系统笔记 (1) —— 进程和线程 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E5%85%83%E6%95%B0"><span class="nav-text">1. 四元数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89"><span class="nav-text">1.1. 定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%A7%E8%B4%A8"><span class="nav-text">1.2. 性质</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9B%E5%85%83%E6%95%B0%E8%BF%90%E7%AE%97"><span class="nav-text">1.3. 四元数运算</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E4%BD%8D%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E7%A9%BA%E9%97%B4%E6%97%8B%E8%BD%AC"><span class="nav-text">2. 单位四元数与空间旋转</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%82%B9%E7%9A%84%E8%A1%A8%E7%A4%BA"><span class="nav-text">2.1. 点的表示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%8B%E8%BD%AC%E7%9A%84%E8%A1%A8%E7%A4%BA"><span class="nav-text">2.2. 旋转的表示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%8B%E8%BD%AC%E7%9A%84%E5%A4%8D%E5%90%88"><span class="nav-text">2.3. 旋转的复合</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5%E4%B8%8E%E5%8D%95%E4%BD%8D%E5%9B%9B%E5%85%83%E6%95%B0"><span class="nav-text">3. 旋转矩阵与单位四元数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5%E6%AC%A7%E6%8B%89%E8%A7%92%E5%92%8C-rpy-%E8%A7%92"><span class="nav-text">3.1. 旋转矩阵、欧拉角和 RPY 角</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5"><span class="nav-text">3.1.1. 旋转矩阵</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AC%A7%E6%8B%89%E8%A7%92"><span class="nav-text">3.1.2. 欧拉角</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#rpy-%E8%A7%92"><span class="nav-text">3.1.3. RPY 角</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5%E8%BD%AC%E6%8D%A2%E4%B8%BA%E5%9B%9B%E5%85%83%E6%95%B0"><span class="nav-text">3.2. 旋转矩阵转换为四元数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9B%E5%85%83%E6%95%B0%E8%BD%AC%E6%8D%A2%E4%B8%BA%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5"><span class="nav-text">3.3. 四元数转换为旋转矩阵</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#rpy-%E8%A7%92%E8%BD%AC%E6%8D%A2%E4%B8%BA%E5%9B%9B%E5%85%83%E6%95%B0"><span class="nav-text">3.4. RPY 角转换为四元数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9B%E5%85%83%E6%95%B0%E8%BD%AC%E6%8D%A2%E4%B8%BA-rpy-%E8%A7%92"><span class="nav-text">3.5. 四元数转换为 RPY 角</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-text">参考链接</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jiaxin Shou"
+      src="https://drive.google.com/uc?export=view&id=1TclFU5uu2Ole6scPy9kTzGSTYvs_7mUY">
+  <p class="site-author-name" itemprop="name">Jiaxin Shou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/shoujiaxin" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;shoujiaxin" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:shoujiaxin@gmail.com" title="E-Mail → mailto:shoujiaxin@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Sjx_96" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Sjx_96" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://instagram.com/shoujiaxin" title="Instagram → https:&#x2F;&#x2F;instagram.com&#x2F;shoujiaxin" rel="noopener" target="_blank"><i class="fab fa-instagram fa-fw"></i>Instagram</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="far fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jiaxin Shou</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = decodeURI(visitors.id);
+      var title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              leancloudSelector(url).innerText = 'Counter not initialized! More info at console err msg.';
+              console.error('ATTENTION! LeanCloud counter has security bug, see how to solve it here: https://github.com/theme-next/hexo-leancloud-counter-security. \n However, you can still use LeanCloud without security, by setting `security` option to `false`.');
+            
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"XbcFfHEXn1luNOnUrtizHfzW-MdYXbMMI","app_key":"JbKohvPsKEYaHgjNSvRfcOIn","server_url":null,"security":true};
+    function fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'XbcFfHEXn1luNOnUrtizHfzW-MdYXbMMI',
+      appKey     : 'JbKohvPsKEYaHgjNSvRfcOIn',
+      placeholder: "Just go go",
+      avatar     : 'retro',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1570 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>5 自由度机械臂的建模 (1) —— 齐次坐标及其变换矩阵</title>
+    <url>/2018/10/01/5-%E8%87%AA%E7%94%B1%E5%BA%A6%E6%9C%BA%E6%A2%B0%E8%87%82%E7%9A%84%E5%BB%BA%E6%A8%A1-1-%E2%80%94%E2%80%94-%E9%BD%90%E6%AC%A1%E5%9D%90%E6%A0%87%E5%8F%8A%E5%85%B6%E5%8F%98%E6%8D%A2%E7%9F%A9%E9%98%B5/</url>
+    <content><![CDATA[<h2 id="齐次坐标系">1. 齐次坐标系</h2>
+<p>在欧氏几何中，我们常使用笛卡尔坐标系 (Cartesian Coordinate System) 来作为二维平面或三维空间中坐标系统。与此类似，在投影几何中，则使用<strong>齐次坐标系</strong> (Homogeneous Coordinates)，也称<strong>投影坐标系</strong> (Projective Coordinates) 作为坐标系统。</p>
+<a id="more"></a>
+<p>齐次坐标可以让包括无穷远点在内的点以有限的坐标表示，使用齐次坐标的公式通常会比使用笛卡尔坐标的公式更简单、且更对称。为了表示无穷远点，齐次坐标用来表示坐标的数值数目比投影空间的维度多 1。</p>
+<p>实投影平面可以看作是包含无穷远点在内的欧氏平面，这些无穷远点位于各自的无穷远线上，无穷远点的坐标可由无穷远线的斜率给出。对于欧氏平面上的平行线，在投影平面可以看作相交于该方向上的无穷远点。</p>
+<p>给定欧氏平面上一点 <span class="math inline">\((x, y)\)</span>，对任意非零实数 <span class="math inline">\(Z\)</span>，三元组 <span class="math inline">\((xZ, yZ, Z)\)</span> 即为该点的齐次坐标。由齐次坐标的定义，我们可以得到如下几个性质：</p>
+<ul>
+<li>齐次坐标所表示的点的笛卡尔坐标可由前两个数值除以第三个数值得到：齐次坐标 <span class="math inline">\((X, Y, Z)\)</span>，当 <span class="math inline">\(Z\)</span> 不为 0 时，表示欧氏平面上的点 <span class="math inline">\((\frac{X}{Z}, \frac{Y}{Z})\)</span>；当 <span class="math inline">\(Z\)</span> 为 0 时，则表示无穷远点</li>
+<li>一个点的齐次坐标乘以一个非零实数所得的齐次坐标仍然表示该点，故一个点可以有无限多个齐次坐标表示</li>
+<li>齐次坐标的原点为 <span class="math inline">\((0, 0, 1)\)</span>，而 <span class="math inline">\((0, 0, 0)\)</span> 不表示任何点</li>
+</ul>
+<p>对于向量 <span class="math inline">\((x, y, 1)\)</span>，可以在几何意义上理解为空间中第三个维度为常数的平面上的一个二维向量。同样地，在三维空间的点 <span class="math inline">\((x, y, z)\)</span>，其齐次坐标为 <span class="math inline">\((a x, a y, a z, a)\)</span>，其中 <span class="math inline">\(a\)</span> 为一个非零实数。<font color=#ff4444>齐次坐标的实质就是用 <span class="math inline">\(n + 1\)</span> 维向量来表示 <span class="math inline">\(n\)</span> 维向量。</font></p>
+<p>使用齐次坐标可以将平移和旋转变换统一成 <span class="math inline">\(4 \times 4\)</span> 的矩阵运算，便于计算和处理。</p>
+<h2 id="旋转矩阵">2. 旋转矩阵</h2>
+<p>旋转矩阵 (Rotation Matrix) 描述两个坐标系之间的旋转变换。假设空间中有坐标系 <span class="math inline">\(\{A\}\)</span> 和坐标系 <span class="math inline">\(\{B\}\)</span>，则 <span class="math inline">\(\{A\}\)</span> 到 <span class="math inline">\(\{B\}\)</span> 的旋转变换可以描述为 <span class="math display">\[
+\begin{aligned}
+_{B}^{A}R &amp; =
+\begin{bmatrix}
+^{A}\hat{X}_{B} &amp; ^{A}\hat{Y}_{B} &amp; ^{A}\hat{Z}_{B}
+\end{bmatrix} \\
+&amp; =
+\begin{bmatrix}
+\hat{X}_{B} \cdot \hat{X}_{A} &amp; \hat{Y}_{B} \cdot \hat{X}_{A} &amp; \hat{Z}_{B} \cdot \hat{X}_{A} \\
+\hat{X}_{B} \cdot \hat{Y}_{A} &amp; \hat{Y}_{B} \cdot \hat{Y}_{A} &amp; \hat{Z}_{B} \cdot \hat{Y}_{A} \\
+\hat{X}_{B} \cdot \hat{Z}_{A} &amp; \hat{Y}_{B} \cdot \hat{Z}_{A} &amp; \hat{Z}_{B} \cdot \hat{Z}_{A}
+\end{bmatrix}
+\end{aligned}
+\]</span> 其中，<span class="math inline">\(^{A}\hat{X}_{B}\)</span>、<span class="math inline">\(^{A}\hat{Y}_{B}\)</span>、<span class="math inline">\(^{A}\hat{Z}_{B}\)</span> 分别为坐标系 <span class="math inline">\(\{B\}\)</span> 的 <span class="math inline">\(X\)</span> 轴、<span class="math inline">\(Y\)</span> 轴、<span class="math inline">\(Z\)</span> 轴的方向向量在坐标系 <span class="math inline">\(\{A\}\)</span> 坐标轴上的投影，即坐标系 <span class="math inline">\(\{B\}\)</span> 主轴方向的单位矢量。</p>
+<p>根据以上定义，旋转矩阵各列的模均为 1，并且这些单位矢量均相互正交，且有 <span class="math display">\[
+_{B}^{A}R = {_{A}^{B}R^T} = {_{A}^{B}R^{-1}}
+\]</span> 所以 <span class="math inline">\(_{B}^{A}R\)</span> 的列是 <span class="math inline">\(\{B\}\)</span> 的单位矢量在 <span class="math inline">\(\{A\}\)</span> 中的描述；$ _{B}^{A}R$ 的行是 <span class="math inline">\(\{A\}\)</span> 的单位矢量在 <span class="math inline">\(\{B\}\)</span> 中的描述。</p>
+<h2 id="齐次变换矩阵">3. 齐次变换矩阵</h2>
+<p>三维空间中的齐次变换矩阵表示为 <span class="math inline">\(4 \times 4\)</span> 阶矩阵形式 <span class="math display">\[
+_{B}^{A}T =
+\begin{bmatrix}
+  &amp; _{B}^{A}R &amp;   &amp; ^{A}P_{B\ ORG} \\
+0 &amp; 0         &amp; 0 &amp; 1
+\end{bmatrix}
+\]</span> 其中，<span class="math inline">\(_{B}^{A}R\)</span> 为 <span class="math inline">\(3 \times 3\)</span> 阶旋转矩阵，<span class="math inline">\(^{A}P_{BORG}\)</span> 为 <span class="math inline">\(3 \times 1\)</span> 阶平移矢量。</p>
+<p>常见的几何变换都是线性变换，包括平移、旋转、缩放等，而机器人中最常见的是平移和旋转变换，这里就以这两种变换为例分析其在齐次坐标系下的变换形式。变换都在笛卡尔坐标系下进行，三维的笛卡尔坐标系满足右手定则。</p>
+<h3 id="平移变换">3.1. 平移变换</h3>
+<p>给定空间中点 <span class="math inline">\(P\)</span>，笛卡尔坐标系下的坐标为 <span class="math inline">\((x, y, z)\)</span>，将点 <span class="math inline">\(P\)</span> 分别沿 <span class="math inline">\(X\)</span> 轴、<span class="math inline">\(Y\)</span> 轴、<span class="math inline">\(Z\)</span> 轴平移 <span class="math inline">\(t_{x}\)</span>、<span class="math inline">\(t_{y}\)</span> 和 <span class="math inline">\(t_{z}\)</span> 个单位，得到点 <span class="math inline">\(P&#39;\)</span>，其坐标为 <span class="math inline">\((x&#39;, y&#39;, z&#39;)\)</span>，则用齐次坐标变换矩阵可以表示为 <span class="math display">\[
+\begin{bmatrix}
+x&#39; \\
+y&#39; \\
+z&#39; \\
+1
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 &amp; 0 &amp; 0 &amp; t_{x} \\
+0 &amp; 1 &amp; 0 &amp; t_{y} \\
+0 &amp; 0 &amp; 1 &amp; t_{z} \\
+0 &amp; 0 &amp; 0 &amp; 1
+\end{bmatrix}
+\begin{bmatrix}
+x \\
+y \\
+z \\
+1
+\end{bmatrix}
+\]</span></p>
+<h3 id="旋转变换">3.2. 旋转变换</h3>
+<p>三维空间内的旋转变换可以分解为绕 <span class="math inline">\(X\)</span> 轴、绕 <span class="math inline">\(Y\)</span> 轴和绕 <span class="math inline">\(Z\)</span> 轴的旋转，旋转的方向同样满足右手定则：大拇指沿旋转轴线的正方向，四指的指向即为旋转的正方向。</p>
+<h4 id="绕-x-轴的旋转">3.2.1. 绕 <span class="math inline">\(X\)</span> 轴的旋转</h4>
+<p>点 <span class="math inline">\(P (x, y, z)\)</span> 绕 <span class="math inline">\(X\)</span> 轴旋转 <span class="math inline">\(\alpha\)</span> 得到点 <span class="math inline">\(P&#39; (x&#39;, y&#39;, z&#39;)\)</span>。由于绕 <span class="math inline">\(X\)</span> 轴旋转，因此 <span class="math inline">\(x&#39; = x\)</span>，即点 <span class="math inline">\(P\)</span> 在 <span class="math inline">\(YOZ\)</span> 平面上进行二维旋转，则有 <span class="math display">\[
+\begin{aligned}
+x&#39; &amp; = x                               \\
+y&#39; &amp; = y \cos{\alpha} - z \sin{\alpha} \\
+z&#39; &amp; = y \sin{\alpha} + z \cos{\alpha}
+\end{aligned}
+\]</span> 用齐次坐标变换可表示为 <span class="math display">\[
+\begin{bmatrix}
+x&#39; \\
+y&#39; \\
+z&#39; \\
+1
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 &amp; 0            &amp; 0             &amp; 0 \\
+0 &amp; \cos{\alpha} &amp; -\sin{\alpha} &amp; 0 \\
+0 &amp; \sin{\alpha} &amp; \cos{\alpha}  &amp; 0 \\
+0 &amp; 0            &amp; 0             &amp; 1
+\end{bmatrix}
+\begin{bmatrix}
+x \\
+y \\
+z \\
+1
+\end{bmatrix}
+\]</span></p>
+<h4 id="绕-y-轴的旋转">3.2.2. 绕 <span class="math inline">\(Y\)</span> 轴的旋转</h4>
+<p>点 <span class="math inline">\(P (x, y, z)\)</span> 绕 <span class="math inline">\(Y\)</span> 轴旋转 <span class="math inline">\(\theta\)</span> 得到点 <span class="math inline">\(P&#39; (x&#39;, y&#39;, z&#39;)\)</span>。由于绕 <span class="math inline">\(Y\)</span> 轴旋转，因此 <span class="math inline">\(y&#39; = y\)</span>，即点 <span class="math inline">\(P\)</span> 在 <span class="math inline">\(ZOX\)</span> 平面（注意正方向）上进行二维旋转，则有 <span class="math display">\[
+\begin{aligned}
+x&#39; &amp; = z \sin{\theta} + x \cos{\theta} \\
+y&#39; &amp; = y&#39;                              \\
+z&#39; &amp; = z \cos{\theta} - x \sin{\theta}
+\end{aligned}
+\]</span> 用齐次坐标变换可表示为 <span class="math display">\[
+\begin{bmatrix}
+x&#39; \\
+y&#39; \\
+z&#39; \\
+1
+\end{bmatrix}
+=
+\begin{bmatrix}
+\cos{\theta}  &amp; 0 &amp; \sin{\theta} &amp; 0 \\
+0             &amp; 1 &amp; 0            &amp; 0 \\
+-\sin{\theta} &amp; 0 &amp; \cos{\theta} &amp; 0 \\
+0             &amp; 0 &amp; 0            &amp; 1
+\end{bmatrix}
+\begin{bmatrix}
+x \\
+y \\
+z \\
+1
+\end{bmatrix}
+\]</span></p>
+<h4 id="绕-z-轴的旋转">3.2.3. 绕 <span class="math inline">\(Z\)</span> 轴的旋转</h4>
+<p>点 <span class="math inline">\(P (x, y, z)\)</span> 绕 <span class="math inline">\(Z\)</span> 轴旋转 <span class="math inline">\(\gamma\)</span> 得到点 <span class="math inline">\(P&#39; (x&#39;, y&#39;, z&#39;)\)</span>。同理，由于绕 <span class="math inline">\(Z\)</span> 轴旋转，因此 <span class="math inline">\(z&#39; = z\)</span>，即点 <span class="math inline">\(P\)</span> 在 <span class="math inline">\(XOY\)</span> 平面上进行二维旋转，则有 <span class="math display">\[
+\begin{aligned}
+x&#39; &amp; =\ x \cos{\gamma} - y \sin{\gamma} \\
+y&#39; &amp; =\ x \sin{\gamma} + y \sin{\gamma} \\
+z&#39; &amp; =\ z
+\end{aligned}
+\]</span> 用齐次坐标变换可表示为 <span class="math display">\[
+\begin{bmatrix}
+x&#39; \\
+y&#39; \\
+z&#39; \\
+1
+\end{bmatrix}
+=
+\begin{bmatrix}
+\cos{\gamma} &amp; -\sin{\gamma} &amp; 0 &amp; 0 \\
+\sin{\gamma} &amp; \cos{\gamma}  &amp; 0 &amp; 0 \\
+0            &amp; 0             &amp; 1 &amp; 0 \\
+0            &amp; 0             &amp; 0 &amp; 1
+\end{bmatrix}
+\begin{bmatrix}
+x \\
+y \\
+z \\
+1
+\end{bmatrix}
+\]</span></p>
+<hr />
+<h2 id="参考链接">参考链接</h2>
+<ul>
+<li><p><a href="https://en.wikipedia.org/wiki/Denavit–Hartenberg_parameters">Denavit–Hartenberg parameters - Wikipedia</a></p></li>
+<li><p><a href="https://blog.csdn.net/csxiaoshui/article/details/65446125">旋转变换（一）旋转矩阵</a></p></li>
+</ul>
+]]></content>
+      <categories>
+        <category>机器人</category>
+      </categories>
+      <tags>
+        <tag>机器人</tag>
+        <tag>齐次坐标系</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>5 自由度机械臂的建模 (2) —— DH 建模法</title>
+    <url>/2018/10/02/5-%E8%87%AA%E7%94%B1%E5%BA%A6%E6%9C%BA%E6%A2%B0%E8%87%82%E7%9A%84%E5%BB%BA%E6%A8%A1-2-%E2%80%94%E2%80%94-DH-%E5%BB%BA%E6%A8%A1%E6%B3%95/</url>
+    <content><![CDATA[<h2 id="dh-建模法">DH 建模法</h2>
+<p>DH 建模方法是由 Denavit 和 Hartenberg 提出的一种建模方法，主要用在机器人运动学上。此方法在机器人的每个连杆上建立一个坐标系，通过齐次坐标变换实现两个连杆上的坐标变换，建立多连杆串联系统中首末坐标系的变换关系。</p>
+<a id="more"></a>
+<p>DH 建模方法的几个要点如下：</p>
+<ul>
+<li>建立连杆坐标系</li>
+<li>确定四个参数 <span class="math inline">\(\alpha\)</span>、<span class="math inline">\(a\)</span>、<span class="math inline">\(d\)</span>、<span class="math inline">\(\theta\)</span></li>
+<li>列 DH 参数表</li>
+<li>由参数表得到变换矩阵</li>
+</ul>
+<p>DH 建模方法中，每个连杆使用 4 个参数 <span class="math inline">\(\alpha\)</span>、<span class="math inline">\(a\)</span>、<span class="math inline">\(d\)</span> 和 <span class="math inline">\(\theta\)</span> 来描述，2 个描述连杆本身，另外 2 个描述与相邻连杆的位姿（连接或几何关系）。对于转动关节，其中 <span class="math inline">\(\theta\)</span> 为关节变量，其他三个参数固定不变，为连杆参数；对于移动关节，<span class="math inline">\(d\)</span> 为关节变量，其他三个为关节参数。</p>
+<p>根据连杆坐标系和关节对应关系的不同，DH 建模法可以分为传统 DH (Classic DH) 和改进 DH (Modified DH)，二者的主要区别如下表所示。</p>
+<table>
+<thead>
+<tr class="header">
+<th>区别</th>
+<th>Classic DH</th>
+<th>Modified DH</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>连杆固定坐标系的位置</td>
+<td>后一个关节坐标系</td>
+<td>前一个关节坐标系</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(X\)</span> 轴的确定方式</td>
+<td>当前坐标系 <span class="math inline">\(Z\)</span> 轴和前一个坐标系 <span class="math inline">\(Z\)</span> 轴的向量积</td>
+<td>后一个坐标系 <span class="math inline">\(Z\)</span> 轴与当前坐标系 <span class="math inline">\(Z\)</span> 轴的向量积</td>
+</tr>
+<tr class="odd">
+<td>坐标系间的参数变换顺序</td>
+<td><span class="math inline">\(\theta\)</span>、<span class="math inline">\(d\)</span>、<span class="math inline">\(a\)</span>、<span class="math inline">\(\alpha\)</span></td>
+<td><span class="math inline">\(\alpha\)</span>、<span class="math inline">\(a\)</span>、<span class="math inline">\(\theta\)</span>、<span class="math inline">\(d\)</span></td>
+</tr>
+</tbody>
+</table>
+<h3 id="classic-dh">Classic DH</h3>
+<div data-align="center">
+<img src="https://drive.google.com/uc?export=view&id=1GYql9eMiNaknHYI69XB3dMeQubryIiPe" alt="Classic DH" width="40%"/>
+</div>
+<p>Classic DH 的关节和坐标系关系如图所示，其中各个参数的含义如下：</p>
+<ul>
+<li><span class="math inline">\(\theta_{i}\)</span>：<span class="math inline">\(X_{i-1}\)</span> 到 <span class="math inline">\(X_{i}\)</span> 绕 <span class="math inline">\(Z_{i-1}\)</span> 旋转的角度</li>
+<li><span class="math inline">\(d_{i}\)</span>：<span class="math inline">\(X_{i-1}\)</span> 到 <span class="math inline">\(X_{i}\)</span> 沿 <span class="math inline">\(Z_{i-1}\)</span> 方向的距离</li>
+<li><span class="math inline">\(a_{i}\)</span>：<span class="math inline">\(Z_{i-1}\)</span> 到 <span class="math inline">\(Z_{i}\)</span> 沿 <span class="math inline">\(X_{i-1}\)</span> 方向的距离</li>
+<li><span class="math inline">\(\alpha_{i}\)</span>：<span class="math inline">\(Z_{i-1}\)</span> 到 <span class="math inline">\(Z_{i}\)</span> 绕 <span class="math inline">\(X_{i-1}\)</span> 旋转的角度</li>
+</ul>
+<p>坐标系 <span class="math inline">\(O_{i-1}\)</span> 与关节 <span class="math inline">\(i\)</span> 对齐，其 DH 参数矩阵为 <span class="math display">\[
+_{i}^{i-1}T =
+\begin{bmatrix}
+\cos{\theta_{i}} &amp; -\sin{\theta_{i}} \cos{\alpha_{i}} &amp; \sin{\theta_{i}}  \sin{\alpha_{i}} &amp; a_{i} \cos{\theta_{i}} \\
+\sin{\theta_{i}} &amp; \cos{\theta_{i}} \cos{\alpha_{i}}  &amp; -\cos{\theta_{i}} \sin{\alpha_{i}} &amp; a_{i} \sin{\theta_{i}} \\
+0                &amp; \sin{\alpha_{i}}                   &amp; \cos{\alpha_{i}}                   &amp; d_{i}                  \\
+0                &amp; 0                                  &amp; 0                                  &amp; 1
+\end{bmatrix}
+\]</span></p>
+<h3 id="modified-dh">Modified DH</h3>
+<div data-align="center">
+<img src="https://upload.wikimedia.org/wikipedia/commons/d/d8/DHParameter.png" alt="Modified DH" width="40%"/>
+</div>
+<p>Modified DH 的关节和坐标系关系如图所示，其中各个参数的含义如下：</p>
+<ul>
+<li><span class="math inline">\(\alpha_{i-1}\)</span>：<span class="math inline">\(Z_{i-1}\)</span> 到 <span class="math inline">\(Z_{i}\)</span> 绕 <span class="math inline">\(X_{i-1}\)</span> 旋转的角度</li>
+<li><span class="math inline">\(a_{i-1}\)</span>：<span class="math inline">\(Z_{i-1}\)</span> 到 <span class="math inline">\(Z_{i}\)</span> 沿 <span class="math inline">\(X_{i-1}\)</span> 方向的距离</li>
+<li><span class="math inline">\(\theta_{i}\)</span>：<span class="math inline">\(X_{i-1}\)</span> 到 <span class="math inline">\(X_{i}\)</span> 绕 <span class="math inline">\(Z_{i}\)</span> 旋转的角度</li>
+<li><span class="math inline">\(d_{i}\)</span>：<span class="math inline">\(X_{i-1}\)</span> 到 <span class="math inline">\(X_{i}\)</span> 沿 <span class="math inline">\(Z_{i}\)</span> 方向的距离</li>
+</ul>
+<p>坐标系 <span class="math inline">\(O_{i-1}\)</span> 与关节 <span class="math inline">\(i-1\)</span> 对齐，其 DH 参数矩阵为 <span class="math display">\[
+_{i}^{i-1}T =
+\begin{bmatrix}
+\cos{\theta_{i}}                    &amp; -\sin{\theta_{i}}                   &amp; 0                   &amp; a_{i-1}                   \\
+\sin{\theta_{i}} \cos{\alpha_{i-1}} &amp; \cos{\theta_{i}} \cos{\alpha_{i-1}} &amp; -\sin{\alpha_{i-1}} &amp; -d_{i} \sin{\alpha_{i-1}} \\
+\sin{\theta_{i}} \sin{\alpha_{i-1}} &amp; \cos{\theta_{i}} \sin{\alpha_{i-1}} &amp; \cos{\alpha_{i-1}}  &amp; d_{i} \cos{\alpha_{i-1}}  \\
+0                                   &amp; 0                                   &amp; 0                   &amp; 1
+\end{bmatrix}
+\]</span></p>
+<p>Modified DH 克服了 Classic DH 在用于树型结构机器人时可能出现的问题，比较常用，故之后主要介绍这种方法，并使用该方法进行建模。</p>
+<h2 id="机械臂连杆坐标系的建立">机械臂连杆坐标系的建立</h2>
+<p>建立机械臂连杆坐标系的步骤：</p>
+<ol type="1">
+<li>确定各个关节轴和连杆，坐标系的 <span class="math inline">\(Z\)</span> 轴沿关节轴线方向</li>
+<li>找出相邻两关节轴线的交点或公垂线，用于确定坐标系 <span class="math inline">\(\{i\}\)</span> 的原点：以关节轴 <span class="math inline">\(i\)</span> 和 <span class="math inline">\(i+1\)</span> 的交点或公垂线与关节轴 <span class="math inline">\(i\)</span> 的交点为原点</li>
+<li>确定 <span class="math inline">\(X\)</span> 轴：两轴线相交时，<span class="math inline">\(\vec{X_{i}} = \pm \vec{Z_{i+1}} \times \vec{Z_{i}}\)</span>；两轴线不相交时，<span class="math inline">\(X_{i}\)</span> 轴与公垂线重合，方向为 <span class="math inline">\(i\)</span> 到 <span class="math inline">\(i+1\)</span></li>
+<li>右手定则确定 <span class="math inline">\(Y_{i}\)</span> 轴</li>
+<li>确定基坐标系 <span class="math inline">\(\{0\}\)</span>：为了简化问题，<span class="math inline">\(Z_0\)</span> 通常与关节 1 的轴线方向重合，且当关节变量 1 为 0 时，坐标系 <span class="math inline">\(\{0\}\)</span> 与 <span class="math inline">\(\{1\}\)</span> 重合</li>
+<li>确定末端坐标系 <span class="math inline">\(\{n\}\)</span>：对于转动关节，<span class="math inline">\(\theta_n = 0\)</span> 时，<span class="math inline">\(X_n\)</span> 与 <span class="math inline">\(X_{n-1}\)</span> 方向相同，选取原点使 <span class="math inline">\(d_n = 0\)</span>；对于移动关节，取 <span class="math inline">\(X_n\)</span> 方向使 <span class="math inline">\(\theta_n = 0\)</span>，当 <span class="math inline">\(d_n = 0\)</span> 时，取 <span class="math inline">\(X_{n-1}\)</span> 与 <span class="math inline">\(X_n\)</span> 的交点为原点</li>
+</ol>
+<div data-align="center">
+<img src="https://drive.google.com/uc?export=view&id=1wSbJ4LteBvaAXjykoVqwe91GlwGkcuYD" alt="机械臂" width="40%"/>
+</div>
+<p>这里我使用的 5 自由度机械臂的实物如上图所示，根据如上所述的步骤建立坐标系，结果如下图所示。</p>
+<a name="坐标系"></a>
+<div data-align="center">
+<img src="https://drive.google.com/uc?export=view&id=1nGTlKyJhLxSZSBxhsYxiTPvYqL3axcPZ" alt="坐标系 1" width="50%"/>
+</div>
+<h2 id="dh-参数表">DH 参数表</h2>
+<p>根据机械臂各个连杆间坐标系的关系，采用 Modified DH 形式，得到的参数表如下。</p>
+<table>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(i\)</span></th>
+<th><span class="math inline">\(\alpha_{i-1}\)</span></th>
+<th><span class="math inline">\(a_{i-1}\)</span></th>
+<th><span class="math inline">\(\theta_{i-1}\)</span></th>
+<th><span class="math inline">\(d_{i}\)</span></th>
+<th><span class="math inline">\(\theta\)</span> 的范围</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td><span class="math inline">\(0^{\circ}\)</span></td>
+<td><span class="math inline">\(0\)</span></td>
+<td><span class="math inline">\(\theta_{1}\)</span></td>
+<td><span class="math inline">\(0\)</span></td>
+<td><span class="math inline">\((-\frac{2 \pi}{3}, \frac{2 \pi}{3})\)</span></td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td><span class="math inline">\(-90^{\circ}\)</span></td>
+<td><span class="math inline">\(a_{1}\)</span></td>
+<td><span class="math inline">\(\theta_{2}\)</span></td>
+<td><span class="math inline">\(0\)</span></td>
+<td><span class="math inline">\((-\frac{\pi}{2}, 0)\)</span></td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td><span class="math inline">\(0^{\circ}\)</span></td>
+<td><span class="math inline">\(a_{2}\)</span></td>
+<td><span class="math inline">\(\theta_{3}\)</span></td>
+<td><span class="math inline">\(0\)</span></td>
+<td><span class="math inline">\((-\frac{2 \pi}{3}, \frac{2 \pi}{3})\)</span></td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td><span class="math inline">\(0^{\circ}\)</span></td>
+<td><span class="math inline">\(a_{3}\)</span></td>
+<td><span class="math inline">\(\theta_{4}\)</span></td>
+<td><span class="math inline">\(0\)</span></td>
+<td><span class="math inline">\((-\frac{7 \pi}{6}, \frac{\pi}{6})\)</span></td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td><span class="math inline">\(-90^{\circ}\)</span></td>
+<td><span class="math inline">\(0\)</span></td>
+<td><span class="math inline">\(\theta_{5}\)</span></td>
+<td><span class="math inline">\(0\)</span></td>
+<td><span class="math inline">\((-\frac{2 \pi}{3}, \frac{2 \pi}{3})\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>其中，<span class="math inline">\(a_{1} = 3\ mm\)</span>，<span class="math inline">\(a_{2} = 96\ mm\)</span>，<span class="math inline">\(a_{3} = 96\ mm\)</span>，<span class="math inline">\(\theta_{1}\)</span>～<span class="math inline">\(\theta_{5}\)</span> 为关节 1～5 的旋转角度。初始时刻，<span class="math inline">\(\theta_{1} = 0\)</span>，<span class="math inline">\(\theta_{2} = 0\)</span>，<span class="math inline">\(\theta_{3} = 0\)</span>，<span class="math inline">\(\theta_{4} = -\frac{pi}{2}\)</span>，<span class="math inline">\(\theta_{5} = 0\)</span>。</p>
+<h2 id="齐次变换矩阵">齐次变换矩阵</h2>
+<p>将 DH 参数表代入 Modified DH 的 DH 参数矩阵，可以得到各个坐标系间的齐次变换矩阵 <span class="math inline">\(_{1}^{0}T\)</span>、<span class="math inline">\(_{2}^{1}T\)</span>、<span class="math inline">\(_{3}^{2}T\)</span>、<span class="math inline">\(_{4}^{3}T\)</span> 和 <span class="math inline">\(_{5}^{4}T\)</span>，则可得基坐标系到末端坐标系的齐次变换矩阵 <a name="运动学方程"></a> <span class="math display">\[
+_{5}^{0}T = {_{1}^{0}T} {_{2}^{1}T} {_{3}^{2}T} {_{4}^{3}T} {_{5}^{4}T} =
+\begin{bmatrix}
+n_{x} &amp; o_{x} &amp; a_{x} &amp; p_{x} \\
+n_{y} &amp; o_{y} &amp; a_{y} &amp; p_{y} \\
+n_{z} &amp; o_{z} &amp; a_{z} &amp; p_{z} \\
+0   &amp; 0   &amp; 0   &amp; 1
+\end{bmatrix}
+\]</span></p>
+<p>其中，<span class="math inline">\(\begin{bmatrix} p_{x} &amp; p_{y} &amp; p_{z} \end{bmatrix}^T\)</span> 为机械臂末端在基坐标系中的位置，<span class="math inline">\(\begin{bmatrix} n_{x} &amp; n_{y} &amp; n_{z} \end{bmatrix}^T\)</span> 为机械臂末端坐标系 <span class="math inline">\(X\)</span> 轴在基坐标系中的方向矢量，<span class="math inline">\(\begin{bmatrix} o_{x} &amp; o_{y} &amp; o_{z} \end{bmatrix}^T\)</span> 为机械臂末端坐标系 <span class="math inline">\(Y\)</span> 轴在基坐标系中的方向矢量，<span class="math inline">\(\begin{bmatrix} a_{x} &amp; a_{y} &amp; a_{z} \end{bmatrix}^T\)</span> 为机械臂末端坐标系 <span class="math inline">\(Z\)</span> 轴在基坐标系中的方向矢量。</p>
+<p>代入 DH 参数，可得 <span class="math display">\[
+\begin{aligned}
+n_{x} = &amp; \ s_{1} s_{5} + c_{1} c_{2} c_{3} c_{4} c_{5} - c_{1} c_{2} c_{5} s_{3} s_{4} - c_{1} c_{3} c_{5} s_{2} s_{4} - c_{1} c_{4} c_{5} s_{2} s_{3} \\
+n_{y} = &amp; \ c_{2} c_{3} c_{4} c_{5} s_{1} - c_{1} s_{5} - c_{2} c_{5} s_{1} s_{3} s_{4} - c_{3} c_{5} s_{1} s_{2} s_{4} - c_{4} c_{5} s_{1} s_{2} s_{3} \\
+n_{z} = &amp; \ c_{5} s_{2} s_{3} s_{4} - c_{2} c_{4} c_{5} s_{3} - c_{3} c_{4} c_{5} s_{2} - c_{2} c_{3} c_{5} s_{4}                                       \\
+o_{x} = &amp; \ c_{5} s_{1} - c_{1} c_{2} c_{3} c_{4} s_{5} + c_{1} c_{2} s_{3} s_{4} s_{5} + c_{1} c_{3} s_{2} s_{4} s_{5} + c_{1} c_{4} s_{2} s_{3} s_{5} \\
+o_{y} = &amp; \ c_{2} s_{1} s_{3} s_{4} s_{5} - c_{2} c_{3} c_{4} s_{1} s_{5} - c_{1} c_{5} + c_{3} s_{1} s_{2} s_{4} s_{5} + c_{4} s_{1} s_{2} s_{3} s_{5} \\
+o_{z} = &amp; \ c_{2} c_{3} s_{4} s_{5} + c_{2} c_{4} s_{3} s_{5} + c_{3} c_{4} s_{2} s_{5} - s_{2} s_{3} s_{4} s_{5}                                       \\
+a_{x} = &amp; \ c_{1} s_{2} s_{3} s_{4} - c_{1} c_{2} c_{4} s_{3} - c_{1} c_{3} c_{4} s_{2} - c_{1} c_{2} c_{3} s_{4}                                       \\
+a_{y} = &amp; \ s_{1} s_{2} s_{3} s_{4} - c_{2} c_{4} s_{1} s_{3} - c_{3} c_{4} s_{1} s_{2} - c_{2} c_{3} s_{1} s_{4}                                       \\
+a_{z} = &amp; \ c_{2} s_{3} s_{4} + c_{3} s_{2} s_{4} + c_{4} s_{2} s_{3} - c_{2} c_{3} c_{4}                                                               \\
+p_{x} = &amp; \ a_{1} c_{1} + a_{2} c_{1} c_{2} + a_{3} c_{1} c_{2} c_{3} - a_{3} c_{1} s_{2} s_{3}                                                         \\
+p_{y} = &amp; \ a_{1} s_{1} + a_{2} c_{2} s_{1} + a_{3} c_{2} c_{3} s_{1} - a_{3} s_{1} s_{2} s_{3}                                                         \\
+p_{z} = &amp; \ -a_{2} s_{2} - a_{3} c_{2} s_{3} - a_{3} c_{3} s_{2}
+\end{aligned}
+\]</span> 其中，<span class="math inline">\(s_{i} = \sin{\theta_{i}}\)</span>，<span class="math inline">\(c_{i} = \cos{\theta_{i}}\)</span>。</p>
+<hr />
+<h2 id="参考链接">参考链接</h2>
+<ul>
+<li><p><a href="https://blog.csdn.net/pengjc2001/article/details/70156333">Puma560 机器人 DH 变换 - pengjc2001 的博客</a></p></li>
+<li><p><a href="https://blog.csdn.net/qq_27170195/article/details/79936518">MATLAB-Robot (2)：标准 DH 和改进 DH 的区别 - 陈记小铺的博客</a></p></li>
+</ul>
+]]></content>
+      <categories>
+        <category>机器人</category>
+      </categories>
+      <tags>
+        <tag>机器人</tag>
+        <tag>DH 建模法</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>5 自由度机械臂的建模 (3) —— 逆运动学求解</title>
+    <url>/2018/10/03/5-%E8%87%AA%E7%94%B1%E5%BA%A6%E6%9C%BA%E6%A2%B0%E8%87%82%E7%9A%84%E5%BB%BA%E6%A8%A1-3-%E2%80%94%E2%80%94-%E9%80%86%E8%BF%90%E5%8A%A8%E5%AD%A6%E6%B1%82%E8%A7%A3/</url>
+    <content><![CDATA[<h2 id="逆运动学的解法">1. 逆运动学的解法</h2>
+<ul>
+<li>封闭解法：计算速度快、可以获得所有解，但是受机械臂结构限制较大
+<ul>
+<li>代数法</li>
+<li>几何法</li>
+</ul></li>
+<li>数值解法：通用，但计算速度慢
+<ul>
+<li>消元法：由机器人的非线性运动方程出发构造相关的多项式方程，通过计算该多项式方程求解</li>
+<li>延拓法：通过跟踪解的路径，从一个逆运动学解已知的初始位姿出发计算目标位姿的解</li>
+<li>迭代计算法：从一个给定的初始值出发。迭代计算逆运动学的精确解</li>
+</ul></li>
+</ul>
+<a id="more"></a>
+<h2 id="解的存在性">2. 解的存在性</h2>
+<ul>
+<li>解的存在性完全取决于机械臂的工作空间</li>
+<li>工作空间：
+<ul>
+<li>灵活工作空间：机械臂末端能够以任意位姿到达的空间点集</li>
+<li>可达工作空间：机械臂末端至少能够以一种位姿到达的空间点集</li>
+</ul></li>
+<li>如果末端位姿在可达工作空间中，则逆运动学的解是存在的，否则不存在</li>
+<li>解的个数取决于机械臂的关节数量，它也是连杆参数和关节运动范围的函数。通常，连杆的非零参数越多，则到达某一位姿的方式也越多，即逆运动学的解就越多</li>
+<li>低于 6 自由度的机械臂在三维空间中不能到达全部位姿</li>
+<li>通常选取最短行程解作为多解情况下的最优解：根据 “多移动小连杆，少移动大连杆” 的原则设定加权系数</li>
+</ul>
+<h2 id="pieper-解法">3. Pieper 解法</h2>
+<p><strong>Pieper 准则</strong>：机械臂三个相邻关节轴交于一点或互相平行。</p>
+<p>符合 Pieper 准则则逆运动学可解。以之前建好运动学模型的 5 自由度机械臂为例，其逆运动学求解过程如下：</p>
+<h3 id="通过分离-theta_1-theta_2-theta_3-求解移动部分关节-12-和-3的转动度">3.1. 通过分离 <span class="math inline">\(\theta_{1}\)</span> , <span class="math inline">\(\theta_{2}\)</span> , <span class="math inline">\(\theta_{3}\)</span> ，求解移动部分（关节 1、2 和 3）的转动⻆度</h3>
+<p>首先，回顾一下之前确定好的<a href="https://shoujiaxin.github.io/2018/10/02/5-自由度机械臂的建模-2-——-DH-建模法/#坐标系">机械臂各个连杆坐标系的关系</a>，如下图所示。</p>
+<div data-align="center">
+<img src="https://drive.google.com/uc?export=view&id=1nGTlKyJhLxSZSBxhsYxiTPvYqL3axcPZ" alt="坐标系 1" width="50%"/>
+</div>
+<p>给定坐标系 <span class="math inline">\(\{4\}\)</span> 的原点在基坐标系中的位姿 <span class="math inline">\(^{0}P_{4\ ORG} = \begin{bmatrix} x &amp; y &amp; z &amp; 1 \end{bmatrix}^{T}\)</span>，则有 <span class="math display">\[
+^{0}P_{4\ ORG} =
+\begin{bmatrix}
+x \\ y \\ z \\ 1
+\end{bmatrix}
+= {_{1}^{0}T} {_{2}^{1}T} {_{3}^{2}T} \cdot {^{3}P_{4\ ORG}}
+\tag{1}
+\]</span> 其中，<span class="math inline">\(^{3}P_{4\ ORG}\)</span> 为坐标系 <span class="math inline">\(\{4\}\)</span> 的原点在坐标系 <span class="math inline">\(\{3\}\)</span> 中的位姿，可用 <span class="math inline">\(_{4}^{3}T\)</span> 的第 4 列表示，即 <span class="math display">\[
+^{3}P_{4\ ORG} =
+\begin{bmatrix}
+a_{3}                   \\
+-d_{4} \sin{\alpha_{3}} \\
+d_{4} \cos{\alpha_{3}}  \\
+1                       \\
+\end{bmatrix}
+\]</span></p>
+<p>令 <span class="math inline">\({_{3}^{2}T} ^{3}P_{4\ ORG} = \begin{bmatrix} f_{1}(\theta_{3}) &amp; f_{2}(\theta_{3}) &amp; f_{3}(\theta_{3}) &amp; 1 \end{bmatrix}^{T}\)</span>，则 <span class="math display">\[
+\begin{aligned}
+f_{1}(\theta_{3}) &amp; = a_{2} + a_{3} c_{3} \\
+f_{2}(\theta_{3}) &amp; = a_{3} s_{3}         \\
+f_{3}(\theta_{3}) &amp; = 0
+\end{aligned}
+\tag{2}
+\]</span> 再令 <span class="math display">\[
+{_{2}^{1}T}
+\begin{bmatrix}
+f_{1}(\theta_{3}) \\ f_{2}(\theta_{3}) \\ f_{3}(\theta_{3}) \\ 1
+\end{bmatrix}
+=
+\begin{bmatrix}
+g_{1}(\theta_{2}, \theta_{3}) \\ g_{2}(\theta_{2}, \theta_{3}) \\ g_{3}(\theta_{2}, \theta_{3}) \\ 1
+\end{bmatrix}
+\]</span> 将式 <span class="math inline">\((1)\)</span> 代入，可得 <span class="math display">\[
+\begin{bmatrix}
+x \\ y \\ z \\ 1
+\end{bmatrix}
+= {_{1}^{0}T}
+\begin{bmatrix}
+g_{1}(\theta_{2}, \theta_{3}) \\ g_{2}(\theta_{2}, \theta_{3}) \\ g_{3}(\theta_{2}, \theta_{3}) \\ 1
+\end{bmatrix}
+=
+\begin{bmatrix}
+g_{1} c_{1} - g_{2} s_{1} \\ g_{1} s_{1} + g_{2} c_{1} \\ g_{3} \\ 1
+\end{bmatrix}
+\tag{3}
+\]</span> 其中， <span class="math display">\[
+\begin{aligned}
+g_{1}(\theta_{2}, \theta_{3}) &amp; = c_{2} f_{1} - s_{2} f_{2} + a_{1}                                                                             \\
+&amp; = a_{1} + a_{2} c_{2} + a_{3} (c_{2} c_{3} - s_{2} s_{3})                                                       \\
+g_{2}(\theta_{2}, \theta_{3}) &amp; = s_{2} f_{1} \cos{\alpha_{1}} + c_{2} f_{2} \cos{\alpha_{1}} - f_{3} \sin{\alpha_{1}} - d_{2} \sin{\alpha_{1}} \\
+&amp; = 0                                                                                                             \\
+g_{3}(\theta_{2}, \theta_{3}) &amp; = s_{2} f_{1} \sin{\alpha_{1}} + c_{2} f_{2} \sin{\alpha_{1}} + f_{3} \cos{\alpha_{1}} + d_{2} \cos{\alpha_{1}} \\
+&amp; = -a_{2} s_{2} - a_{3} (c_{2} s_{3} + c_{3} s_{2})
+\end{aligned}
+\tag{4}
+\]</span> 再令 <span class="math inline">\(r(\theta_{1}, \theta_{2}) = x^{2} + y^{2} + z^{2} = g_{1}^{2} + g_{2}^{2} + g_{3}^{2} = 2 a_{1} (k_{1} c_{2} + k_{2} s_{2}) + k_{3}\)</span>，其中 <span class="math display">\[
+\begin{aligned}
+k_{1} (\theta_{3}) &amp; = f_{1}                                                                     \\
+&amp; = a_{2} + a_{3} c_{3}                                                       \\
+k_{2} (\theta_{3}) &amp; = -f_{2}                                                                    \\
+&amp; = -a_{3} s_{3}                                                              \\
+k_{3} (\theta_{3}) &amp; = f_{1}^{2} + f_{2}^{2} + f_{3}^{2} + a_{1}^{2} + d_{2}^{2} + 2 d_{2} f_{3} \\
+&amp; = a_{1}^{2} + a_{2}^{2} + a_{3}^{2} + 2 a_{2} a_{3} c_{3}
+\end{aligned}
+\tag{5}
+\]</span></p>
+<p>此外，由 <span class="math inline">\((4)\)</span> 可得 <span class="math inline">\(z = g_{3} = (k_{1} s_{2} - k_{2} c_{2}) \sin{\alpha_{1}} + k_{4}\)</span>，其中，<span class="math inline">\(k_{4} = f_{3} \cos{\alpha_{1}} + d_{2} \cos{\alpha_{1}} = 0\)</span>。</p>
+<p>综上所述，可得方程组 <span class="math display">\[
+\begin{cases}
+\begin{aligned}
+r &amp; = 2 a_{1} (k_{1} c_{2} + k_{2} s_{2}) + k_{3}          \\
+z &amp; = (k_{1} s_{2} - k_{2} c_{2}) \sin{\alpha_{1}} + k_{4}
+\end{aligned}
+\tag{6}
+\end{cases}
+\]</span> <span class="math inline">\(a_{1}\)</span> 和 <span class="math inline">\(\sin{\alpha_{1}}\)</span> 均不为零，消去 <span class="math inline">\(\theta_{2}\)</span> 项可得 <span class="math display">\[
+\frac{(r - k_{3})^{2}}{4 a_{1}^{2}} + \frac{(z - k_{4})^{2}}{\sin^{2} \alpha_{1}} = k_{1}^{2} + k_{2}^{2}
+\tag{7}
+\]</span> 上式只含有未知数 <span class="math inline">\(\theta_{3}\)</span>，可利用万能公式 <span class="math inline">\(u = \tan{\frac{\theta_{3}}{2}}\)</span> 求解。</p>
+<p>将 <span class="math inline">\(k_{1}\)</span>、<span class="math inline">\(k_{2}\)</span> 和 <span class="math inline">\(k_{3}\)</span> 代入式 <span class="math inline">\((7)\)</span>，可得 <span class="math display">\[
+\begin{aligned}
+&amp; \frac{((a_{2} + a_{3} c_{3})^{2} + a_{1}^{2} - x^{2} - y^{2} - z^{2} + a_{3}^{2} s_{3}^{2})^{2}}{(4 a_{1}^{2})} + z^{2} \\
+&amp; = (a_{2} + a_{3} c_{3})^{2} + a_{3}^{2} s_{3}^{2}
+\end{aligned}
+\tag{8}
+\]</span> 代入万能公式 <span class="math display">\[
+\begin{aligned}
+\sin{\theta_{3}} &amp; = \frac{2 u}{1 + u^{2}}       \\
+\cos{\theta_{3}} &amp; = \frac{1 - u^{2}}{1 + u^{2}}
+\end{aligned}
+\]</span> 解得 <span class="math inline">\(\theta_{3} = 2 \tan^{-1}{u}\)</span>，共有 4 个解。</p>
+<p>再代入 <span class="math inline">\(r = 2 a_{1} (k_{1} c_{2} + k_{2} s_{2}) + k_{3}\)</span> 可解得 <span class="math inline">\(\theta_{2}\)</span>，有 2 个解；最后代入 <span class="math inline">\(x = g_{1} c_{1} - g_{2} s_{1}\)</span> 可解得 <span class="math inline">\(\theta_{1}\)</span>，也有 2 个解。</p>
+<p>综上，可解出关节 1、2 和 3 的角度，共有 <span class="math inline">\(4 \times 2 \times 2 = 16\)</span> 组解。</p>
+<h3 id="求解-theta_4-和-theta_5">3.2. 求解 <span class="math inline">\(\theta_{4}\)</span> 和 <span class="math inline">\(\theta_{5}\)</span></h3>
+<p>现在已知关节 1、2、3 的角度 <span class="math inline">\(\theta_{1}\)</span>、<span class="math inline">\(\theta_{2}\)</span> 和 <span class="math inline">\(\theta_{3}\)</span>，上一篇求得了<a href="https://shoujiaxin.github.io/2018/10/02/5-自由度机械臂的建模-2-——-DH-建模法/#运动学方程">机械臂的正运动学方程</a> <span class="math display">\[
+_{5}^{0}T =
+\begin{bmatrix}
+n_x &amp; o_x &amp; a_x &amp; p_x \\
+n_y &amp; o_y &amp; a_y &amp; p_y \\
+n_z &amp; o_z &amp; a_z &amp; p_z \\
+0   &amp; 0   &amp; 0   &amp; 1
+\end{bmatrix}
+\tag{9}
+\]</span> 将上式等号两边同时左乘 <span class="math inline">\(_{3}^{0}T^{-1}\)</span> 可得 <span class="math display">\[
+{_{3}^{0}T^{-1}} \cdot {_{5}^{0}T} = {_{4}^{3}T} {_{5}^{4}T} =
+\begin{bmatrix}
+c_{4} c_{5} &amp; -c_{4} s_{5} &amp; -s_{4} &amp; a3 \\
+c_{5} s_{4} &amp; -s_{4} s_{5} &amp; c_{4}  &amp; 0  \\
+-s_{5}    &amp; -c_{5}     &amp; 0    &amp; 0  \\
+0       &amp; 0        &amp; 0    &amp; 1
+\end{bmatrix}
+\tag{10}
+\]</span> 等式左右两边元素 <span class="math inline">\((1, 3)\)</span> 和 <span class="math inline">\((2, 3)\)</span> 对应相等，可解得 <span class="math inline">\(\theta_{4} = \tan^{-1}{\frac{s_{4}}{c_{4}}}\)</span>。</p>
+<p>同理，用 <span class="math inline">\(_{4}^{0}T^{-1}\)</span> 左乘等式 <span class="math inline">\((9)\)</span> 的两边，可得 <span class="math display">\[
+{_{4}^{0}T^{-1}} \cdot {_{5}^{0}T} = {_{5}^{4}T} =
+\begin{bmatrix}
+c_{5}  &amp; -s_{5} &amp; 0 &amp; 0 \\
+0    &amp; 0    &amp; 1 &amp; 0 \\
+-s_{5} &amp; -c_{5} &amp; 0 &amp; 0 \\
+0    &amp; 0    &amp; 0 &amp; 1
+\end{bmatrix}
+\tag{11}
+\]</span> 等式左右两边元素 <span class="math inline">\((1, 1)\)</span> 和 <span class="math inline">\((1, 2)\)</span> 对应相等，可解得 <span class="math inline">\(\theta_{5} = \tan^{-1}{\frac{s_{5}}{c_{5}}}\)</span>。</p>
+<h3 id="世界坐标系以及末端夹子坐标系的变换">3.3. 世界坐标系以及末端夹子坐标系的变换</h3>
+<p>通过前面两个步骤，已经可以通过给定坐标系 <span class="math inline">\(\{5\}\)</span> 在机械臂基坐标系 <span class="math inline">\(\{0\}\)</span> 中的位姿来计算出机械臂各个关节的角度。</p>
+<p>但是，再回顾机械臂各连杆坐标系的建立过程，我们会发现，为了简化问题、方便计算，我们通常让机械臂的基坐标系 <span class="math inline">\(\{0\}\)</span> 和坐标系 <span class="math inline">\(\{1\}\)</span> 重合，而让机械臂末端坐标系 <span class="math inline">\(\{5\}\)</span> 的原点与坐标系 <span class="math inline">\(\{4\}\)</span> 的原点重合。而实际情况下，机械臂往往放置在一个具有一定高度的底座上，且末端带有一个具有一定长度的工具来完成夹持等的功能，因此，机械臂基坐标系与世界坐标系、末端执行器坐标系与机械臂末端坐标系之前还存在相应的变换关系。</p>
+<p>我们将机械臂所在空间的世界坐标系 <span class="math inline">\(\{W\}\)</span> 放置在机械臂底座的底部，将末端执行器的坐标系 <span class="math inline">\(\{T\}\)</span> 放置在机械臂末端夹子的末端，如下图所示。</p>
+<div data-align="center">
+<img src="https://drive.google.com/uc?export=view&id=1vyK9BuaFA448DZWpkzJ_vTLzI8xr2G2_" alt="坐标系 2" width="50%"/>
+</div>
+<p>则可以得到这两个坐标系的齐次变换矩阵 <span class="math display">\[
+_{0}^{W}T =
+\begin{bmatrix}
+1 &amp; 0 &amp; 0 &amp; 0  \\
+0 &amp; 1 &amp; 0 &amp; 0  \\
+0 &amp; 0 &amp; 1 &amp; 72 \\
+0 &amp; 0 &amp; 0 &amp; 1
+\end{bmatrix}
+\ \ \ \ _{T}^{5}T =
+\begin{bmatrix}
+0 &amp; 0  &amp; 1 &amp; 0   \\
+0 &amp; -1 &amp; 0 &amp; 0   \\
+1 &amp; 0  &amp; 0 &amp; 120 \\
+0 &amp; 0  &amp; 0 &amp; 1
+\end{bmatrix}
+\]</span></p>
+<p>通常，机械臂通过外部传感器可以获取目标物体在世界坐标系中的位姿 <span class="math inline">\(_{G}^{W}T\)</span>，则可以得到如下关系 <span class="math display">\[
+_{G}^{W}T = {_{T}^{W}T} = {_{0}^{W}T} \cdot {_{5}^{0}T} \cdot {_{T}^{5}T}
+\tag{12}
+\]</span> 通过分别左乘 <span class="math inline">\(_{0}^{W}T^{-1}\)</span> 和右乘 <span class="math inline">\(_{T}^{5}T^{-1}\)</span>，就可以得到机械臂坐标系 <span class="math inline">\(\{5\}\)</span> 的原点在机械臂基坐标系 <span class="math inline">\(\{0\}\)</span> 中的位姿 <span class="math inline">\(_{5}^{0}T = {_{0}^{W}T^{-1}} \cdot {_{G}^{W}T} \cdot {_{T}^{5}T^{-1}}\)</span>，再代入前两步即可求解机械臂的各关节的角度。</p>
+<hr />
+<h2 id="参考链接">参考链接</h2>
+<ul>
+<li><p><a href="https://zh.coursera.org/learn/robotics1">机器人学一 (Robotics 1)</a></p></li>
+<li><p><a href="http://blog.sina.com.cn/s/blog_131fa47b20102whij.html">机器人启蒙（七）—— PUMA560 运动正逆解教你重新做人！</a></p></li>
+</ul>
+]]></content>
+      <categories>
+        <category>机器人</category>
+      </categories>
+      <tags>
+        <tag>机器人</tag>
+        <tag>逆运动学</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>5 自由度机械臂的建模 (4) —— 四元数与空间旋转</title>
+    <url>/2019/04/22/5-%E8%87%AA%E7%94%B1%E5%BA%A6%E6%9C%BA%E6%A2%B0%E8%87%82%E7%9A%84%E5%BB%BA%E6%A8%A1-4-%E2%80%94%E2%80%94-%E5%9B%9B%E5%85%83%E6%95%B0%E4%B8%8E%E7%A9%BA%E9%97%B4%E6%97%8B%E8%BD%AC/</url>
+    <content><![CDATA[<p>四元数 (Quaternion) 是由爱尔兰数学家威廉·卢云·哈密顿在 1843 年提出的数学概念。从明确地角度而言，四元数是复数的不可交换延伸。相对于复数为二维空间，如果把四元数的集合考虑成多维实数空间，四元数就代表着一个四维空间。它可以用于描述现实空间的坐标。单位四元数 (Unit Quaternion) 可以用于表示三维空间中的旋转，它与常用的另外两种表示方式，即三维正交矩阵和欧拉角是等价的，但是避免了欧拉角表示法中的万向锁问题。</p>
+<a id="more"></a>
+<h2 id="四元数">1. 四元数</h2>
+<h3 id="定义">1.1. 定义</h3>
+<p>复数是由实数加上虚数单位 <span class="math inline">\(i\)</span> 组成，其中 <span class="math inline">\(i^{2} = -1\)</span>。类似地，四元数是由实数加上三个元素 <span class="math inline">\(i\)</span>、<span class="math inline">\(j\)</span>、<span class="math inline">\(k\)</span> 组成，且这三个元素满足 <span class="math display">\[
+i^{2} = j^{2} = k^{2} = ijk = -1
+\]</span></p>
+<p>每个四元数都是 <span class="math inline">\(1\)</span>、<span class="math inline">\(i\)</span>、<span class="math inline">\(j\)</span>、<span class="math inline">\(k\)</span> 的线性组合，即四元数一般可以表示为 <span class="math display">\[
+h = a + bi + cj + dk
+\]</span></p>
+<p>为了便于说明和计算，这里也将四元数 <span class="math inline">\(h\)</span> 表示为 <span class="math inline">\(h = (a, b, c, d)\)</span>。</p>
+<h3 id="性质">1.2. 性质</h3>
+<ul>
+<li><p><strong>乘法不可交换</strong> <span class="math display">\[
+\begin{aligned}
+&amp; ij = k, ji = -k \\
+&amp; jk = i, kj = -i \\
+&amp; ki = j, ik = -j
+\end{aligned}
+\]</span></p></li>
+<li><p><strong>共轭</strong>：四元数 <span class="math inline">\(h = a + bi + cj + dk\)</span> 的共轭定义为 <span class="math display">\[
+h^{*} = a - bi - cj - dk
+\]</span> 且一般情况下 <span class="math display">\[
+(hk)^{*} = k^{*} h^{*} = h^{*} k^{*}
+\]</span></p></li>
+<li><p><strong>模（绝对值）</strong> <span class="math display">\[
+|h| = \sqrt{h \cdot h} =\sqrt{h \cdot h^{*}} = \sqrt{a^{2} + b^{2} + c^{2} + d^{2}}
+\]</span></p></li>
+<li><p><strong>乘逆</strong> <span class="math display">\[
+h^{-1} = \frac{h^{*}}{|h|^{2}}
+\]</span></p></li>
+</ul>
+<h3 id="四元数运算">1.3. 四元数运算</h3>
+<p>定义两个四元数 <span class="math display">\[
+\begin{aligned}
+q &amp; = a + \vec{u} = a + bi + cj + dk \\
+p &amp; = t + \vec{v} = t + xj + yj + zk
+\end{aligned}
+\]</span></p>
+<ul>
+<li><p><strong>加法</strong> <span class="math display">\[
+p + q = a + t + \vec{u} + \vec{v} = (a + t) + (b + x)j + (c + y)j + (d + z)k
+\]</span> 加法遵循实数和复数的所有交换律和结合律。</p></li>
+<li><p><strong>乘法（格拉斯曼积）</strong> <span class="math display">\[
+\begin{aligned}
+pq &amp; = at - \vec{u} \cdot \vec{v} + a \vec{v} + t \vec{u} + \vec{u} \times \vec{v}             \\
+&amp; = (at - bx - cy - dz) + (bt + ax + dy -cz)i + (ct + ay + bz - dx)j + (dt + za + cx - by)k
+\end{aligned}
+\]</span></p></li>
+<li><p><strong>点积（欧几里得内积）</strong>：四元数的点积等同于一个四维矢量的点积，是一个标量 <span class="math display">\[
+p \cdot q = at + \vec{u} \cdot \vec{v} = at + bx + cy + dz
+\]</span> 可以用格拉斯曼积表示为 <span class="math display">\[
+p \cdot q = \frac{pq + qp}{2}
+\]</span></p></li>
+</ul>
+<h2 id="单位四元数与空间旋转">2. 单位四元数与空间旋转</h2>
+<p>单位四元数 (Unit Quaternion) 可以用于表示三维空间中的旋转，它与常用的另外两种表示方式，即三维正交矩阵和欧拉角是等价的，但是避免了欧拉角表示法中的万向锁问题。用四元数来表示旋转要解决两个问题：一是如何用四元数表示三维空间里的点；二是如何用四元数表示三维空间的旋转。</p>
+<h3 id="点的表示">2.1. 点的表示</h3>
+<p>对于三维空间中的一点 <span class="math inline">\(p\)</span> 的笛卡尔坐标为 <span class="math inline">\((x, y, z)\)</span>，其可用纯四元数（即实部为 <span class="math inline">\(0\)</span> 的四元数）表示为 <span class="math display">\[
+p = xj + yj + zk
+\]</span></p>
+<h3 id="旋转的表示">2.2. 旋转的表示</h3>
+<p>设 <span class="math inline">\(q\)</span> 为一个单位四元数，<span class="math inline">\(p\)</span> 是一个纯四元数（即空间中的一个点），定义纯四元数 <span class="math display">\[
+R_{q}(p) = q p q^{-1}
+\]</span> 表示空间中的点 <span class="math inline">\(p\)</span> 经过旋转 <span class="math inline">\(q\)</span> 后得到的空间中的另一个点。</p>
+<h3 id="旋转的复合">2.3. 旋转的复合</h3>
+<p>根据四元数表示空间旋转的定义，有 <span class="math display">\[
+R_{q_{1} q_{2}} (p) = (q_{1} q_{2}) p (q_{1} q_{2})^{-1} = q_{1} q_{2} p q_{2}^{-1} q_{1}^{-1} = R_{q_{1}} \left[ R_{q_{2}} (p) \right]
+\]</span> 因此，对于两个旋转的复合，只需要将对应的单位四元数相乘。</p>
+<h2 id="旋转矩阵与单位四元数">3. 旋转矩阵与单位四元数</h2>
+<h3 id="旋转矩阵欧拉角和-rpy-角">3.1. 旋转矩阵、欧拉角和 RPY 角</h3>
+<h4 id="旋转矩阵">3.1.1. 旋转矩阵</h4>
+<p>空间中一点绕 <span class="math inline">\(x\)</span>、<span class="math inline">\(y\)</span>、<span class="math inline">\(z\)</span> 轴旋转的旋转矩阵分别为 <span class="math display">\[
+\begin{aligned}
+&amp; R_{x}(\theta_{1}) =
+\begin{bmatrix}
+1 &amp; 0                &amp; 0                 \\
+0 &amp; \cos{\theta_{1}} &amp; -\sin{\theta_{1}} \\
+0 &amp; \sin{\theta_{1}} &amp; \cos{\theta_{1}}
+\end{bmatrix}   \\
+&amp; R_{y}(\theta_{2}) =
+\begin{bmatrix}
+\cos{\theta_{2}}  &amp; 0 &amp; \sin{\theta_{2}} \\
+0                 &amp; 1 &amp; 0                \\
+-\sin{\theta_{2}} &amp; 0 &amp; \cos{\theta_{2}}
+\end{bmatrix}   \\
+&amp; R_{z}(\theta_{3}) =
+\begin{bmatrix}
+\cos{\theta_{3}} &amp; -\sin{\theta_{3}} &amp; 0 \\
+\sin{\theta_{3}} &amp; \cos{\theta_{3}}  &amp; 0 \\
+0                &amp; 0                 &amp; 1
+\end{bmatrix}
+\end{aligned}
+\]</span> 其中，有三个独立变量 <span class="math inline">\(\theta_{1}\)</span>、<span class="math inline">\(\theta_{2}\)</span> 和 <span class="math inline">\(\theta_{3}\)</span>，通常有两种表示方式，即欧拉角和 RPY 角。</p>
+<h4 id="欧拉角">3.1.2. 欧拉角</h4>
+<p>下图所示为常用的 ZXZ 顺规欧拉角的定义</p>
+<div data-align="center">
+<img src="https://upload.wikimedia.org/wikipedia/commons/a/a1/Eulerangles.svg" alt="ZXZ 顺规欧拉角" width="35%"/>
+</div>
+<p>设 <span class="math inline">\(xyz\)</span> 轴为参考坐标系的坐标轴，<span class="math inline">\(xy\)</span> 平面与 <span class="math inline">\(XY\)</span> 平面的交线 <span class="math inline">\(N\)</span> 称为交点线。则 ZXZ 顺规的欧拉角可以静态地定义为：</p>
+<ul>
+<li><span class="math inline">\(\alpha\)</span>：<span class="math inline">\(x\)</span> 轴与 <span class="math inline">\(N\)</span> 的夹角</li>
+<li><span class="math inline">\(\beta\)</span>：<span class="math inline">\(z\)</span> 轴与 <span class="math inline">\(Z\)</span> 轴的夹角</li>
+<li><span class="math inline">\(\gamma\)</span>：<span class="math inline">\(N\)</span> 与 <span class="math inline">\(X\)</span> 轴的夹角</li>
+</ul>
+<p>其旋转矩阵为 <span class="math display">\[
+\begin{aligned}
+R &amp; = R_{z}(\alpha) R_{x}(\beta) R_{z}(\gamma) \\
+&amp; =
+\begin{bmatrix}
+\cos{\alpha} &amp; -\sin{\alpha} &amp; 0 \\
+\sin{\alpha} &amp; \cos{\alpha}  &amp; 0 \\
+0            &amp; 0             &amp; 1
+\end{bmatrix}
+\begin{bmatrix}
+1 &amp; 0           &amp; 0            \\
+0 &amp; \cos{\beta} &amp; -\sin{\beta} \\
+0 &amp; \sin{\beta} &amp; \cos{\beta}
+\end{bmatrix}
+\begin{bmatrix}
+\cos{\gamma} &amp; -\sin{\gamma} &amp; 0 \\
+\sin{\gamma} &amp; \cos{\gamma}  &amp; 0 \\
+0            &amp; 0             &amp; 1
+\end{bmatrix}
+\end{aligned}
+\]</span></p>
+<p>ZXZ 顺规欧拉角的动态演示如下图所示</p>
+<div data-align="center">
+<img src="https://upload.wikimedia.org/wikipedia/commons/8/85/Euler2a.gif" alt="ZXZ 顺规欧拉角动态" width="35%"/>
+</div>
+<h4 id="rpy-角">3.1.3. RPY 角</h4>
+<p>RPY 角即绕 <span class="math inline">\(X\)</span> 轴摇摆 (Roll) <span class="math inline">\(\gamma\)</span>、绕 <span class="math inline">\(Y\)</span> 轴俯仰 (Pitch) <span class="math inline">\(\beta\)</span>、绕 <span class="math inline">\(Z\)</span> 轴偏转 (Yaw) <span class="math inline">\(\alpha\)</span>，这三个变量互相独立。RPY 角表示法与 ZYX 顺规的欧拉角表示方式等价，其旋转矩阵为 <span class="math display">\[
+\begin{aligned}
+R &amp; = R_{z}(\alpha) R_{y}(\beta) R_{x}(\gamma) \\
+&amp; =
+\begin{bmatrix}
+\cos{\alpha} &amp; -\sin{\alpha} &amp; 0 \\
+\sin{\alpha} &amp; \cos{\alpha}  &amp; 0 \\
+0            &amp; 0             &amp; 1
+\end{bmatrix}
+\begin{bmatrix}
+\cos{\beta}  &amp; 0 &amp; \sin{\beta} \\
+0            &amp; 1 &amp; 0           \\
+-\sin{\beta} &amp; 0 &amp; \cos{\beta}
+\end{bmatrix}
+\begin{bmatrix}
+1 &amp; 0            &amp; 0             \\
+0 &amp; \cos{\gamma} &amp; -\sin{\gamma} \\
+0 &amp; \sin{\gamma} &amp; \cos{\gamma}
+\end{bmatrix}
+\end{aligned}
+\]</span></p>
+<h3 id="旋转矩阵转换为四元数">3.2. 旋转矩阵转换为四元数</h3>
+<p>已知旋转矩阵 <span class="math display">\[
+R =
+\begin{bmatrix}
+r_{11} &amp; r_{12} &amp; r_{13} \\
+r_{21} &amp; r_{12} &amp; r_{13} \\
+r_{31} &amp; r_{12} &amp; r_{13}
+\end{bmatrix}
+\]</span> 其对应的四元数 <span class="math inline">\(q = w + xi + yj + zk\)</span> 或 <span class="math inline">\(q = (w, x, y, z)\)</span>，其中 <span class="math display">\[
+\begin{aligned}
+w &amp; = \frac{1}{2} \sqrt{1 + r_{11} + r_{22} + r_{33}} \\
+x &amp; = \frac{r_{32} - r_{23}}{4 w}                     \\
+y &amp; = \frac{r_{13} - r_{31}}{4 w}                     \\
+z &amp; = \frac{r_{21} - r_{12}}{4 w}
+\end{aligned}
+\]</span></p>
+<p>故可得空间中一点绕 <span class="math inline">\(x\)</span>、<span class="math inline">\(y\)</span>、<span class="math inline">\(z\)</span> 轴旋转的四元数表示为 <span class="math display">\[
+\begin{aligned}
+q_x(\theta_{1}) &amp; = (\cos{\frac{\theta_{1}}{2}}, \sin{\frac{\theta_{1}}{2}}, 0, 0) \\
+q_y(\theta_{2}) &amp; = (\cos{\frac{\theta_{2}}{2}}, 0, \sin{\frac{\theta_{2}}{2}}, 0) \\
+q_z(\theta_{3}) &amp; = (\cos{\frac{\theta_{3}}{2}}, 0, 0, \sin{\frac{\theta_{3}}{2}})
+\end{aligned}
+\]</span></p>
+<h3 id="四元数转换为旋转矩阵">3.3. 四元数转换为旋转矩阵</h3>
+<p>对于四元数 <span class="math inline">\(q = (w, x, y, z)\)</span>，可以得到对应的旋转矩阵 <span class="math display">\[
+R =
+\begin{bmatrix}
+r_{11} &amp; r_{12} &amp; r_{13} \\
+r_{21} &amp; r_{12} &amp; r_{13} \\
+r_{31} &amp; r_{12} &amp; r_{13}
+\end{bmatrix}
+\]</span> 其中， <span class="math display">\[
+\begin{aligned}
+r_{11} &amp; = w^{2} + x^{2} - y^{2} -z^{2}  \\
+r_{12} &amp; = 2xy - 2wz             \\
+r_{13} &amp; = 2xz + 2wy             \\
+r_{21} &amp; = 2xy + 2wz             \\
+r_{22} &amp; = w^{2} - x^{2} + y^{2} - z^{2} \\
+r_{23} &amp; = 2yz - 2wx             \\
+r_{31} &amp; = 2xz - 2wy             \\
+r_{32} &amp; = 2yz + 2wx             \\
+r_{33} &amp; = w^{2} - x^{2} - y^{2} + z^{2}
+\end{aligned}
+\]</span></p>
+<h3 id="rpy-角转换为四元数">3.4. RPY 角转换为四元数</h3>
+<p>若旋转由 RPY 角（或 ZYX 顺规的欧拉角）表示，即绕参考坐标系的 <span class="math inline">\(Z\)</span>、<span class="math inline">\(Y\)</span> 和 <span class="math inline">\(X\)</span> 轴依次旋转 <span class="math inline">\(\gamma\)</span>、<span class="math inline">\(\beta\)</span> 和 <span class="math inline">\(\alpha\)</span> 角，则此旋转的四元数表示为 <span class="math inline">\(q = (w, x, y, z)\)</span>，其中 <span class="math display">\[
+\begin{aligned}
+w &amp; = \cos{\frac{\alpha}{2}} \cos{\frac{\beta}{2}} \cos{\frac{\gamma}{2}} + \sin{\frac{\alpha}{2}} \sin{\frac{\beta}{2}} \sin{\frac{\gamma}{2}} \\
+x &amp; = \sin{\frac{\alpha}{2}} \cos{\frac{\beta}{2}} \cos{\frac{\gamma}{2}} - \cos{\frac{\alpha}{2}} \sin{\frac{\beta}{2}} \sin{\frac{\gamma}{2}} \\
+y &amp; = \cos{\frac{\alpha}{2}} \sin{\frac{\beta}{2}} \cos{\frac{\gamma}{2}} + \sin{\frac{\alpha}{2}} \cos{\frac{\beta}{2}} \sin{\frac{\gamma}{2}} \\
+z &amp; = \cos{\frac{\alpha}{2}} \cos{\frac{\beta}{2}} \sin{\frac{\gamma}{2}} + \sin{\frac{\alpha}{2}} \sin{\frac{\beta}{2}} \cos{\frac{\gamma}{2}} \\
+\end{aligned}
+\]</span></p>
+<h3 id="四元数转换为-rpy-角">3.5. 四元数转换为 RPY 角</h3>
+<p>对于四元数 <span class="math inline">\(q = (w, x, y, z)\)</span>，可以得到对应的 RPY 角 <span class="math display">\[
+\begin{aligned}
+\theta_{R} &amp; = \arctan{\left[ \frac{2(yz+wx)}{w^{2} - x^{2} - y^{2} + z^{2}} \right]}   \\
+\theta_{P} &amp; = \arcsin{[-2(xz - wy)]}                                           \\
+\theta_{Y} &amp; = \arctan{\left[ \frac{2(xy + wz)}{w^{2} + x^{2} - y^{2} - z^{2}} \right]}
+\end{aligned}
+\]</span></p>
+<hr />
+<h2 id="参考链接">参考链接</h2>
+<ul>
+<li><a href="https://www.cnblogs.com/21207-iHome/p/6894128.html">四元数与欧拉角（RPY 角）的相互转换</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>机器人</category>
+      </categories>
+      <tags>
+        <tag>机器人</tag>
+        <tag>四元数</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu 18.04 折腾指北</title>
+    <url>/2019/02/27/Ubuntu-18-04-%E6%8A%98%E8%85%BE%E6%8C%87%E5%8C%97/</url>
+    <content><![CDATA[<p>迫于打算用 ROS (Robot Operating System) 来玩机械臂，而 macOS 和 Windows 上的 ROS 依旧处于 Beta 阶段，所以又要折腾一番 Linux。观望了一段时间 Ubuntu 18.04，感觉应该稳定了，更重要的是 18.04 比 16.04 好看的多，所以又拿出了旧笔记本折腾 Linux，顺便做个记录，以备后用。</p>
+<a id="more"></a>
+<h2 id="笔记本硬件配置">笔记本硬件配置</h2>
+<p>这台 Dell 笔记本是 2014 年买的了，已经残破不堪，正适合用来折腾，配置如下：</p>
+<ul>
+<li>CPU: Intel® Core™ i5-4210U</li>
+<li>GPU: GeForce GT 750M</li>
+<li>RAM: 6G</li>
+<li>SSD: Intel 730 240G</li>
+</ul>
+<h2 id="windows-10-和-ubuntu-18.04-双系统">Windows 10 和 Ubuntu 18.04 双系统</h2>
+<p>笔记本只有一块 240G 的 SSD，平时文档工作又必需 Windows，所以还是双系统吧。</p>
+<p>过程比较简单，安装好 Windows 10，打开 <code>磁盘管理</code>，压缩卷留出 80G 的未分配空间即可。</p>
+<p>制作好 Ubuntu 18.04 的启动盘，重启进入安装界面，此时最好断开网络连接，可以更快完成安装。选择 <code>Minimal installation</code> 并勾选 <code>Install third-party software for graphics and Wi-Fi hardware and additional media formats</code>，Installation type 默认即可将 Ubuntu 安装到未分配的磁盘空间，并自动为 Ubuntu 完成分区。</p>
+<h3 id="双系统时间同步">双系统时间同步</h3>
+<p>由于 Windows 和 Ubuntu 默认的 BIOS 时间读取方式不同，装完双系统后两个系统显示的时间会差 8 个小时，可通过下面两个方法<strong>之一</strong>进行修改：</p>
+<ul>
+<li><p><strong>在 Windows 中使用 UTC 时间</strong> 打开运行窗口（快捷键 <code>Win + R</code>），输入 <code>regedit</code> 启动注册表编辑器，找到 <code>计算机\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\TimeZoneInformation\</code>，添加一项类型为 <code>REG_DWORD</code> 的键值，命名为 <code>RealTimeIsUniversal</code>，值为 1，修改完成后重启即可。</p></li>
+<li><p><strong>在 Ubuntu 中关闭 UTC 时间</strong></p>
+<p>终端输入</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo apt-get install ntpdate</span><br><span class="line">sudo ntpdate time.windows.com</span><br><span class="line">sudo hwclock --localtime --systohc</span><br></pre></td></tr></table></figure>
+<p>将其中的 <code>UTC=yes</code> 改为 <code>UTC=no</code> 并保存即可。</p></li>
+</ul>
+<h2 id="nvidia-显卡驱动">Nvidia 显卡驱动</h2>
+<p>当初 16.04 最头疼的一点是 Ubuntu 自带的显卡驱动和 Nvidia 的独立显卡冲突，系统安装完成后如果忘记手动切换驱动，重启之后会黑屏无法进入系统。</p>
+<p>18.04 安装完后重启了一下发现这个问题已经不存在了，但似乎没有安装 Nvidia 显卡的驱动，故还需手动装之。</p>
+<p>打开终端，执行</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo ubuntu-drivers autoinstall</span><br></pre></td></tr></table></figure>
+<p>即可自动安装合适的驱动。安装完成重启，即可在应用中找到 NVIDIA X Server Settings，在其中的 <code>PRIME Profiles</code> 可以切换独显和集显。</p>
+<h2 id="切换-zsh">切换 Zsh</h2>
+<p>Linux 切换 Zsh 和 macOS 中大致相同，但是 <code>Minimal installation</code> 安装的 Ubuntu 18.04 是不自带 Zsh 的，还需要手动安装</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install zsh</span><br><span class="line">chsh -s /usr/bin/zsh</span><br></pre></td></tr></table></figure>
+<p>重启终端即可切换到 Zsh。</p>
+<h3 id="安装和配置-oh-my-zsh">安装和配置 <a href="https://ohmyz.sh">Oh My Zsh</a></h3>
+<p>终端执行</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sh -c &quot;$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)&quot;</span><br></pre></td></tr></table></figure>
+<h3 id="安装主题和字体">安装主题和字体</h3>
+<p><a href="https://github.com/bhilburn/powerlevel9k">Powerlevel9k</a> 主题的安装和配置以及其余的美化过程也基本与 macOS 中一样，但是和 Powerline 字体的安装稍微不同</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git clone https://github.com/bhilburn/powerlevel9k.git ~/.oh-my-zsh/custom/themes/powerlevel9k  # 安装主题</span><br><span class="line">sudo apt-get install fonts-powerline  # 安装字体</span><br></pre></td></tr></table></figure>
+<p>再修改 <code>~/.zshrc</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ZSH_THEME=&quot;powerlevel9k/powerlevel9k&quot;</span><br><span class="line">POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context dir dir_writable vcs)</span><br><span class="line">POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status background_jobs history time)</span><br><span class="line">DEFAULT_USER=&quot;&lt;username&gt;&quot;</span><br></pre></td></tr></table></figure>
+<h3 id="安装插件">安装插件</h3>
+<p>个人常用的插件主要是 zsh-autosuggestions 和 zsh-syntax-highlighting 这两个。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git clone https://github.com/zsh-users/zsh-autosuggestions $&#123;ZSH_CUSTOM:-~/.oh-my-zsh/custom&#125;/plugins/zsh-autosuggestions</span><br><span class="line">git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $&#123;ZSH_CUSTOM:-~/.oh-my-zsh/custom&#125;/plugins/zsh-syntax-highlighting</span><br></pre></td></tr></table></figure>
+<h2 id="配置代理">配置代理</h2>
+<p>由于众所周知的原因，代理是必不可少的，客户端可以用 <a href="https://github.com/shadowsocks/shadowsocks-qt5">Shadowsocks-Qt5</a></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo add-apt-repository ppa:hzwhuang/ss-qt5</span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install shadowsocks-qt5</span><br></pre></td></tr></table></figure>
+<p>之前版本的 Ubuntu 通常通过上面添加 PPA 源的方式安装客户端，但是根据目前 (2019-02-27) PPA 源上的 <a href="https://code.launchpad.net/~hzwhuang/+archive/ubuntu/ss-qt5">Shadowsocks-Qt5 页面</a>，还不支持 18.04，所以暂时从其 GitHub 的 <a href="https://github.com/shadowsocks/shadowsocks-qt5/releases/latest">Release</a> 下载吧，也可以将 <code>/etc/apt/sources.list.d/hzwhuang-ubuntu-ss-qt5-bionic.list</code> 中 ss-qt5 的源地址由</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;ppa.launchpad.net&#x2F;hzwhuang&#x2F;ss-qt5&#x2F;ubuntu bionic main</span><br></pre></td></tr></table></figure>
+<p>改为</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;ppa.launchpad.net&#x2F;hzwhuang&#x2F;ss-qt5&#x2F;ubuntu artful main</span><br></pre></td></tr></table></figure>
+<h3 id="全局代理">全局代理</h3>
+<p>安装好客户端，可以在 Settings - Network - Network Proxy 中设置代理。选择 <code>Manual</code>，<code>HTTP Proxy</code>、<code>HTTPS Proxy</code> 和 <code>FTP Proxy</code> 的地址均清空，端口改为 <code>0</code>，<code>Socks Proxy</code> 的地址为 <code>127.0.0.1</code>，端口号为 <code>1080</code>，如下图所示。</p>
+<div data-align="center">
+<img src="https://drive.google.com/uc?export=view&id=1lyUGS90-Fd6lSeyDVXOFnxc_GobOL_6z" alt="全局代理" width="30%"/>
+</div>
+<p>但是通过这种方式在系统中手动配置的代理为全局代理，使用起来有一些不方便。</p>
+<h3 id="pac-代理">PAC 代理</h3>
+<p>如果尚未安装 pip，首先执行</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo apt-get install python3-pip</span><br></pre></td></tr></table></figure>
+<p>再通过 pip 安装 GenPAC，并用其生成 PAC 文件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo pip3 install -U genpac</span><br><span class="line">genpac --pac-proxy &quot;SOCKS5 127.0.0.1:1080&quot; --gfwlist-proxy=&quot;SOCKS5 127.0.0.1:1080&quot; --gfwlist-url=https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt --output=&quot;proxy.pac&quot;</span><br></pre></td></tr></table></figure>
+<p>最后在 Settings - Network - Network Proxy 中选择 <code>Automatic</code>，Configuration URL 填入 <code>file:///home/&lt;username&gt;/proxy.pac</code> 即可。</p>
+<h3 id="客户端开机自启">客户端开机自启</h3>
+<p>终端输入</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">gnome-session-properties</span><br></pre></td></tr></table></figure>
+<p>打开 Startup Applications Preferences，添加需要开机自启的程序。</p>
+<p>如果是从 Github 下载的 Shadowsocks-Qt5，可以点击 Browse 选择下载的 AppImage 文件；若是通过添加 PPA 源方式下载的客户端，可以输入命令 <code>/usr/bin/ss-qt5</code> 来添加自启。</p>
+<h2 id="exfat-格式支持">exFAT 格式支持</h2>
+<p>现在 U 盘大多使用 exFAT 格式，而 Ubuntu 18.04 默认无法读取该格式，需要安装 <code>exfat-utils</code>。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo apt-get install exfat-utils</span><br></pre></td></tr></table></figure>
+<h2 id="更换主题">更换主题</h2>
+<p>首先安装 tweak-tool 和 user themes 插件，运行命令</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo apt-get install gnome-tweak-tool</span><br><span class="line">sudo apt-get install gnome-shell-extensions</span><br></pre></td></tr></table></figure>
+<p>打开 Tweaks，在 Extensions 中启动插件 User themes，将从 <a href="https://www.gnome-look.org">Gnome-look.org</a> 下载的解压到 <code>~/.themes</code>，再启动 Tweaks 即可设置主题。</p>
+<p>在 Tweaks 中，按下 <code>Ctrl + F2</code> 可以打开命令窗口，输入 <code>r</code> 即可重启桌面。</p>
+<p>另外，在 Ubuntu Software 中安装 Dash to Dock 可以实现 Dock 居中和背景透明等。</p>
+]]></content>
+      <categories>
+        <category>Linux 的折腾日常</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>macOS 环境安装和配置</title>
+    <url>/2018/11/26/macOS-%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<p>又是一波接一波的骚操作把系统搞崩的一天，为了节省今后重装系统配置环境的时间，把各种环境的安装和配置做个记录吧……</p>
+<a id="more"></a>
+<hr />
+<h2 id="xcode">Xcode</h2>
+<h3 id="安装">安装</h3>
+<p>当然是去 App Store 下载了，之后的 Homebrew 等都要依赖它。</p>
+<hr />
+<h2 id="homebrew"><a href="https://brew.sh">Homebrew</a></h2>
+<blockquote>
+<p>macOS 缺失的软件包的管理器</p>
+</blockquote>
+<p>算是强迫症必备吧</p>
+<h3 id="安装-1">安装</h3>
+<h2 id="section"><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">/usr/bin/ruby -e &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)&quot;</span><br></pre></td></tr></table></figure></h2>
+<h2 id="homebrew-cask"><a href="https://formulae.brew.sh/cask/">Homebrew Cask</a></h2>
+<blockquote>
+<p>"To install, drag this icon…" no more!</p>
+</blockquote>
+<p>同上</p>
+<h3 id="安装-2">安装</h3>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">brew tap caskroom/cask</span><br><span class="line">brew install vitorgalvao/tiny-scripts/cask-repair</span><br></pre></td></tr></table></figure>
+<p>这里还安装了 cask-repair，用于添加新的 Cask 或者更新 Cask，详见 <a href="https://github.com/Homebrew/homebrew-cask/blob/master/CONTRIBUTING.md">How To Contribute</a></p>
+<h3 id="配置">配置</h3>
+<p>使用 cask-repair 提交新的 Cask 或者更新时，会默认使用系统的文本编辑器打开 Cask 的信息文件 <code>*.rb</code>，一般都默认为 TextEdit.app，可以在 <code>~/.bash_profile</code> 中修改 Homebrew 使用的文本编辑器</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">export HOMEBREW_EDITOR=code</span><br></pre></td></tr></table></figure>
+<p><code>code</code> 表示将 Homebrew 使用的文本编辑器改为 Visual Studio Code</p>
+<hr />
+<h2 id="python">Python</h2>
+<p>为了方便不同版本的 Python 共存，并且隔离多个 Python 环境，使用 <a href="https://conda.io/docs/">Conda</a> 进行管理。</p>
+<blockquote>
+<p>Conda 是 Python、R、Ruby 等多种语言的包、依赖和环境管理</p>
+</blockquote>
+<p>Conda 有多个不同的发行版，比如 <a href="https://anaconda.org/">Anaconda</a> 和 <a href="https://conda.io/miniconda.html">Miniconda</a> 等，前者包含了许多科学计算的包，因此安装包体积很大，为了节省安装时间和占用空间，就使用 Miniconda。</p>
+<h3 id="安装-3">安装</h3>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">brew cask install miniconda</span><br></pre></td></tr></table></figure>
+<h3 id="配置-1">配置</h3>
+<p>安装好以后需要将 Conda 的路径加入环境变量，在 <code>~/.bash_profile</code> 中加入</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">export PATH=$&#123;PATH&#125;:/usr/local/miniconda3/bin</span><br></pre></td></tr></table></figure>
+<h3 id="使用">使用</h3>
+<ul>
+<li><p>列出所有环境（默认环境为 base）</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">conda env list</span><br></pre></td></tr></table></figure></li>
+<li><p>创建新的环境</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">conda create --name &lt;name&gt; python=&lt;version&gt;</span><br></pre></td></tr></table></figure></li>
+<li><p>从已有环境复制一个环境</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">conda create --name &lt;new name&gt; --clone &lt;old name&gt;</span><br></pre></td></tr></table></figure></li>
+<li><p>进入 &amp; 退出环境</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">conda activate &lt;name&gt;  # 进入名为 name 的环境，或者使用 source activate &lt;name&gt;</span><br><span class="line">conda deactivate       # 退出当前环境，或者使用 source deactivate</span><br></pre></td></tr></table></figure></li>
+<li><p>安装包（默认安装到当前环境，如果没有进入任何环境，则安装到 base 中）</p>
+<h2 id="section-1"><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">conda install &lt;package&gt;</span><br></pre></td></tr></table></figure></h2></li>
+</ul>
+<h2 id="latex">LaTeX</h2>
+<p>配置 LaTeX 的环境是最头疼的……经过我的多次尝（作）试（死），总算摸索出正确的姿势……那就是用 Docker。首先 Homebrew 安装 Docker</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">brew cask install docker</span><br></pre></td></tr></table></figure>
+<p>镜像可以使用 <a href="https://hub.docker.com/r/shoujiaxin/texlive">shoujiaxin/texlive</a>，此镜像基于 Debian 且安装了 TeXLive 2019。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker pull shoujiaxin/texlive:latest</span><br></pre></td></tr></table></figure>
+<p>带有 <code>latest</code> tag 的镜像会安装最新版本的 TeXLive；带有 <code>cjk</code> tag 的镜像中用于配置特殊中文字体，目前加入了隶书</p>
+<p>使用时可以用类似下面的命令创建可执行文件，将命令重定向至 Docker 镜像。以 <code>xelatex</code> 命令为例，创建文件 <code>xelatex</code> 并写入</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/sh</span></span><br><span class="line">set -euo pipefail</span><br><span class="line">docker run -i --rm -w &quot;$(pwd)&quot; -v &quot;$(pwd):$(pwd)&quot; shoujiaxin/texlive xelatex &quot;$@&quot;</span><br></pre></td></tr></table></figure>
+<p>给予文件执行权限</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo chmod +x ./xelatex</span><br></pre></td></tr></table></figure>
+<p>将文件所在路径加入 <code>~/.zshrc</code> 即可。</p>
+<h2 id="zsh">Zsh</h2>
+<p>macOS 的默认终端是 Bash，相比 Zsh 功能和可定制性有限，本着生命在于折腾的原则，<strong>换！</strong></p>
+<h3 id="切换默认-shell">切换默认 Shell</h3>
+<p>终端输入</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">chsh -s /bin/zsh</span><br></pre></td></tr></table></figure>
+<p>输入管理员密码，重启终端即可将默认的 Shell 切换到 Zsh，如需切换回来，执行</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">chsh -s /bin/bash</span><br></pre></td></tr></table></figure>
+<p>Zsh 的配置位于 <code>~/.zshrc</code>，需要继续使用 Bash 的配置可以在末尾添加</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">source ~/.bash_profile</span><br></pre></td></tr></table></figure>
+<h3 id="安装和配置-oh-my-zsh">安装和配置 <a href="https://ohmyz.sh">Oh My Zsh</a></h3>
+<blockquote>
+<p>Oh My Zsh is a delightful, open source, community-driven framework for managing your Zsh configuration. It comes bundled with thousands of helpful functions, helpers, plugins, themes, and a few things that make you shout...</p>
+</blockquote>
+<p>终端执行</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sh -c &quot;$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)&quot;</span><br></pre></td></tr></table></figure>
+<p>安装完成后 Oh My Zsh 的配置文件位于 <code>~/.oh-my-zsh</code>。</p>
+<h3 id="更换主题和背景">更换主题和背景</h3>
+<p>Oh My Zsh 的主题不是很喜欢，故换成 <a href="https://github.com/bhilburn/powerlevel9k">Powerlevel9k</a>，<a href="https://github.com/bhilburn/powerlevel9k/wiki/Install-Instructions#step-1-install-powerlevel9k">Install the Powerlevel9k Theme</a> 介绍了各种安装主题的方法，这里使用安装到 Oh My Zsh 的方法。</p>
+<p>执行</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git clone https://github.com/bhilburn/powerlevel9k.git ~/.oh-my-zsh/custom/themes/powerlevel9k</span><br></pre></td></tr></table></figure>
+<p>可以将主题安装到 <code>~/.oh-my-zsh/custom/themes/</code> 中，修改 <code>~/.zshrc</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ZSH_THEME=&quot;powerlevel9k/powerlevel9k&quot;</span><br></pre></td></tr></table></figure>
+<p>即可更换主题为 Powerlevel9k。</p>
+<p>Powerlevel9k 依赖 Powerline 字体，否则终端中会有乱码，<a href="https://github.com/bhilburn/powerlevel9k/wiki/Install-Instructions#step-2-install-a-powerline-font">Install a Powerline Font</a> 介绍了几种安装 Powerline 字体的方法，经过多次尝试，这里使用最便捷的方法，即安装 <a href="https://github.com/ryanoasis/nerd-fonts">Nerd 字体</a>，执行</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> brew tap caskroom/fonts</span></span><br><span class="line">brew cask install font-hack-nerd-font</span><br></pre></td></tr></table></figure>
+<p>目前 (2019-02-27) 如果按照官方的安装步骤，tap 了 caskroom/fonts，在执行 <code>brew update</code> 时会报错，猜测是因为 Homebrew 更新后 Homebrew Cask 已经包含了各种字体，所以可以直接安装，也可以在安装完成以后 untap 一下。</p>
+<p>字体安装完成修改 <code>~/.zshrc</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">POWERLEVEL9K_MODE=&#x27;nerdfont-complete&#x27;</span><br><span class="line">POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context dir dir_writable vcs)</span><br><span class="line">POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status background_jobs history time)</span><br><span class="line">DEFAULT_USER=&quot;&lt;username&gt;&quot;</span><br></pre></td></tr></table></figure>
+<p>可以完成字体配置和各种自定义。其中，<code>POWERLEVEL9K_LEFT_PROMPT_ELEMENTS</code> 控制终端左侧显示内容：<code>dir</code> 显示当前路径、<code>dir_writable</code> 在当前路径没有写权限时会显示一个🔒、<code>vcs</code> 则是显示版本控制；<code>POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS</code> 控制终端右侧显示内容：<code>status</code> 命令返回的状态、<code>history</code> 历史记录数以及 <code>time</code> 时间等；设置 <code>DEFAULT_USER</code> 可以隐藏登录该用户时终端左侧显示的用户名。</p>
+<h3 id="安装插件">安装插件</h3>
+<ul>
+<li><p><a href="https://github.com/zsh-users/zsh-autosuggestions">zsh-autosuggestions</a> 终端输入</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git clone https://github.com/zsh-users/zsh-autosuggestions $&#123;ZSH_CUSTOM:-~/.oh-my-zsh/custom&#125;/plugins/zsh-autosuggestions</span><br></pre></td></tr></table></figure>
+<p>将 zsh-autosuggestions 的源码 clone 到 <code>~/.oh-my-zsh/custom/plugins</code>。打开 <code>~/.zshrc</code>，将 <code>zsh-autosuggestions</code> 添加到 <code>plugins=()</code> 行的括号中，多个插件用空格分隔。</p></li>
+<li><p><a href="https://github.com/zsh-users/zsh-syntax-highlighting">zsh-syntax-highlighting</a> 终端输入</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $&#123;ZSH_CUSTOM:-~/.oh-my-zsh/custom&#125;/plugins/zsh-syntax-highlighting</span><br></pre></td></tr></table></figure>
+<p>将 zsh-syntax-highlighting 的源码 clone 到 <code>~/.oh-my-zsh/custom/plugins</code>。打开 <code>~/.zshrc</code>，将 <code>zsh-syntax-highlighting</code> 添加到 <code>plugins=()</code> 行的括号中，多个插件用空格分隔。</p></li>
+</ul>
+]]></content>
+      <categories>
+        <category>Mac 的使用日常</category>
+      </categories>
+      <tags>
+        <tag>macOS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>将 Windows 上的打印机共享为 AirPrint</title>
+    <url>/2018/12/02/%E5%B0%86-Windows-%E4%B8%8A%E7%9A%84%E6%89%93%E5%8D%B0%E6%9C%BA%E5%85%B1%E4%BA%AB%E4%B8%BA-AirPrint/</url>
+    <content><![CDATA[<p>实验室的打印机连在群晖的 NAS 上，要使用打印机首先需要安装群晖助手。然而 macOS 版的群晖助手貌似并不支持打印……经过一段时间打印需要先把文件拷贝到 Windows 上的折磨之后，忽然想到如果能把 Windows 上的打印机共享成 AirPrint，就不需要额外安装驱动了，而且 iPhone 和 iPad 也可以直接使用。</p>
+<a id="more"></a>
+<h2 id="系统环境">系统环境</h2>
+<p>本文描述的方法在以下版本的操作系统上测试通过，其他版本不保证一定可行：</p>
+<ul>
+<li><p>Windows 10 家庭版 1803</p></li>
+<li><p>macOS Mojave 10.14.1</p></li>
+<li><p>iOS 12.1</p></li>
+</ul>
+<h2 id="配置-windows">配置 Windows</h2>
+<ol type="1">
+<li><p>开启打印机的共享</p>
+<ul>
+<li><p>打开<code>控制面板 - 硬件和声音 - 设备和打印机</code></p></li>
+<li><p>右键需要共享的打印机，打开<code>打印机属性</code>，选择共享页面，勾选<code>共享这台打印机</code></p></li>
+</ul></li>
+<li><p>安装 <a href="https://support.apple.com/kb/DL999?viewlocale=zh_CN&amp;locale=zh_CN">Bonjour Print Services (Windows)</a></p></li>
+<li><p>安装 <a href="https://drive.google.com/open?id=1_aB1lyZgJ9ERC-kXmEjsnYeuWL0Tylvo">AirPrint Installer</a></p>
+<ul>
+<li><p>使用管理员权限运行 <code>AirPrint Installer.exe</code></p></li>
+<li><p>点击 <code>Install AirPrint Service</code></p></li>
+<li><p>设置 <code>Service Startup</code> 为 <code>Auto</code>，点击 <code>Start</code> 即可</p>
+<div data-align="center">
+<img src="https://drive.google.com/uc?export=view&id=1OIO9lxMVYtlMJugafFGn7zaMXjrIZbsh" alt="AirPrint Installer" width="50%"/>
+</div>
+<p><em>这里的 <code>AirPrint Auth</code> 可以设置认证方式，默认是使用 Windows 的账户和密码认证。我尝试过修改为其他的方式、允许空白密码或者运行访客账户，似乎并没有效果，所以就用默认设置好了。</em></p></li>
+</ul></li>
+<li><p>配置防火墙</p>
+<blockquote>
+<p>Bonjour 联网协议通过 UDP 端口 5353 收发网络数据包。Bonjour 安装器会在受支持的系统上安装时相应配置 Windows 防火墙，但是如果您启用了单独的 “个人防火墙”，则需要确保 UDP 端口 5353 已打开，以便 Bonjour 能正常工作。</p>
+</blockquote>
+<p>正常情况下不需要这个步骤，如果全部配置好以后仍然搜索不到 AirPrint 打印机，可以尝试检查一下 Windows 的防火墙设置。</p></li>
+</ol>
+<h2 id="配置-macos-ios">配置 macOS &amp; iOS</h2>
+<p>macOS 的配置比较简单。打开 <code>System Preferences - Printers &amp; Scanners</code>，点击左侧打印机列表左下角的 <code>+</code>，会自动搜索局域网内的打印机。此时应该可以看到一个类型为 <code>Bonjour</code>，名为 <code>&lt;打印机名&gt; @ &lt;Windows 电脑名&gt;</code> 的打印机。选择这个打印机，会自动识别协议为 <code>AirPrint</code>，点击 <code>Add</code> 添加，之后就可以正常使用了。</p>
+<p>iOS 基本不需要设置，在打印页面点击 <code>Select Printer</code>，会自动搜索并配置打印机，输入账号和密码验证就可以打印了。</p>
+]]></content>
+      <categories>
+        <category>Mac 的使用日常</category>
+      </categories>
+      <tags>
+        <tag>macOS</tag>
+        <tag>AirPrint</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>强制 macOS 开启 2K 显示器的 HiDPI</title>
+    <url>/2019/03/02/%E5%BC%BA%E5%88%B6-macOS-%E5%BC%80%E5%90%AF-2K-%E6%98%BE%E7%A4%BA%E5%99%A8%E7%9A%84-HiDPI/</url>
+    <content><![CDATA[<p>每次干起活儿来都感觉 15 英寸屏幕的 MacBook Pro 还是太小，所以前段时间买了台 26.9 英寸 QHD (2560 × 1440) 的三星。选这台显示器是因为它有 Type-C 口，一根线就可以解决视频、音频、充电以及数据传输，非常方便，实际用起来也是相当不错。但是看习惯了 MacBook Pro 的 Retina 屏，总觉得 macOS 在 2K 分辨率下点对点显示时颗粒感严重，边缘锯齿明显而且字也很糊。所以折腾了一下，强制 macOS 开启 1080P 的 HiDPI，虽然显示的内容少了一点，但是感观舒服了很多。</p>
+<a id="more"></a>
+<h2 id="显示器参数">显示器参数</h2>
+<ul>
+<li>型号：SAMSUNG S27H850QFC</li>
+<li>面板类型：IPS</li>
+<li>面板尺寸：26.9 英寸</li>
+<li>屏幕比例：16:9</li>
+<li>最佳分辨率：2560 × 1440</li>
+</ul>
+<h2 id="开启-hidpi-的步骤">开启 HiDPI 的步骤</h2>
+<h3 id="启用-hidpi-模式">1. 启用 HiDPI 模式</h3>
+<p>终端输入</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo defaults write /Library/Preferences/com.apple.windowserver.plist DisplayResolutionEnabled -bool true</span><br></pre></td></tr></table></figure>
+<h3 id="获取显示器的-displayvendorid-和-displayproductid">2. 获取显示器的 DisplayVendorId 和 DisplayProductID</h3>
+<p>终端输入</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ioreg -lw0 | grep IODisplayPrefsKey</span><br></pre></td></tr></table></figure>
+<p>此时，我的 Mac 输出</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">&quot;IODisplayPrefsKey&quot; = &quot;IOService:/AppleACPIPlatformExpert/PCI0@0/AppleACPIPCI/IGPU@2/AppleIntelFramebuffer@0/display0/AppleBacklightDisplay-610-a019&quot;</span><br><span class="line">&quot;IODisplayPrefsKey&quot; = &quot;IOService:/AppleACPIPlatformExpert/PCI0@0/AppleACPIPCI/IGPU@2/AppleIntelFramebuffer@2/display0/AppleDisplay-4c2d-e0f&quot;</span><br></pre></td></tr></table></figure>
+<p>其中，第二行即为外接显示器的信息，<code>4c2d</code> 为显示器的 <code>DisplayVendorId</code>，<code>e0f</code> 为显示器的 <code>DisplayProductID</code>。</p>
+<h3 id="编写配置文件">3. 编写配置文件</h3>
+<p>可以使用<a href="https://comsysto.github.io/Display-Override-PropertyList-File-Parser-and-Generator-with-HiDPI-Support-For-Scaled-Resolutions/">这个工具</a>编写显示器的配置文件。2K 显示器开启 HiDPI 一般使用 1080P 就可以了，720P 显示会非常大，可显示内容也很少。</p>
+<p>我的配置文件如下</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">plist</span> <span class="meta-keyword">PUBLIC</span> <span class="meta-string">&quot;-//Apple//DTD PLIST 1.0//EN&quot;</span> <span class="meta-string">&quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">plist</span> <span class="attr">version</span>=<span class="string">&quot;1.0&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dict</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">key</span>&gt;</span>DisplayProductName<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">string</span>&gt;</span>SAMSUNG S27H850QFC<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">key</span>&gt;</span>DisplayProductID<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">integer</span>&gt;</span>3599<span class="tag">&lt;/<span class="name">integer</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">key</span>&gt;</span>DisplayVendorID<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">integer</span>&gt;</span>19501<span class="tag">&lt;/<span class="name">integer</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">key</span>&gt;</span>scale-resolutions<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">array</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">data</span>&gt;</span>AAAPAAAACHAA<span class="tag">&lt;/<span class="name">data</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">data</span>&gt;</span>AAAMgAAABwgA<span class="tag">&lt;/<span class="name">data</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">data</span>&gt;</span>AAAKAAAABaAA<span class="tag">&lt;/<span class="name">data</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">array</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">key</span>&gt;</span>target-default-ppmm<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">real</span>&gt;</span>10.0699301<span class="tag">&lt;/<span class="name">real</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">key</span>&gt;</span>edid-patches<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">array</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">dict</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">key</span>&gt;</span>offset<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">integer</span>&gt;</span>72<span class="tag">&lt;/<span class="name">integer</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">key</span>&gt;</span>data<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">data</span>&gt;</span>AAAAEAAAAAAAAAAAAAAAAAAA<span class="tag">&lt;/<span class="name">data</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">dict</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">array</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dict</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">plist</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>保存文件，命名为 <code>DisplayProductID-&lt;DisplayProductID&gt;</code>，即 <code>DisplayProductID-e0f</code>。</p>
+<h3 id="临时关闭-sip">4. 临时关闭 SIP</h3>
+<p>由于需要把上面编写好的显示器配置文件放到系统目录下，需要先临时关闭一下 SIP (System Integrity Protection)。</p>
+<ul>
+<li><p>重启，按住 <code>⌘ + R</code> 进入恢复模式</p></li>
+<li><p>在<code>实用工具</code>中打开终端，输入</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">csrutil disable</span><br></pre></td></tr></table></figure></li>
+<li><p>重启即可关闭 SIP</p></li>
+</ul>
+<h3 id="将配置文件拷贝到系统文件夹">5. 将配置文件拷贝到系统文件夹</h3>
+<ul>
+<li><p>打开目录 <code>/System/Library/Displays/Contents/Resources/Overrides/DisplayVendorID-&lt;DisplayVendorId&gt;</code>， 即 <code>/System/Library/Displays/Contents/Resources/Overrides/DisplayVendorID-4c2d</code></p></li>
+<li><p>将之前编辑好的配置文件 <code>DisplayProductID-e0f</code> 复制到该路径中</p></li>
+<li><p>重启 Mac</p></li>
+<li><p>打开 Displays Preferences，能看到如下配置即说明 HiDPI 开启成功</p>
+<div data-align="center">
+<img src="https://drive.google.com/uc?export=view&id=1Fc3ipNDBvgUj4ScT3bfo4apexM5SozKN" alt="Displays Preferences" width="50%"/>
+</div></li>
+</ul>
+<h3 id="开启-sip">6. 开启 SIP</h3>
+<p>配置修改成功以后，为了系统安全，最好还是开启 SIP。进入恢复模式，在终端中输入</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">csrutil enable</span><br></pre></td></tr></table></figure>
+<p>重启即可。</p>
+]]></content>
+      <categories>
+        <category>Mac 的使用日常</category>
+      </categories>
+      <tags>
+        <tag>macOS</tag>
+        <tag>HiDPI</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>操作系统笔记 (1) —— 进程和线程</title>
+    <url>/2020/03/04/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AC%94%E8%AE%B0-1-%E2%80%94%E2%80%94-%E8%BF%9B%E7%A8%8B%E5%92%8C%E7%BA%BF%E7%A8%8B/</url>
+    <content><![CDATA[<h2 id="进程-process">1. 进程 (Process)</h2>
+<h3 id="定义">1.1. 定义</h3>
+<p>进程是一个具有一定独立功能的程序在一个数据集合上的一次<strong>动态</strong>执行过程。</p>
+<a id="more"></a>
+<h3 id="组成">1.2. 组成</h3>
+<p>一个进程包括了正在运行的一个程序的所有状态信息：</p>
+<ul>
+<li>程序的代码</li>
+<li>程序处理的数据</li>
+<li>程序计数器中的值，指示下一条将运行的指令</li>
+<li>一组通用的寄存器的当前值、堆和栈等</li>
+<li>一组系统资源，如打开的文件等</li>
+</ul>
+<h3 id="特点">1.3. 特点</h3>
+<ul>
+<li>动态性：可动态地创建、切换、结束进程</li>
+<li>并发行：进程可以被独立调度并占用处理运行<em>（并发：某个时间段；并行：某个时刻）</em></li>
+<li>独立性：不同进程的工作（正确性）不相互影响</li>
+<li>制约性：因访问共享数据/资源或进程间同步而产生制约</li>
+</ul>
+<h3 id="进程和程序">1.4. 进程和程序</h3>
+<h4 id="联系">1.4.1. 联系</h4>
+<ul>
+<li>程序是产生进程的基础</li>
+<li>程序的每次运行构成不同的进程</li>
+<li>进程是程序功能的体现</li>
+<li>通过多次执行，一个程序可对应多个进程；通过调用关系，一个进程可包括多个程序</li>
+</ul>
+<h4 id="区别">1.4.2. 区别</h4>
+<ul>
+<li>进程是程序的执行（动态的）；程序是有序代码的集合（静态的）</li>
+<li>进程有核心态/用户态</li>
+<li>进程是一个状态变化的过程（暂时的）；程序可以长久保存（永久的）</li>
+<li>进程与程序的组成不同：进程的组成包括程序、数据和进程控制块（即进程状态信息）</li>
+</ul>
+<h3 id="进程的生命期管理">1.5. 进程的生命期管理</h3>
+<h4 id="创建">1.5.1. 创建</h4>
+<p>引起进程创建的 3 个事件：</p>
+<ul>
+<li>系统初始化</li>
+<li>用户请求创建一个新进程</li>
+<li>正在运行的进程执行了创建进程的系统调用</li>
+</ul>
+<h4 id="运行">1.5.2. 运行</h4>
+<p>内核选择一个就绪的进程，让它占用处理及并执行。</p>
+<h4 id="等待阻塞">1.5.3. 等待（阻塞）</h4>
+<p>以下情况进程等待：</p>
+<ul>
+<li>请求并等待系统服务，无法马上完成</li>
+<li>启动某种操作，无法马上完成</li>
+<li>需要的数据没有到达</li>
+</ul>
+<p>进程只能自己阻塞自己。</p>
+<h4 id="唤醒">1.5.4. 唤醒</h4>
+<p>唤醒进程的原因：</p>
+<ul>
+<li>被阻塞进程需要的资源可被满足</li>
+<li>被阻塞进程等待的事件到达</li>
+<li>将该进程的 PCB 插入就绪队列</li>
+</ul>
+<p>进程只能被别的进程或 OS 唤醒。</p>
+<h4 id="结束">1.5.5. 结束</h4>
+<p>以下情况进程结束：</p>
+<ul>
+<li>正常退出（自愿）</li>
+<li>错误退出（自愿）</li>
+<li>致命错误（强制）</li>
+<li>被其他进程所杀（强制）</li>
+</ul>
+<h3 id="进程状态变化模型">1.6. 进程状态变化模型</h3>
+<div data-align="center">
+<img src="https://drive.google.com/uc?export=view&id=1kGiADhNe_OnLs3ZHWyv3fEHcjwVdNq4B" alt="进程状态转换" width="60%"/>
+</div>
+<h4 id="三种基本状态">1.6.1. 三种基本状态</h4>
+<ul>
+<li>运行 (Running)：当一个进程正在处理机上运行时</li>
+<li>就绪 (Ready)：一个进程获得了除处理机之外的一切所需资源，一旦得到处理机即可运行</li>
+<li>等待/阻塞 (Blocked)：一个进程正在等待某一事件而暂停运行，如等待某资源、输入/输出完成</li>
+</ul>
+<h4 id="其他状态">1.6.2. 其他状态</h4>
+<ul>
+<li>创建 (New)：一个进程正在被创建，还没被转到就绪状态之前的状态</li>
+<li>结束 (Exit)：一个进程正在从系统中消失时的状态，由于进程结束或其他原因所致</li>
+<li>挂起 (Suspend)：把一个进程从内存转到外存。挂起状态时，进程没有占用内存空间，处在挂起状态的进程映像在磁盘上</li>
+</ul>
+<h4 id="进程挂起">1.6.3. 进程挂起</h4>
+<ul>
+<li>阻塞挂起 (Blocked suspend)：进程在外存并等待某事件的出现</li>
+<li>就绪挂起 (Ready suspend)：进程在外存，但只要进入内存，即可运行</li>
+<li>与挂起相关的状态转换
+<ul>
+<li>阻塞 =&gt; 阻塞挂起：没有进程处于就绪状态或就绪进程要求更多内存资源时，进行此种转换，以提交新进程或运行就绪进程</li>
+<li>就绪 =&gt; 就绪挂起：当有高优先级阻塞进程和低优先级就绪进程时，OS 选择挂起低优先级就绪进程</li>
+<li>运行 =&gt; 就绪挂起：对抢先式分时系统，当有高优先级阻塞挂起进程因事件出现而进入就绪挂起，OS 可能把运行进程转到就绪挂起状态</li>
+<li>就绪挂起 =&gt; 就绪：没有就绪进程或挂起就绪进程优先级高于就绪进程时，进行此种转换</li>
+<li>阻塞挂起 =&gt; 阻塞：当一个进程释放足够内存时，OS 会把一个高优先级阻塞挂起进程转换为阻塞进程</li>
+</ul></li>
+<li>在外存时的状态转换
+<ul>
+<li>阻塞挂起 =&gt; 就绪挂起：当有阻塞挂起进程因相关事件出现时，OS 会把阻塞挂起进程转换为就绪挂起进程</li>
+</ul></li>
+<li>状态队列
+<ul>
+<li>由 OS 维护一组队列，表示系统中所有进程的当前状态</li>
+<li>不同的状态分别用不同的队列来表示（就绪队列、各类阻塞队列等）</li>
+<li>每个进程的 PCB 都根据它的状态加入到相应的队列中，当一个进程状态发生变化时，它的 PCB 从一个状态队列中脱离出来，加入到另一个队列</li>
+</ul></li>
+</ul>
+<h2 id="线程-thread">2. 线程 (Thread)</h2>
+<h3 id="定义-1">2.1. 定义</h3>
+<p>进程当中的一条执行流程，即 <span class="math display">\[
+\text{线程} = \text{进程} - \text{共享资源}
+\]</span></p>
+<ul>
+<li>属于同一个进程的多个线程共享进程的所拥有的资源（代码、数据、打开的文件等）</li>
+<li>线程有独立的线程控制块 (TCB)，包括程序计数器 (PC)、堆栈 (SP)、State、寄存器 (Registers) 等</li>
+<li>优点：
+<ul>
+<li>一个进程可以同时存在多个线程</li>
+<li>各个线程之间可以并发地执行</li>
+<li>各个线程之间可以共享地址空间和文件等资源</li>
+</ul></li>
+<li>缺点：一个线程崩溃，会导致其所属进程的所有线程崩溃</li>
+</ul>
+<h3 id="线程的实现">2.2. 线程的实现</h3>
+<ul>
+<li><strong>用户线程</strong>：在用户空间实现的线程机制（OS 看不到，由用户线程库管理）
+<ul>
+<li>不依赖 OS 的内核，由一组用户级的线程库函数完成线程的管理，包括创建、终止、同步和调度等</li>
+<li>可用于不支持线程技术的多进程 OS</li>
+<li>每个进程都需要自己私有的 TCB 列表，用于跟踪记录其各个线程的状态（PC、栈指针、寄存器等），TCB 由线程库函数来维护</li>
+<li>用户线程的切换也是由线程库函数来完成，无需用户态/核心态切换，速度快</li>
+<li>允许每个进程拥有自定义的线程调度算法</li>
+<li>缺点：如果一个线程发起系统调用而阻塞，则整个进程在等待；一个线程开始运行后，除非主动交出 CPU 使用权，否则其所在进程中的其他线程无法运行；在多线程执行时，每个线程分到的时间片较少，执行较慢</li>
+</ul></li>
+<li><strong>内核线程</strong>：在 OS 内核中实现的线程机制，由 OS 内核来完成线程的创建、终止和管理
+<ul>
+<li>在支持内核线程的 OS 中，由内核维护进程和线程的上下文信息（PCB 和 TCB）</li>
+<li>线程的创建、终止和切换都是通过系统调用/内核函数（用户态 =&gt; 内核态）的方式进行，由内核完成，系统开销大</li>
+<li>在一个进程中，如果某个内核线程发起系统调用而被阻塞，并不会影响其他内核线程的运行</li>
+<li>时间片分配给线程，多线程的进程获得更多 CPU 时间</li>
+</ul></li>
+<li><strong>轻量级进程</strong>：在内核中实现，支持用户线程
+<ul>
+<li>内核支持的用户线程，一个进程可有一个或多个轻量级进程，每个轻量级进程由一个单独的内核线程来支持</li>
+</ul></li>
+</ul>
+<h2 id="进程与线程的比较">3. 进程与线程的比较</h2>
+<ul>
+<li>进程是资源分配单位；线程是 CPU 调度单位</li>
+<li>进程拥有一个完成的资源平台，而线程只独享必不可少的资源，如寄存器和堆栈</li>
+<li>线程同样具有就绪、阻塞和执行三种基本状态，同样具有状态之间的转换关系</li>
+<li>线程能减少并发执行的时间和空间开销：线程的创建、终止时间比进程短；同一进程内线程切换时间比进程短（无需切换页表）；同一进程的各线程可直接进行不通过内核的通信</li>
+</ul>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+      </categories>
+      <tags>
+        <tag>学习笔记</tag>
+        <tag>操作系统</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>数据结构和算法笔记 (1) —— 二叉树的遍历</title>
+    <url>/2020/03/09/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%92%8C%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-1-%E2%80%94%E2%80%94-%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E9%81%8D%E5%8E%86/</url>
+    <content><![CDATA[<p>树的遍历：按照某种次序访问树中各节点，每个节点被访问恰好一次</p>
+<p>遍历方法：</p>
+<ul>
+<li>深度优先：先访问子节点，再访问父节点。按照根节点相对于左右子节点的访问顺序，分为前序 (Pre-order)、中序 (In-order) 和后序 (Post-order)</li>
+<li>广度优先：层次遍历</li>
+</ul>
+<a id="more"></a>
+<p>二叉树节点的定义如下</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TreeNode</span> &#123;</span></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  T data;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;TreeNode&lt;T&gt;&gt; left;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;TreeNode&lt;T&gt;&gt; right;</span><br><span class="line"></span><br><span class="line">  TreeNode(T x) : data(x), left(<span class="literal">nullptr</span>), right(<span class="literal">nullptr</span>) &#123;&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="前序遍历">1. 前序遍历</h2>
+<p>遍历顺序：根 =&gt; 左 =&gt; 右</p>
+<h3 id="递归实现">1.1. 递归实现</h3>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> VST&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">pre_order_traversal</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;TreeNode&lt;T&gt;&gt; node, VST&amp; visit)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!node) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  visit(node);</span><br><span class="line">  pre_order_traversal(node-&gt;left, visit);</span><br><span class="line">  pre_order_traversal(node-&gt;right, visit);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="迭代实现">1.2. 迭代实现</h3>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> VST&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">pre_order_traversal</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;TreeNode&lt;T&gt;&gt; root, VST&amp; visit)</span> </span>&#123;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">stack</span>&lt;<span class="keyword">decltype</span>(root)&gt; stk;</span><br><span class="line">  <span class="keyword">auto</span> node = root;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span> (node || !stk.empty()) &#123;</span><br><span class="line">    <span class="keyword">while</span> (node) &#123;</span><br><span class="line">      visit(node);</span><br><span class="line"></span><br><span class="line">      stk.push(node);</span><br><span class="line">      node = node-&gt;left;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!stk.empty()) &#123;</span><br><span class="line">      node = stk.top();</span><br><span class="line">      stk.pop();</span><br><span class="line"></span><br><span class="line">      node = node-&gt;right;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="中序遍历">2. 中序遍历</h2>
+<p>遍历顺序：左 =&gt; 根 =&gt; 右</p>
+<h3 id="递归实现-1">2.1. 递归实现</h3>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> VST&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">in_order_traversal</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;TreeNode&lt;T&gt;&gt; node, VST&amp; visit)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!node) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  in_order_traversal(node-&gt;left, visit);</span><br><span class="line">  visit(node);</span><br><span class="line">  in_order_traversal(node-&gt;right, visit);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="迭代实现-1">2.2. 迭代实现</h3>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> VST&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">in_order_traversal</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;TreeNode&lt;T&gt;&gt; root, VST&amp; visit)</span> </span>&#123;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">stack</span>&lt;<span class="keyword">decltype</span>(root)&gt; stk;</span><br><span class="line">  <span class="keyword">auto</span> node = root;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span> (node || !stk.empty()) &#123;</span><br><span class="line">    <span class="keyword">while</span> (node) &#123;</span><br><span class="line">      stk.push(node);</span><br><span class="line">      node = node-&gt;left;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!stk.empty()) &#123;</span><br><span class="line">      node = stk.top();</span><br><span class="line">      stk.pop();</span><br><span class="line"></span><br><span class="line">      visit(node);</span><br><span class="line"></span><br><span class="line">      node = node-&gt;right;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="后序遍历">3. 后序遍历</h2>
+<p>遍历顺序：左 =&gt; 右 =&gt; 根</p>
+<h3 id="递归实现-2">3.1. 递归实现</h3>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> VST&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">post_order_traversal</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;TreeNode&lt;T&gt;&gt; node, VST&amp; visit)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!node) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  post_order_traversal(node-&gt;left, visit);</span><br><span class="line">  post_order_traversal(node-&gt;right, visit);</span><br><span class="line">  visit(node);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="迭代实现-2">3.2. 迭代实现</h3>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> VST&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">post_order_traversal</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;TreeNode&lt;T&gt;&gt; root, VST&amp; visit)</span> </span>&#123;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">stack</span>&lt;<span class="built_in">std</span>::<span class="built_in">pair</span>&lt;<span class="keyword">decltype</span>(root), <span class="keyword">bool</span>&gt;&gt; stk;</span><br><span class="line">  stk.push(<span class="built_in">std</span>::<span class="built_in">make_pair</span>(root, <span class="literal">false</span>));</span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span> (!stk.empty()) &#123;</span><br><span class="line">    <span class="keyword">auto</span> node = stk.top().first;</span><br><span class="line">    <span class="keyword">auto</span> visited = stk.top().second;</span><br><span class="line">    stk.pop();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!node) &#123;</span><br><span class="line">      <span class="keyword">continue</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (visited) &#123;</span><br><span class="line">      visit(node);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      stk.push(<span class="built_in">std</span>::<span class="built_in">make_pair</span>(node, <span class="literal">true</span>));</span><br><span class="line">      stk.push(<span class="built_in">std</span>::<span class="built_in">make_pair</span>(node-&gt;right, <span class="literal">false</span>));</span><br><span class="line">      stk.push(<span class="built_in">std</span>::<span class="built_in">make_pair</span>(node-&gt;left, <span class="literal">false</span>));</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="层次遍历">4. 层次遍历</h2>
+<p>遍历顺序：自上而下、先左后右</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> VST&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">level_traversal</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;TreeNode&lt;T&gt;&gt; root, VST&amp; visit)</span> </span>&#123;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">queue</span>&lt;<span class="keyword">decltype</span>(root)&gt; que;</span><br><span class="line">  <span class="keyword">if</span> (root) &#123;</span><br><span class="line">    que.push(root);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span> (!que.empty()) &#123;</span><br><span class="line">    <span class="keyword">auto</span> node = que.front();</span><br><span class="line">    que.pop();</span><br><span class="line"></span><br><span class="line">    visit(node);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (node-&gt;left) &#123;</span><br><span class="line">      que.push(node-&gt;left);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (node-&gt;right) &#123;</span><br><span class="line">      que.push(node-&gt;right);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+      </categories>
+      <tags>
+        <tag>学习笔记</tag>
+        <tag>数据结构</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>数据结构和算法笔记 (2) —— 排序算法</title>
+    <url>/2020/03/10/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%92%8C%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-2-%E2%80%94%E2%80%94-%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/</url>
+    <content><![CDATA[<p>常用排序算法的总结和 C++ 实现。</p>
+<a id="more"></a>
+<h2 id="冒泡排序-bubble-sort">1. 冒泡排序 (Bubble Sort)</h2>
+<h3 id="原理">1.1. 原理</h3>
+<p>在一次<strong>冒泡</strong>过程中，比较相邻的两个元素：如果逆序（左边元素大于右边元素），则二者交换。一次冒泡后，序列中最大的元素将位于序列的末尾，对剩余元素依次进行冒泡操作，直到没有任何一对数字需要比较。</p>
+<h3 id="实现">1.2. 实现</h3>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> RandomIt&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">bubble_sort</span><span class="params">(RandomIt first, RandomIt last)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">auto</span> i = first; i &lt; last; ++i) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">auto</span> j = first; j &lt; last - <span class="number">1</span>; ++j) &#123;</span><br><span class="line">      <span class="keyword">if</span> (*j &gt; *(j + <span class="number">1</span>)) &#123;</span><br><span class="line">        <span class="built_in">std</span>::swap(*j, *(j + <span class="number">1</span>));</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="分析">1.3. 分析</h3>
+<ul>
+<li>稳定排序算法</li>
+<li>最坏时间复杂度：<span class="math inline">\(O(n^{2})\)</span></li>
+<li>最优时间复杂度：<span class="math inline">\(O(n)\)</span></li>
+<li>平均时间复杂度：<span class="math inline">\(O(n^{2})\)</span></li>
+<li>最坏空间复杂度：共 <span class="math inline">\(O(n)\)</span>，需要辅助空间 <span class="math inline">\(O(1)\)</span></li>
+</ul>
+<h2 id="归并排序-merge-sort">2. 归并排序 (Merge Sort)</h2>
+<h3 id="原理-1">2.1. 原理</h3>
+<p>分治法 (Divide and Conquer)：递归地将序列平均分割为两个子序列，直到序列中只含有一个元素（即有序）；再利用归并操作 (merge) 将有序序列合并起来。</p>
+<h3 id="实现-1">2.2. 实现</h3>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 利用辅助空间的合并</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> RandomIt&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">merge</span><span class="params">(RandomIt first, RandomIt mid, RandomIt last)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">using</span> data_type = <span class="keyword">typename</span> <span class="built_in">std</span>::remove_reference&lt;<span class="keyword">decltype</span>(*first)&gt;::type;</span><br><span class="line">  <span class="function"><span class="built_in">vector</span>&lt;data_type&gt; <span class="title">left_sub</span><span class="params">(first, mid)</span></span>;</span><br><span class="line">  <span class="function"><span class="built_in">vector</span>&lt;data_type&gt; <span class="title">right_sub</span><span class="params">(mid, last)</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">auto</span> left_it = left_sub.cbegin();</span><br><span class="line">  <span class="keyword">auto</span> right_it = right_sub.cbegin();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">auto</span> it = first; it != last; ++it) &#123;</span><br><span class="line">    <span class="keyword">if</span> (left_it == left_sub.cend()) &#123;</span><br><span class="line">      *it = *right_it;</span><br><span class="line">      ++right_it;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (right_it == right_sub.cend()) &#123;</span><br><span class="line">      *it = *left_it;</span><br><span class="line">      ++left_it;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (*left_it &lt; *right_it) &#123;</span><br><span class="line">      *it = *left_it;</span><br><span class="line">      ++left_it;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      *it = *right_it;</span><br><span class="line">      ++right_it;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 利用 3 次反转，原地合并两个有序序列</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> RandomIt&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">inplace_merge</span><span class="params">(RandomIt first, RandomIt mid, RandomIt last)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">while</span> (first &lt; mid &amp;&amp; mid &lt; last) &#123;</span><br><span class="line">    <span class="keyword">while</span> (first &lt; mid &amp;&amp; *first &lt; *mid) &#123;</span><br><span class="line">      ++first;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">auto</span> index = mid;</span><br><span class="line">    <span class="keyword">while</span> (mid &lt; last &amp;&amp; *mid &lt; *first) &#123;</span><br><span class="line">      ++mid;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">std</span>::reverse(first, index);</span><br><span class="line">    <span class="built_in">std</span>::reverse(index, mid);</span><br><span class="line">    <span class="built_in">std</span>::reverse(first, mid);</span><br><span class="line"></span><br><span class="line">    first += mid - index + <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> RandomIt&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">merge_sort</span><span class="params">(RandomIt first, RandomIt last)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (last - first &lt;= <span class="number">1</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">auto</span> mid = first + (last - first) / <span class="number">2</span>;</span><br><span class="line">  merge_sort(first, mid);</span><br><span class="line">  merge_sort(mid, last);</span><br><span class="line">  inplace_merge(first, mid, last);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="分析-1">2.3. 分析</h3>
+<ul>
+<li>稳定排序算法</li>
+<li>最坏时间复杂度：<span class="math inline">\(O(n \log{n})\)</span></li>
+<li>最优时间复杂度：<span class="math inline">\(O(n \log{n})\)</span></li>
+<li>平均时间复杂度：<span class="math inline">\(O(n \log{n})\)</span></li>
+<li>最坏空间复杂度：共 <span class="math inline">\(O(n)\)</span></li>
+</ul>
+<h2 id="选择排序-selection-sort">3. 选择排序 (Selection Sort)</h2>
+<h3 id="原理-2">3.1. 原理</h3>
+<p>将序列划分为已排序和未排序两个子序列。起始时，已排序序列为空，未排序序列为整个原始序列。依次在未排序序列中找到最小元素，并将其放到已排序序列的末尾，直到未排序序列未空。</p>
+<h3 id="实现-2">3.2. 实现</h3>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> RandomIt&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">selection_sort</span><span class="params">(RandomIt first, RandomIt last)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">auto</span> i = first; i &lt; last - <span class="number">1</span>; ++i) &#123;</span><br><span class="line">    <span class="keyword">auto</span> min_it = i;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">auto</span> j = i; j &lt; last; ++j) &#123;</span><br><span class="line">      <span class="keyword">if</span> (*j &lt; *min_it) &#123;</span><br><span class="line">        min_it = j;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">std</span>::swap(*i, *min_it);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="分析-2">3.3. 分析</h3>
+<ul>
+<li>最坏时间复杂度：<span class="math inline">\(O(n^{2})\)</span></li>
+<li>最优时间复杂度：<span class="math inline">\(O(n^{2})\)</span></li>
+<li>平均时间复杂度：<span class="math inline">\(O(n^{2})\)</span></li>
+<li>最坏空间复杂度：共 <span class="math inline">\(O(n)\)</span>，需要辅助空间 <span class="math inline">\(O(1)\)</span></li>
+</ul>
+<h2 id="插入排序-insertion-sort">4. 插入排序 (Insertion Sort)</h2>
+<h3 id="原理-3">4.1. 原理</h3>
+<p>对于未排序序列中的每个元素，从前向后扫描已排序元素，找到相应位置并将其插入已排序序列。</p>
+<h3 id="实现-3">4.2. 实现</h3>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> RandomIt&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">insertion_sort</span><span class="params">(RandomIt first, RandomIt last)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">auto</span> i = first + <span class="number">1</span>; i &lt; last; ++i) &#123;</span><br><span class="line">    <span class="keyword">auto</span> temp = *i;</span><br><span class="line">    <span class="keyword">auto</span> j = i - <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">for</span> (; first &lt;= j &amp;&amp; temp &lt; *j; --j) &#123;</span><br><span class="line">      *(j + <span class="number">1</span>) = *j;</span><br><span class="line">    &#125;</span><br><span class="line">    *(j + <span class="number">1</span>) = temp;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="分析-3">4.3. 分析</h3>
+<ul>
+<li>最坏时间复杂度：<span class="math inline">\(O(n^{2})\)</span></li>
+<li>最优时间复杂度：<span class="math inline">\(O(n)\)</span></li>
+<li>平均时间复杂度：<span class="math inline">\(O(n^{2})\)</span></li>
+<li>最坏空间复杂度：共 <span class="math inline">\(O(n)\)</span>，需要辅助空间 <span class="math inline">\(O(1)\)</span></li>
+</ul>
+<h2 id="快速排序-quick-sort">5. 快速排序 (Quick Sort)</h2>
+<h3 id="原理-4">5.1. 原理</h3>
+<p>分治法：</p>
+<ol type="1">
+<li>挑选基准值：从序列中挑选出一个 “基准” 元素</li>
+<li>重新排列序列，使得所有比基准元素小的元素都在其左边，比基准元素大的元素都在其右边，此时基准元素已经就位</li>
+<li>递归地排序基准元素左、右两边的子序列</li>
+</ol>
+<p>选取基准的方式：</p>
+<ul>
+<li>固定位置：取序列第一个或最后一个元素作为基准值</li>
+<li>随机选取：随机选取待排序序列中任意一个元素作为基准值</li>
+<li>三数取中：选择最左端、最右端和中间位置三个元素的中值作为基准值</li>
+</ul>
+<p>对于较小的数组，快速排序不如插入排序。</p>
+<h3 id="实现-4">5.2. 实现</h3>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> RandomIt&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">quick_sort</span><span class="params">(RandomIt first, RandomIt last)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (first == last) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">auto</span> pivot = *first;</span><br><span class="line">  <span class="keyword">auto</span> i = first;</span><br><span class="line">  <span class="keyword">auto</span> j = last - <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">while</span> (i &lt; j) &#123;</span><br><span class="line">    <span class="keyword">while</span> (i &lt; j &amp;&amp; *j &gt;= pivot) &#123;</span><br><span class="line">      --j;</span><br><span class="line">    &#125;</span><br><span class="line">    *i = *j;</span><br><span class="line">    <span class="keyword">while</span> (i &lt; j &amp;&amp; *i &lt;= pivot) &#123;</span><br><span class="line">      ++i;</span><br><span class="line">    &#125;</span><br><span class="line">    *j = *i;</span><br><span class="line">  &#125;</span><br><span class="line">  *i = pivot;</span><br><span class="line"></span><br><span class="line">  quick_sort(first, i);</span><br><span class="line">  quick_sort(i + <span class="number">1</span>, last);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="分析-4">5.3. 分析</h3>
+<ul>
+<li>最坏时间复杂度：<span class="math inline">\(\Theta(n^{2})\)</span></li>
+<li>最优时间复杂度：<span class="math inline">\(\Theta(n \log{n})\)</span></li>
+<li>平均时间复杂度：<span class="math inline">\(\Theta(n \log{n})\)</span></li>
+<li>最坏空间复杂度：取决于实现方式</li>
+</ul>
+<h2 id="堆排序-heap-sort">6. 堆排序 (Heap Sort)</h2>
+<h3 id="原理-5">6.1. 原理</h3>
+<p><strong>堆</strong> (Heap)：完全二叉树且满足子节点的值总是小于（或者大于）它的父节点。若父节点的值恒小于等于其子节点的值，则成为最小堆 (Min Heap)；反之，若父节点的值恒大于等于其子节点的值，则成为最大堆 (Max Heap)。</p>
+<p>堆通常使用一维数组实现。当数组的起始索引为 <span class="math inline">\(0\)</span> 时：</p>
+<ul>
+<li>节点 <span class="math inline">\(i\)</span> 的左子节点索引为 <span class="math inline">\(2 i + 1\)</span></li>
+<li>节点 <span class="math inline">\(i\)</span> 的右子节点索引为 <span class="math inline">\(2 i + 2\)</span></li>
+<li>节点 <span class="math inline">\(i\)</span> 的父节点索引为 <span class="math inline">\(\lfloor \frac{i - 1}{2} \rfloor\)</span></li>
+</ul>
+<p>堆排序是利用堆这种数据结构进行排序的方法：首先把序列转换为最大堆，依次从最大堆中取出根节点（将根节点和最后一个节点交换，再把最后一个节点移出堆），并让剩余元素仍维持最大堆的性质。</p>
+<h3 id="实现-5">6.2. 实现</h3>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> RandomIt, <span class="keyword">typename</span> Distance&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">max_heapify</span><span class="params">(RandomIt first, Distance start, Distance end)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">auto</span> parent = start;</span><br><span class="line">  <span class="keyword">auto</span> child = <span class="number">2</span> * parent + <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span> (child &lt; end) &#123;</span><br><span class="line">    <span class="keyword">if</span> (child + <span class="number">1</span> &lt; end &amp;&amp; *(first + child) &lt; *(first + child + <span class="number">1</span>)) &#123;</span><br><span class="line">      ++child;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (*(first + parent) &gt; *(first + child)) &#123;</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">std</span>::swap(*(first + parent), *(first + child));</span><br><span class="line">    parent = child;</span><br><span class="line">    child = <span class="number">2</span> * parent + <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> RandomIt&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">heap_sort</span><span class="params">(RandomIt first, RandomIt last)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 构造最大堆</span></span><br><span class="line">  <span class="keyword">auto</span> len = last - first;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">auto</span> i = len / <span class="number">2</span> - <span class="number">1</span>; i &gt;= <span class="number">0</span>; --i) &#123;</span><br><span class="line">    max_heapify(first, i, len);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 依次取出最大值：交换根节点和最后一个节点，再取出最后一个节点</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">auto</span> i = len - <span class="number">1</span>; i &gt; <span class="number">0</span>; --i) &#123;</span><br><span class="line">    <span class="built_in">std</span>::swap(*first, *(first + i));</span><br><span class="line">    max_heapify(first, <span class="keyword">static_cast</span>&lt;<span class="keyword">decltype</span>(i)&gt;(<span class="number">0</span>), i);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="分析-5">6.3. 分析</h3>
+<ul>
+<li>不稳定排序算法</li>
+<li>最坏时间复杂度：<span class="math inline">\(O(n \log{n})\)</span></li>
+<li>最优时间复杂度：<span class="math inline">\(O(n \log{n})\)</span></li>
+<li>平均时间复杂度：<span class="math inline">\(\Theta(n \log{n})\)</span></li>
+<li>最坏空间复杂度：共 <span class="math inline">\(O(n)\)</span>，需要辅助空间 <span class="math inline">\(O(1)\)</span></li>
+</ul>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+      </categories>
+      <tags>
+        <tag>学习笔记</tag>
+        <tag>数据结构</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>表达式求值问题</title>
+    <url>/2018/10/20/%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B1%82%E5%80%BC%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<h2 id="表达式的表示方法">1. 表达式的表示方法</h2>
+<p>根据表示方法的不同，表达式的一般有三种：前缀（波兰）表达式 (Polish Notation)、中缀表达式以及后缀（逆波兰）表达式 (Reverse Polish Notation, RPN)。</p>
+<a id="more"></a>
+<ul>
+<li><p><strong>前缀表达式</strong>：操作符置于操作数的前面，如 <code>+ 3 4</code> 表示 “三加四”。如果操作符的元数（所需参数或算子的数量）是固定的，则语法上不需要括号也能被无歧义地解析，例如，前缀表达式 <code>* - 5 6 7</code>，即 “五和六的差再乘以七”，由于简单的算术运算符都是二元的，因此该表达式无需括号，也无歧义。</p></li>
+<li><p><strong>中缀表达式</strong>：操作符以中缀形式位于操作数的中间，如 <code>3 + 4</code> 表示 “三加四”。中缀表达式符合我们日常的习惯，但是不容易被电脑解析。</p></li>
+<li><p><strong>后缀表达式</strong>：操作符置于操作数的后面，如 <code>3 4 +</code> 表示 “三加四”、<code>3 2 + 5 *</code> 表示 “三加上二的结果再乘以五”。后缀表示法也不需要括号来标示操作符的优先级。后缀表达式的解析过程是基于堆栈的，其解析过程一般是：操作数入栈；遇到操作符时，操作数出栈，求值，将结果入栈；不断迭代，最终栈顶就是表达式的值。</p></li>
+</ul>
+<p>简单算术的前缀表达式主要用于学术研究方面，而商业计算器几乎不使用这种表达式；中缀表达式是最符合人们思维方式的表达式，也是我们日常书写和输入表达式的方式；后缀表达式的求值过程对于计算机来说是很容易实现，是最符合计算机的处理方式。</p>
+<p>这里主要讨论算术中缀和后缀表达式的求值以及二者间的转换问题。</p>
+<h2 id="中缀表达式直接求值">2. 中缀表达式直接求值</h2>
+<p>中缀表达式的直接求值，最常见的方法是使用两个堆栈：一个用于保存操作数，另一个用于保存操作符。</p>
+<p>首先考虑只有加、减、乘、除四则运算的简单算术表达式： <span class="math display">\[
+3 + 2 \times 5
+\]</span></p>
+<p>在手动计算这个表达式时，由于我们事先知道乘法的优先级高于加法，因此我们会先计算 <span class="math inline">\(2 \times 5 = 10\)</span>，再计算 <span class="math inline">\(3 + 10 = 13\)</span> 得到最终的结果。</p>
+<p>对于计算机来说，由于使用堆栈来计算和保存结果，就需要专门设计入栈和出栈规则。因为四则运算的运算符都是二元运算符，即需要两个操作数才能完成计算，但是由于操作符位于操作数的中间，所以当一个操作符进操作符栈时，该操作符的两个操作数并没有都进入到操作数栈中。因此，只有在后面一个操作符进操作符栈时，前面的一个操作符所作用的两个操作数才会全部进栈。我们来看操作数栈和操作符栈的变化过程：</p>
+<table>
+<thead>
+<tr class="header">
+<th>序号</th>
+<th>操作数栈</th>
+<th>操作符栈</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td><span class="math inline">\(3\)</span></td>
+<td>空</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td><span class="math inline">\(3\)</span></td>
+<td><span class="math inline">\(+\)</span></td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td><span class="math inline">\(3,\ 2\)</span></td>
+<td><span class="math inline">\(+\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>此时，遇到操作符 <span class="math inline">\(\times\)</span>，如果弹出 <span class="math inline">\(3\)</span>、<span class="math inline">\(2\)</span> 以及 <span class="math inline">\(+\)</span> 进行计算，则原表达式就变成了 <span class="math inline">\((3 + 2) \times 5\)</span>，得到错误的结果。由于当前操作符优先级高于操作符栈栈顶元素的优先级，故需要将当前操作赋压入操作符栈，并将当前操作符的操作数也压入栈。</p>
+<table>
+<thead>
+<tr class="header">
+<th>序号</th>
+<th>操作数栈</th>
+<th>操作符栈</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>4</td>
+<td><span class="math inline">\(3,\ 2\)</span></td>
+<td><span class="math inline">\(+,\ \times\)</span></td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td><span class="math inline">\(3,\ 2,\ 5\)</span></td>
+<td><span class="math inline">\(+,\ \times\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>此时，到了表达式的结尾，依次弹出操作数栈顶部的两个元素，再弹出操作符栈顶的元素，进行计算，将计算后的结果压入操作数栈，并不断重复这个过程，直到操作符栈为空，且操作数栈只有一个元素，即表达式的最终结果。</p>
+<table>
+<thead>
+<tr class="header">
+<th>序号</th>
+<th>操作数栈</th>
+<th>操作符栈</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>6</td>
+<td><span class="math inline">\(3,\ 10\)</span></td>
+<td><span class="math inline">\(+\)</span></td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td><span class="math inline">\(13\)</span></td>
+<td>空</td>
+</tr>
+</tbody>
+</table>
+<p>对于带有括号的等更复杂的表达式，其计算过程与上面类似：遇到 <span class="math inline">\((\)</span> 则直接压入操作符栈；遇到 <span class="math inline">\()\)</span> 则一直弹出操作符和对应的操作数，将计算结果再压入操作数栈，重复这个过程直到将 <span class="math inline">\((\)</span> 也弹出。</p>
+<p>中缀表达式的直接求值有一条原则：<font color=#ff4444>当前操作符的优先级高于操作符栈栈顶操作符的优先级时，将当前操作符压入操作符栈；否则，弹出操作符以及对应的操作数进行计算直至栈顶操作符的优先级低于当前操作符，然后将当前操作符压栈。当所有的操作符处理完毕（即操作符栈为空时），操作数栈中剩下的唯一一个元素就是最终表达式的值。</font></p>
+<p>对于常用的算术运算符，<span class="math inline">\(+\)</span> 与 <span class="math inline">\(-\)</span> 的优先级相同；<span class="math inline">\(\times\)</span> 与 <span class="math inline">\(\div\)</span> 的优先级相同，且高于<span class="math inline">\(+\)</span>、<span class="math inline">\(-\)</span> 的优先级；而 <span class="math inline">\(()\)</span> 的优先级最高。此外，还需要根据情况区分 <span class="math inline">\(-\)</span> 是表示负号还是减号：</p>
+<ul>
+<li>若前面为 <span class="math inline">\((\)</span> 或其他运算符，则表示负号</li>
+<li>若前面为 <span class="math inline">\()\)</span> 或数字，则表示减号</li>
+<li>若前面没有字符，即 <span class="math inline">\(-\)</span> 是表达式的开始，则表示负号</li>
+</ul>
+<h2 id="后缀表达式直接求值">3. 后缀表达式直接求值</h2>
+<p>后缀表达式不需要括号来标示操作符的优先级，因此可以直接利用栈来模拟计算：遇到操作数就将其直接压入操作数栈；遇到操作符则弹出操作数栈顶的两个元素进行计算，再将计算结果压入操作数栈；如此循环，直到表达式结尾，操作数栈中唯一的元素就是表达式的结果。</p>
+<h2 id="中缀表达式转换为后缀表达式">4. 中缀表达式转换为后缀表达式</h2>
+<h3 id="利用二叉树转换">4.1. 利用二叉树转换</h3>
+<p>利用二叉树的性质，可以方便地将中缀表达式转换为后缀表达式。首先利用二叉树表示中缀表达式：用叶子节点存储操作数，其他节点存储操作符；再对二叉树进行遍历即可得到后缀表达式。以表达式 <span class="math display">\[
+3 \times 5 + 5 \div 2 + (3 + 5) \times 2
+\]</span> 为例，将其表示成二叉树形式，如下图所示。</p>
+<div data-align="center">
+<img src="https://drive.google.com/uc?export=view&id=1wR-MK17mWAAnw6yypNF6rEzbaoaFGtrI" alt="二叉树形式" width="30%"/>
+</div>
+<p>将中缀表达式表示为二叉树形式的过程如下：</p>
+<ol type="1">
+<li>找出表达式中最后进行运算的操作符，即优先级最低的操作符，作为根节点</li>
+<li>在步骤 1 找出的操作符的左侧部分找出最后进行运算的操作符，作为步骤 1 根节点的左子节点；右侧部分进行同样的操作</li>
+<li>若步骤 1 找出的操作符左侧或右侧部分只含有操作数，不含有操作符，则将该操作数作为对应的叶子节点。</li>
+<li>不断重复上述过程直到二叉树包含表达式的所有操作数和操作符</li>
+</ol>
+<p>建立完毕表达式的二叉树，从叶子节点开始对二叉树进行后序遍历（左子树-&gt;右子树-&gt;根节点），即可得到中缀表达式对应的后缀表达式。</p>
+<h3 id="利用栈转换">4.2. 利用栈转换</h3>
+<p>利用栈将中缀表达式转换为后缀表达式的过程与计算中缀表达式的过程类似，使用一个栈保存操作符，一个数组用于保存转换得到的后缀表达式。其过程如下：</p>
+<ol type="1">
+<li>从头到尾扫描表达式，若遇到操作符，则与操作符栈的栈顶元素比较优先级：如果当前操作符优先级高于栈顶元素的优先级，则压入操作符栈；否则不断弹出操作符栈顶元素添加到结果数组的末尾，直到栈顶元素的优先级低于当前操作符的优先级，将当前操作符压入操作符栈</li>
+<li>若遇到操作数，则直接添加到结果数组的末尾</li>
+<li>若遇到左括号，则压入操作符栈</li>
+<li>若遇到右括号，则依次弹出操作符栈顶元素添加到结果数组的末尾，直到遇到左括号，将左括号弹出操作符栈</li>
+</ol>
+<h3 id="手动转换">4.3. 手动转换</h3>
+<p>通过对表达式的每一部分添加括号，再将操作符移动到对应括号的后面，也可以方便地将中缀表达式转换为后缀表达式。例如中缀表达式 <span class="math display">\[
+(3 + 5 \times 2) - 2 \times 3
+\]</span> 转换过程如下：</p>
+<ol type="1">
+<li>首先对每一部分添加括号，则有 <span class="math inline">\(((3 + (5 \times 2)) - (2 \times 3))\)</span></li>
+<li>将操作符移动到对应括号的后面：<span class="math inline">\(((3\ (5\ 2)\times) + (2\ 3)\times)-\)</span></li>
+<li>最后去掉所有括号，可得对应的后缀表达式 <span class="math inline">\(3\ 5\ 2 \times +\ 2\ 3 \times -\)</span></li>
+</ol>
+<hr />
+<h2 id="参考链接">参考链接</h2>
+<ul>
+<li><a href="https://www.cnblogs.com/dolphin0520/p/3708602.html">中缀表达式求值问题 - 海 子</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+      </categories>
+      <tags>
+        <tag>学习笔记</tag>
+      </tags>
+  </entry>
+</search>

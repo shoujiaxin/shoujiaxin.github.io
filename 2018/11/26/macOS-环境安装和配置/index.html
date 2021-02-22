@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.3.0">
+<meta name="generator" content="Hexo 5.4.0">
+
+
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -13,14 +15,15 @@
 <link rel="stylesheet" href="/css/main.css">
 
 
-<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-<script id="hexo-configurations">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"shoujiaxin.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#EA6E39","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"shoujiaxin.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":true,"color":"#EA6E39","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
   </script>
-
-  <meta name="description" content="又是一波接一波的骚操作把系统搞崩的一天，为了节省今后重装系统配置环境的时间，把各种环境的安装和配置做个记录吧……">
+<meta name="description" content="又是一波接一波的骚操作把系统搞崩的一天，为了节省今后重装系统配置环境的时间，把各种环境的安装和配置做个记录吧……">
 <meta property="og:type" content="article">
 <meta property="og:title" content="macOS 环境安装和配置">
 <meta property="og:url" content="https://shoujiaxin.github.io/2018/11/26/macOS-%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AE/index.html">
@@ -28,15 +31,16 @@
 <meta property="og:description" content="又是一波接一波的骚操作把系统搞崩的一天，为了节省今后重装系统配置环境的时间，把各种环境的安装和配置做个记录吧……">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2018-11-26T09:12:34.000Z">
-<meta property="article:modified_time" content="2021-01-26T10:14:38.855Z">
+<meta property="article:modified_time" content="2021-02-22T11:17:15.485Z">
 <meta property="article:author" content="Jiaxin Shou">
 <meta property="article:tag" content="macOS">
 <meta name="twitter:card" content="summary">
 
+
 <link rel="canonical" href="https://shoujiaxin.github.io/2018/11/26/macOS-%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AE/">
 
 
-<script id="page-configurations">
+<script class="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
@@ -45,8 +49,7 @@
     lang   : 'zh-CN'
   };
 </script>
-
-  <title>macOS 环境安装和配置 | Jiaxin's Blog</title>
+<title>macOS 环境安装和配置 | Jiaxin's Blog</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-127104980-1"></script>
     <script>
@@ -61,53 +64,63 @@
 
 
 
-
-
   <noscript>
   <style>
-  .use-motion .brand,
+  body { margin-top: 2rem; }
+
   .use-motion .menu-item,
-  .sidebar-inner,
+  .use-motion .sidebar,
   .use-motion .post-block,
   .use-motion .pagination,
   .use-motion .comments,
   .use-motion .post-header,
   .use-motion .post-body,
-  .use-motion .collection-header { opacity: initial; }
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
 
   .use-motion .site-title,
-  .use-motion .site-subtitle {
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
     opacity: initial;
     top: initial;
   }
 
-  .use-motion .logo-line-before i { left: initial; }
-  .use-motion .logo-line-after i { right: initial; }
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
   </style>
 </noscript>
 
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage">
-  <div class="container use-motion">
-    <div class="headband"></div>
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
 
+  <main class="main">
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
   <div class="site-nav-toggle">
-    <div class="toggle" aria-label="切换导航栏">
-      <span class="toggle-line toggle-line-first"></span>
-      <span class="toggle-line toggle-line-middle"></span>
-      <span class="toggle-line toggle-line-last"></span>
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
     </div>
   </div>
 
   <div class="site-meta">
 
     <a href="/" class="brand" rel="start">
-      <span class="logo-line-before"><i></i></span>
+      <i class="logo-line"></i>
       <h1 class="site-title">Jiaxin's Blog</h1>
-      <span class="logo-line-after"><i></i></span>
+      <i class="logo-line"></i>
     </a>
   </div>
 
@@ -120,29 +133,12 @@
 
 
 
-
 <nav class="site-nav">
-  <ul id="menu" class="main-menu menu">
-        <li class="menu-item menu-item-home">
-
-    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
-
-  </li>
-        <li class="menu-item menu-item-tags">
-
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">12</span></a>
-
-  </li>
-        <li class="menu-item menu-item-categories">
-
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">4</span></a>
-
-  </li>
-        <li class="menu-item menu-item-archives">
-
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">12</span></a>
-
-  </li>
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">12</span></a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">4</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">12</span></a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -153,23 +149,22 @@
 
 
   <div class="search-pop-overlay">
-    <div class="popup search-popup">
-        <div class="search-header">
+    <div class="popup search-popup"><div class="search-header">
   <span class="search-icon">
     <i class="fa fa-search"></i>
   </span>
   <div class="search-input-container">
-    <input autocomplete="off" autocapitalize="off"
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
            placeholder="搜索..." spellcheck="false"
            type="search" class="search-input">
   </div>
-  <span class="popup-btn-close">
+  <span class="popup-btn-close" role="button">
     <i class="fa fa-times-circle"></i>
   </span>
 </div>
-<div id="search-result">
-  <div id="no-result">
-    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
   </div>
 </div>
 
@@ -177,28 +172,115 @@
   </div>
 
 </div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#xcode"><span class="nav-number">1.</span> <span class="nav-text">Xcode</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-number">1.1.</span> <span class="nav-text">安装</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#homebrew"><span class="nav-number">2.</span> <span class="nav-text">Homebrew</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-1"><span class="nav-number">2.1.</span> <span class="nav-text">安装</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#homebrew-cask"><span class="nav-number">3.</span> <span class="nav-text">Homebrew Cask</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-2"><span class="nav-number">3.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-number">3.2.</span> <span class="nav-text">配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#python"><span class="nav-number">4.</span> <span class="nav-text">Python</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-3"><span class="nav-number">4.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE-1"><span class="nav-number">4.2.</span> <span class="nav-text">配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8"><span class="nav-number">4.3.</span> <span class="nav-text">使用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#latex"><span class="nav-number">5.</span> <span class="nav-text">LaTeX</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#zsh"><span class="nav-number">6.</span> <span class="nav-text">Zsh</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E6%8D%A2%E9%BB%98%E8%AE%A4-shell"><span class="nav-number">6.1.</span> <span class="nav-text">切换默认 Shell</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AE-oh-my-zsh"><span class="nav-number">6.2.</span> <span class="nav-text">安装和配置 Oh My Zsh</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E6%8D%A2%E4%B8%BB%E9%A2%98%E5%92%8C%E8%83%8C%E6%99%AF"><span class="nav-number">6.3.</span> <span class="nav-text">更换主题和背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E6%8F%92%E4%BB%B6"><span class="nav-number">6.4.</span> <span class="nav-text">安装插件</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jiaxin Shou"
+      src="https://drive.google.com/uc?export=view&id=1TclFU5uu2Ole6scPy9kTzGSTYvs_7mUY">
+  <p class="site-author-name" itemprop="name">Jiaxin Shou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/shoujiaxin" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;shoujiaxin" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:shoujiaxin@gmail.com" title="E-Mail → mailto:shoujiaxin@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Sjx_96" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Sjx_96" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://instagram.com/shoujiaxin" title="Instagram → https:&#x2F;&#x2F;instagram.com&#x2F;shoujiaxin" rel="noopener" target="_blank"><i class="fab fa-instagram fa-fw"></i>Instagram</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
     </header>
 
     
-  <div class="back-to-top">
+  <div class="back-to-top" role="button">
     <i class="fa fa-arrow-up"></i>
     <span>0%</span>
   </div>
+  <div class="reading-progress-bar"></div>
   <a role="button" class="book-mark-link book-mark-link-fixed"></a>
 
+  <a href="https://github.com/shoujiaxin" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
 
-    <main class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
 
-          <div class="content post posts-expand">
-            
 
-    
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://shoujiaxin.github.io/2018/11/26/macOS-%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -215,54 +297,42 @@
           macOS 环境安装和配置
         </h1>
 
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-11-26 17:12:34" itemprop="dateCreated datePublished" datetime="2018-11-26T17:12:34+08:00">2018-11-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-26 18:14:38" itemprop="dateModified" datetime="2021-01-26T18:14:38+08:00">2021-01-26</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Mac-%E7%9A%84%E4%BD%BF%E7%94%A8%E6%97%A5%E5%B8%B8/" itemprop="url" rel="index"><span itemprop="name">Mac 的使用日常</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2018/11/26/macOS-%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AE/" class="post-meta-item leancloud_visitors" data-flag-title="macOS 环境安装和配置" title="阅读次数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
       <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
+        <i class="far fa-calendar"></i>
       </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2018/11/26/macOS-%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AE/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2018/11/26/macOS-%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AE/" itemprop="commentCount"></span>
-    </a>
-  </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-11-26 17:12:34" itemprop="dateCreated datePublished" datetime="2018-11-26T17:12:34+08:00">2018-11-26</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-02-22 19:17:15" itemprop="dateModified" datetime="2021-02-22T19:17:15+08:00">2021-02-22</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Mac-%E7%9A%84%E4%BD%BF%E7%94%A8%E6%97%A5%E5%B8%B8/" itemprop="url" rel="index"><span itemprop="name">Mac 的使用日常</span></a>
+        </span>
+    </span>
+
   
-  
+    <span id="/2018/11/26/macOS-%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AE/" class="post-meta-item leancloud_visitors" data-flag-title="macOS 环境安装和配置" title="阅读次数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span class="leancloud-visitors-count"></span>
+    </span>
+</div>
 
         </div>
       </header>
@@ -271,10 +341,8 @@
     
     
     <div class="post-body" itemprop="articleBody">
-
-      
         <p>又是一波接一波的骚操作把系统搞崩的一天，为了节省今后重装系统配置环境的时间，把各种环境的安装和配置做个记录吧……</p>
-<a id="more"></a>
+<span id="more"></span>
 <hr />
 <h2 id="xcode">Xcode</h2>
 <h3 id="安装">安装</h3>
@@ -286,7 +354,8 @@
 </blockquote>
 <p>算是强迫症必备吧</p>
 <h3 id="安装-1">安装</h3>
-<h2 id="section"><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/bin/ruby -e &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)&quot;</span><br></pre></td></tr></table></figure></h2>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/bin/ruby -e &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)&quot;</span><br></pre></td></tr></table></figure>
+<hr />
 <h2 id="homebrew-cask"><a target="_blank" rel="noopener" href="https://formulae.brew.sh/cask/">Homebrew Cask</a></h2>
 <blockquote>
 <p>"To install, drag this icon…" no more!</p>
@@ -322,8 +391,9 @@
 <li><p>进入 &amp; 退出环境</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">conda activate &lt;name&gt;  # 进入名为 name 的环境，或者使用 source activate &lt;name&gt;</span><br><span class="line">conda deactivate       # 退出当前环境，或者使用 source deactivate</span><br></pre></td></tr></table></figure></li>
 <li><p>安装包（默认安装到当前环境，如果没有进入任何环境，则安装到 base 中）</p>
-<h2 id="section-1"><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda install &lt;package&gt;</span><br></pre></td></tr></table></figure></h2></li>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda install &lt;package&gt;</span><br></pre></td></tr></table></figure></li>
 </ul>
+<hr />
 <h2 id="latex">LaTeX</h2>
 <p>配置 LaTeX 的环境是最头疼的……经过我的多次尝（作）试（死），总算摸索出正确的姿势……那就是用 Docker。首先 Homebrew 安装 Docker</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew cask install docker</span><br></pre></td></tr></table></figure>
@@ -363,7 +433,7 @@
 <p>目前 (2019-02-27) 如果按照官方的安装步骤，tap 了 caskroom/fonts，在执行 <code>brew update</code> 时会报错，猜测是因为 Homebrew 更新后 Homebrew Cask 已经包含了各种字体，所以可以直接安装，也可以在安装完成以后 untap 一下。</p>
 <p>字体安装完成修改 <code>~/.zshrc</code></p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">POWERLEVEL9K_MODE=&#x27;nerdfont-complete&#x27;</span><br><span class="line">POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context dir dir_writable vcs)</span><br><span class="line">POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status background_jobs history time)</span><br><span class="line">DEFAULT_USER=&quot;&lt;username&gt;&quot;</span><br></pre></td></tr></table></figure>
-<p>可以完成字体配置和各种自定义。其中，<code>POWERLEVEL9K_LEFT_PROMPT_ELEMENTS</code> 控制终端左侧显示内容：<code>dir</code> 显示当前路径、<code>dir_writable</code> 在当前路径没有写权限时会显示一个🔒、<code>vcs</code> 则是显示版本控制；<code>POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS</code> 控制终端右侧显示内容：<code>status</code> 命令返回的状态、<code>history</code> 历史记录数以及 <code>time</code> 时间等；设置 <code>DEFAULT_USER</code> 可以隐藏登录该用户时终端左侧显示的用户名。</p>
+<p>可以完成字体配置和各种自定义。其中，<code>POWERLEVEL9K_LEFT_PROMPT_ELEMENTS</code> 控制终端左侧显示内容：<code>dir</code> 显示当前路径、<code>dir_writable</code> 在当前路径没有写权限时会显示一个 🔒、<code>vcs</code> 则是显示版本控制；<code>POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS</code> 控制终端右侧显示内容：<code>status</code> 命令返回的状态、<code>history</code> 历史记录数以及 <code>time</code> 时间等；设置 <code>DEFAULT_USER</code> 可以隐藏登录该用户时终端左侧显示的用户名。</p>
 <h3 id="安装插件">安装插件</h3>
 <ul>
 <li><p><a target="_blank" rel="noopener" href="https://github.com/zsh-users/zsh-autosuggestions">zsh-autosuggestions</a> 终端输入</p>
@@ -380,37 +450,34 @@
     
     
 
-      <footer class="post-footer">
+    <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/macOS/" rel="tag"># macOS</a>
+              <a href="/tags/macOS/" rel="tag"><i class="fa fa-tag"></i> macOS</a>
           </div>
 
         
 
-
-        
-    <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2018/10/20/%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B1%82%E5%80%BC%E9%97%AE%E9%A2%98/" rel="prev" title="表达式求值问题">
-      <i class="fa fa-chevron-left"></i> 表达式求值问题
-    </a></div>
-      <div class="post-nav-item">
-    <a href="/2018/12/02/%E5%B0%86-Windows-%E4%B8%8A%E7%9A%84%E6%89%93%E5%8D%B0%E6%9C%BA%E5%85%B1%E4%BA%AB%E4%B8%BA-AirPrint/" rel="next" title="将 Windows 上的打印机共享为 AirPrint">
-      将 Windows 上的打印机共享为 AirPrint <i class="fa fa-chevron-right"></i>
-    </a></div>
-    </div>
-      </footer>
-    
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/10/20/%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B1%82%E5%80%BC%E9%97%AE%E9%A2%98/" rel="prev" title="表达式求值问题">
+                  <i class="fa fa-chevron-left"></i> 表达式求值问题
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/12/02/%E5%B0%86-Windows-%E4%B8%8A%E7%9A%84%E6%89%93%E5%8D%B0%E6%9C%BA%E5%85%B1%E4%BA%AB%E4%B8%BA-AirPrint/" rel="next" title="将 Windows 上的打印机共享为 AirPrint">
+                  将 Windows 上的打印机共享为 AirPrint <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
   </article>
-  
-  
-  
+</div>
 
 
 
-          </div>
-          
-    <div class="comments" id="valine-comments"></div>
+
+
+
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -419,7 +486,7 @@
       activeClass = localStorage.getItem('comments_active') || activeClass;
     }
     if (activeClass) {
-      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
       if (activeTab) {
         activeTab.click();
       }
@@ -428,123 +495,46 @@
   if (CONFIG.comments.storage) {
     window.addEventListener('tabs:click', event => {
       if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
-      let commentClass = event.target.classList[1];
+      const commentClass = event.target.classList[1];
       localStorage.setItem('comments_active', commentClass);
     });
   }
 </script>
-
-        </div>
-          
-  
-  <div class="toggle sidebar-toggle">
-    <span class="toggle-line toggle-line-first"></span>
-    <span class="toggle-line toggle-line-middle"></span>
-    <span class="toggle-line toggle-line-last"></span>
-  </div>
-
-  <aside class="sidebar">
-    <div class="sidebar-inner">
-
-      <ul class="sidebar-nav motion-element">
-        <li class="sidebar-nav-toc">
-          文章目录
-        </li>
-        <li class="sidebar-nav-overview">
-          站点概览
-        </li>
-      </ul>
-
-      <!--noindex-->
-      <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#xcode"><span class="nav-text">Xcode</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-text">安装</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#homebrew"><span class="nav-text">Homebrew</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-1"><span class="nav-text">安装</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#section"><span class="nav-text">1
-&#x2F;usr&#x2F;bin&#x2F;ruby -e &quot;$(curl -fsSL https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;Homebrew&#x2F;install&#x2F;master&#x2F;install)&quot;
-</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#homebrew-cask"><span class="nav-text">Homebrew Cask</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-2"><span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-text">配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#python"><span class="nav-text">Python</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-3"><span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE-1"><span class="nav-text">配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8"><span class="nav-text">使用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#section-1"><span class="nav-text">1
-conda install &lt;package&gt;
-</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#latex"><span class="nav-text">LaTeX</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#zsh"><span class="nav-text">Zsh</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E6%8D%A2%E9%BB%98%E8%AE%A4-shell"><span class="nav-text">切换默认 Shell</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AE-oh-my-zsh"><span class="nav-text">安装和配置 Oh My Zsh</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E6%8D%A2%E4%B8%BB%E9%A2%98%E5%92%8C%E8%83%8C%E6%99%AF"><span class="nav-text">更换主题和背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E6%8F%92%E4%BB%B6"><span class="nav-text">安装插件</span></a></li></ol></li></ol></div>
-      </div>
-      <!--/noindex-->
-
-      <div class="site-overview-wrap sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <img class="site-author-image" itemprop="image" alt="Jiaxin Shou"
-      src="https://drive.google.com/uc?export=view&id=1TclFU5uu2Ole6scPy9kTzGSTYvs_7mUY">
-  <p class="site-author-name" itemprop="name">Jiaxin Shou</p>
-  <div class="site-description" itemprop="description"></div>
 </div>
-<div class="site-state-wrap motion-element">
-  <nav class="site-state">
-      <div class="site-state-item site-state-posts">
-          <a href="/archives/">
-        
-          <span class="site-state-item-count">12</span>
-          <span class="site-state-item-name">日志</span>
-        </a>
-      </div>
-      <div class="site-state-item site-state-categories">
-            <a href="/categories/">
-          
-        <span class="site-state-item-count">4</span>
-        <span class="site-state-item-name">分类</span></a>
-      </div>
-      <div class="site-state-item site-state-tags">
-            <a href="/tags/">
-          
-        <span class="site-state-item-count">12</span>
-        <span class="site-state-item-name">标签</span></a>
-      </div>
-  </nav>
-</div>
-  <div class="links-of-author motion-element">
-      <span class="links-of-author-item">
-        <a href="https://github.com/shoujiaxin" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;shoujiaxin" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="mailto:shoujiaxin@gmail.com" title="E-Mail → mailto:shoujiaxin@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="https://twitter.com/Sjx_96" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Sjx_96" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="https://instagram.com/shoujiaxin" title="Instagram → https:&#x2F;&#x2F;instagram.com&#x2F;shoujiaxin" rel="noopener" target="_blank"><i class="fab fa-instagram fa-fw"></i>Instagram</a>
-      </span>
-  </div>
+  </main>
 
+  <footer class="footer">
+    <div class="footer-inner">
 
-
-      </div>
-
-    </div>
-  </aside>
-  <div id="sidebar-dimmer"></div>
-
-
-      </div>
-    </main>
-
-    <footer class="footer">
-      <div class="footer-inner">
-        
-
-        
 
 <div class="copyright">
-  
   &copy; 2018 – 
   <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
-    <i class="far fa-user"></i>
+    <i class="fa fa-heart"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">Jiaxin Shou</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
 
-        
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+<script src="/js/local-search.js"></script>
 
 
 
 
+
+
+  
 
 
 <script>
@@ -555,15 +545,15 @@ conda install &lt;package&gt;
     }
 
     function addCount(Counter) {
-      var visitors = document.querySelector('.leancloud_visitors');
-      var url = decodeURI(visitors.id);
-      var title = visitors.dataset.flagTitle;
+      const visitors = document.querySelector('.leancloud_visitors');
+      const url = decodeURI(visitors.id);
+      const title = visitors.dataset.flagTitle;
 
       Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
         .then(response => response.json())
         .then(({ results }) => {
           if (results.length > 0) {
-            var counter = results[0];
+            const counter = results[0];
             leancloudSelector(url).innerText = counter.time + 1;
             Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
               .catch(error => {
@@ -581,8 +571,8 @@ conda install &lt;package&gt;
     }
 
     function showTime(Counter) {
-      var visitors = document.querySelectorAll('.leancloud_visitors');
-      var entries = [...visitors].map(element => {
+      const visitors = document.querySelectorAll('.leancloud_visitors');
+      const entries = [...visitors].map(element => {
         return decodeURI(element.id);
       });
 
@@ -590,7 +580,7 @@ conda install &lt;package&gt;
         .then(response => response.json())
         .then(({ results }) => {
           for (let url of entries) {
-            let target = results.find(item => item.url === url);
+            const target = results.find(item => item.url === url);
             leancloudSelector(url).innerText = target ? target.time : 0;
           }
         })
@@ -599,9 +589,9 @@ conda install &lt;package&gt;
         });
     }
 
-    let { app_id, app_key, server_url } = {"enable":true,"app_id":"XbcFfHEXn1luNOnUrtizHfzW-MdYXbMMI","app_key":"JbKohvPsKEYaHgjNSvRfcOIn","server_url":null,"security":true};
+    const { app_id, app_key, server_url } = {"enable":true,"app_id":"XbcFfHEXn1luNOnUrtizHfzW-MdYXbMMI","app_key":"JbKohvPsKEYaHgjNSvRfcOIn","server_url":null,"security":true};
     function fetchData(api_server) {
-      var Counter = (method, url, data) => {
+      const Counter = (method, url, data) => {
         return fetch(`${api_server}/1.1${url}`, {
           method,
           headers: {
@@ -620,7 +610,7 @@ conda install &lt;package&gt;
       }
     }
 
-    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+    const api_server = app_id.slice(-9) === '-MdYXbMMI' ? `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com` : server_url;
 
     if (api_server) {
       fetchData(api_server);
@@ -635,86 +625,8 @@ conda install &lt;package&gt;
 </script>
 
 
-      </div>
-    </footer>
-  </div>
-
-  
-  <script src="/lib/anime.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
-  <script src="/lib/velocity/velocity.min.js"></script>
-  <script src="/lib/velocity/velocity.ui.min.js"></script>
-
-<script src="/js/utils.js"></script>
-
-<script src="/js/motion.js"></script>
-
-
-<script src="/js/schemes/pisces.js"></script>
-
-
-<script src="/js/next-boot.js"></script>
-
-<script src="/js/bookmark.js"></script>
-
-
-
-
   
 
-
-
-
-  
-<script src="/js/local-search.js"></script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-  
-
-  
-
-
-<script>
-NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
-  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
-    var GUEST = ['nick', 'mail', 'link'];
-    var guest = 'nick,mail';
-    guest = guest.split(',').filter(item => {
-      return GUEST.includes(item);
-    });
-    new Valine({
-      el         : '#valine-comments',
-      verify     : false,
-      notify     : false,
-      appId      : 'XbcFfHEXn1luNOnUrtizHfzW-MdYXbMMI',
-      appKey     : 'JbKohvPsKEYaHgjNSvRfcOIn',
-      placeholder: "Just go go",
-      avatar     : 'retro',
-      meta       : guest,
-      pageSize   : '10' || 10,
-      visitor    : false,
-      lang       : '' || 'zh-cn',
-      path       : location.pathname,
-      recordIP   : false,
-      serverURLs : ''
-    });
-  }, window.Valine);
-});
-</script>
 
 </body>
 </html>

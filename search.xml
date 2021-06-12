@@ -1187,6 +1187,93 @@ z &amp; = \cos{\frac{\alpha}{2}} \cos{\frac{\beta}{2}} \sin{\frac{\gamma}{2}} + 
       </tags>
   </entry>
   <entry>
+    <title>搬砖笔记 (1) —— ECS 架构</title>
+    <url>/2021/06/12/%E6%90%AC%E7%A0%96%E7%AC%94%E8%AE%B0-1-%E2%80%94%E2%80%94-ECS-%E6%9E%B6%E6%9E%84/</url>
+    <content><![CDATA[<p>打工人搬砖入门第一课 —— ECS 架构。</p>
+<span id="more"></span>
+<p>ECS (<a href="https://en.wikipedia.org/wiki/Entity_component_system">Entity-Component-System</a>) 即实体-组件-系统，是一种软件架构模式，遵循组合优于继承 (<a href="https://en.wikipedia.org/wiki/Composition_over_inheritance">Composition Over Inheritance</a>) 原则，主要用于游戏开发。在 ECS 架构中，场景内的每个对象（如敌人、子弹、车辆等）都是一个实体 (Entity)，每个实体都由一个或多个包含数据（状态）的组件 (Component) 组成，架构允许灵活地定义、添加和删除实体，避免了难以理解、维护和扩展的继承层次造成的模糊性问题。</p>
+<h2 id="组合优于继承">组合优于继承</h2>
+<p>要了解 ECS 架构的概念以及为什么要使用这种模式，首先要从组合优于继承原则讲起。</p>
+<p>面向对象程序设计 (OOP) 中的组合优于继承是指类应该倾向于通过组合，即包含实现所需功能的其他类的实例，而非从基类继承来实现多态行为和代码复用。</p>
+<p>定义表示系统所具有行为的接口 (Interface) 是实现组合优于继承的基础，接口实现多态行为，而实现指定接口的类根据需要被添加到业务领域类 (Business Domain Classes) 中。通常情况下，业务领域类都是基类，无需任何继承，系统行为的替代实现通过另一个实现所需行为的接口来完成。包含对接口引用的类可以将对该接口实现的选择推迟到运行时。</p>
+<p>以 C++ 为例，分别采用继承和组合的方式实现一个简单的系统，可以很容易地看出使用组合而非继承带来的好处。</p>
+<h3 id="继承">继承</h3>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Object</span> &#123;</span></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">draw</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">collide</span><span class="params">(Object objects[])</span> </span>&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Visible</span> :</span> <span class="keyword">public</span> Object &#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">draw</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">    <span class="comment">// draw</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Movable</span> :</span> <span class="keyword">public</span> Object &#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">    <span class="comment">// update</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>以上定义了系统的两个接口，此时，可定义实现对应接口的业务领域类，如：</p>
+<ul>
+<li>类 <code>Player</code>：是 <code>Visible</code> 且 <code>Movable</code>，即可见且可移动</li>
+<li>类 <code>Building</code>：是 <code>Visible</code> 但不是 <code>Movable</code>，即可见但不可移动</li>
+</ul>
+<p>C++ 虽然支持多重继承，但十分复杂，且使用多重继承是一个具有很大风险的行为，可能导致钻石问题 (<a href="https://en.wikipedia.org/wiki/Multiple_inheritance#The_diamond_problem">Diamond Problem</a>)。</p>
+<p>若要避免使用多重继承，则需要额外定义如 <code>VisibleAndMovable</code>、<code>VisibleButNotMovable</code> 等这样的组合接口。但是，当接口很多时，此类组合将会导致大量重复的代码，难以维护和扩展。</p>
+<h3 id="组合">组合</h3>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">VisibilityDelegate</span> &#123;</span></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">draw</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Visible</span> :</span> <span class="keyword">public</span> VisibilityDelegate &#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">draw</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">    <span class="comment">// draw</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NotVisible</span> :</span> <span class="keyword">public</span> VisibilityDelegate &#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">draw</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">    <span class="comment">// do nothing</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UpdateDelegate</span> &#123;</span></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Movable</span> :</span> <span class="keyword">public</span> UpdateDelegate &#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">    <span class="comment">// update</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NotMovable</span> :</span> <span class="keyword">public</span> UpdateDelegate &#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">    <span class="comment">// do nothing</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>利用以上定义的几个接口的组合，同样可以实现之前的系统：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Object</span> &#123;</span></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  Object(VisibilityDelegate* v, UpdateDelegate* u) : v_(v), u_(u) &#123;&#125;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">draw</span><span class="params">()</span> </span>&#123; v_-&gt;draw(); &#125;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">update</span><span class="params">()</span> </span>&#123; u_-&gt;update(); &#125;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  VisibilityDelegate* v_;</span><br><span class="line">  UpdateDelegate* u_;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Player</span> &#123;</span></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  Player() : Object(<span class="keyword">new</span> Visible(), <span class="keyword">new</span> Movable()) &#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Building</span> &#123;</span></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  Building() : Object(<span class="keyword">new</span> Visible(), <span class="keyword">new</span> NotMovable()) &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="优点">优点</h3>
+<ul>
+<li><p>赋予设计更高的灵活性</p></li>
+<li><p>通过组件组合类比寻找类的共性并建立继承关系更自然、简单</p></li>
+<li><p>组合一个对象的能力比扩展一个对象本身更好</p>
+<blockquote>
+<p>It is better to compose what an object can do (HAS-A) than extend what it is (IS-A)</p>
+</blockquote></li>
+<li><p>可以适应未来需求的变化，避免继承模型在需求变化时需要对业务领域类进行彻底重组</p></li>
+<li><p>组合关系更加灵活，可在运行时改变；继承关系是静态的，许多语言需要重新编译</p></li>
+</ul>
+<h3 id="缺点">缺点</h3>
+<ul>
+<li>继承模型中，派生类只需要实现（覆盖）于基类方法具有不同行为的方法；而 ECS 架构中，由单个组件提供的方法可能必须在派生类型中实现，即使只是转发方法</li>
+</ul>
+<h2 id="ecs-的基本概念">ECS 的基本概念</h2>
+<p>2007 年，制作 Operation Flashpoint: Dragon Rising 的团队尝试了 ECS 架构。此后，Adam Martin 写了一篇关于 ECS 设计的<a href="https://www.notion.so/ECS-535a35842c404c888ff7c812e6030de4#1f69ee65f2d84e44ab0fab6256ad6660">详细说明</a>，包括核心术语和概念定义，特别提出了系统作为一等元素、实体作为 ID、组件作为原始数据、代码存储在系统而非组件或实体中等观点。</p>
+<p>2015 年，苹果公司推出了用于 iOS、macOS 和 tvOS 的游戏开发框架 GameplayKit，其中包含了 ECS 架构的实现。</p>
+<p><img src="https://drive.google.com/uc?export=view&id=1PFwRZ_Gvc3SgI9cB6q1a-8SfBBpCmpZ3" alt="ECS 架构"></p>
+<p>ECS 架构如上图所示，下面分别介绍实体、组件和系统的概念。</p>
+<h3 id="实体-entity">实体 (Entity)</h3>
+<p>实体是一个抽象的概念，用来表示通用的对象，是一系列表示该实体所具有能力的组件的集合。在代码实现中，实体通常使用一个整型 ID 来表示，该实体所具有的所有组件都会被这个 ID 标记，且在运行过程中，可以动态地为实体添加或删除组件。</p>
+<p>样例：</p>
+<ul>
+<li><code>Player(Sprite, Position, Velocity, Health)</code></li>
+<li><code>Tree(Sprite, Position)</code></li>
+</ul>
+<h3 id="组件-component">组件 (Component)</h3>
+<p>组件是对象某一个特性的原始数据（状态），拥有某个组件即表示实体具有这个特性或能力。在代码中通常使用结构体、类或关联数组实现。</p>
+<p>样例：</p>
+<ul>
+<li><code>Position(x, y)</code></li>
+<li><code>Velocity(x, y)</code></li>
+<li><code>Health(value)</code></li>
+</ul>
+<h3 id="系统-system">系统 (System)</h3>
+<p>系统是一个连续运行的、对拥有与该系统相同组件的每个实体执行全局操作的工具，通常只有行为（方法），不包含状态（数据）。</p>
+<p>样例：</p>
+<ul>
+<li><code>MoveSystem(Position, Velocity)</code></li>
+<li><code>RenderSystem(Sprite, Position)</code></li>
+</ul>
+<h2 id="实战-entityx">实战 —— <a href="https://github.com/alecthomas/entityx">EntityX</a></h2>
+<h3 id="创建组件">创建组件</h3>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Position</span> &#123;</span></span><br><span class="line">  Position(<span class="keyword">double</span> x = <span class="number">0</span>, <span class="keyword">double</span> y = <span class="number">0</span>) : x(x), y(y) &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">double</span> x;</span><br><span class="line">  <span class="keyword">double</span> y;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="给实体添加组件">给实体添加组件</h3>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">entity.assign&lt;Position&gt;(<span class="number">1.0</span>, <span class="number">2.0</span>);</span><br></pre></td></tr></table></figure>
+<h3 id="获取拥有特定组件的实体">获取拥有特定组件的实体</h3>
+<p>函数式：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">entities.each&lt;Position, Direction&gt;([](Entity entity, Position &amp;position,</span><br><span class="line">                                      Direction &amp;direction) &#123;</span><br><span class="line">  <span class="comment">// Do things with entity, position and direction.</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>迭代器方式：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">ComponentHandle&lt;Position&gt; position;</span><br><span class="line">ComponentHandle&lt;Direction&gt; direction;</span><br><span class="line"><span class="keyword">for</span> (Entity entity : entities.entities_with_components(position, direction)) &#123;</span><br><span class="line">  <span class="comment">// Do things with entity, position and direction.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="获取实体的某个组件">获取实体的某个组件</h3>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">ComponentHandle&lt;Position&gt; position = entity.component&lt;Position&gt;();</span><br><span class="line"><span class="keyword">if</span> (position) &#123;</span><br><span class="line">  <span class="comment">// Do stuff with position</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+      </categories>
+      <tags>
+        <tag>学习笔记</tag>
+        <tag>ECS</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>操作系统笔记 (1) —— 进程和线程</title>
     <url>/2020/03/04/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AC%94%E8%AE%B0-1-%E2%80%94%E2%80%94-%E8%BF%9B%E7%A8%8B%E5%92%8C%E7%BA%BF%E7%A8%8B/</url>
     <content><![CDATA[<h2 id="进程-process">进程 (Process)</h2>

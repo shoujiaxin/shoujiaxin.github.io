@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;shoujiaxin.github.io&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.5.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:true,&quot;bookmark&quot;:{&quot;enable&quot;:true,&quot;color&quot;:&quot;#EA6E39&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:true,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;},&quot;path&quot;:&quot;&#x2F;search.xml&quot;,&quot;localsearch&quot;:{&quot;enable&quot;:true,&quot;trigger&quot;:&quot;auto&quot;,&quot;top_n_per_article&quot;:1,&quot;unescape&quot;:false,&quot;preload&quot;:false}}</script><script src="/js/config.js"></script>
+<meta name="description" content="打工人搬砖入门第一课 —— ECS 架构。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="搬砖笔记 (1) —— ECS 架构">
+<meta property="og:url" content="https://shoujiaxin.github.io/2021/06/12/%E6%90%AC%E7%A0%96%E7%AC%94%E8%AE%B0-1-%E2%80%94%E2%80%94-ECS-%E6%9E%B6%E6%9E%84/index.html">
+<meta property="og:site_name" content="Jiaxin&#39;s Blog">
+<meta property="og:description" content="打工人搬砖入门第一课 —— ECS 架构。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://drive.google.com/uc?export=view&id=1PFwRZ_Gvc3SgI9cB6q1a-8SfBBpCmpZ3">
+<meta property="article:published_time" content="2021-06-12T07:58:00.000Z">
+<meta property="article:modified_time" content="2021-06-12T09:13:43.479Z">
+<meta property="article:author" content="Jiaxin Shou">
+<meta property="article:tag" content="学习笔记">
+<meta property="article:tag" content="ECS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://drive.google.com/uc?export=view&id=1PFwRZ_Gvc3SgI9cB6q1a-8SfBBpCmpZ3">
+
+
+<link rel="canonical" href="https://shoujiaxin.github.io/2021/06/12/%E6%90%AC%E7%A0%96%E7%AC%94%E8%AE%B0-1-%E2%80%94%E2%80%94-ECS-%E6%9E%B6%E6%9E%84/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;shoujiaxin.github.io&#x2F;2021&#x2F;06&#x2F;12&#x2F;%E6%90%AC%E7%A0%96%E7%AC%94%E8%AE%B0-1-%E2%80%94%E2%80%94-ECS-%E6%9E%B6%E6%9E%84&#x2F;&quot;,&quot;path&quot;:&quot;2021&#x2F;06&#x2F;12&#x2F;搬砖笔记-1-——-ECS-架构&#x2F;&quot;,&quot;title&quot;:&quot;搬砖笔记 (1) —— ECS 架构&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>搬砖笔记 (1) —— ECS 架构 | Jiaxin's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-127104980-1"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{&quot;tracking_id&quot;:&quot;UA-127104980-1&quot;,&quot;only_pageview&quot;:false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Jiaxin's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">13</span></a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">4</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">13</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%84%E5%90%88%E4%BC%98%E4%BA%8E%E7%BB%A7%E6%89%BF"><span class="nav-number">1.</span> <span class="nav-text">组合优于继承</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%A7%E6%89%BF"><span class="nav-number">1.1.</span> <span class="nav-text">继承</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%84%E5%90%88"><span class="nav-number">1.2.</span> <span class="nav-text">组合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%98%E7%82%B9"><span class="nav-number">1.3.</span> <span class="nav-text">优点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%BA%E7%82%B9"><span class="nav-number">1.4.</span> <span class="nav-text">缺点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ecs-%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">2.</span> <span class="nav-text">ECS 的基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E4%BD%93-entity"><span class="nav-number">2.1.</span> <span class="nav-text">实体 (Entity)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%84%E4%BB%B6-component"><span class="nav-number">2.2.</span> <span class="nav-text">组件 (Component)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F-system"><span class="nav-number">2.3.</span> <span class="nav-text">系统 (System)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E6%88%98-entityx"><span class="nav-number">3.</span> <span class="nav-text">实战 —— EntityX</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E7%BB%84%E4%BB%B6"><span class="nav-number">3.1.</span> <span class="nav-text">创建组件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%99%E5%AE%9E%E4%BD%93%E6%B7%BB%E5%8A%A0%E7%BB%84%E4%BB%B6"><span class="nav-number">3.2.</span> <span class="nav-text">给实体添加组件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E6%8B%A5%E6%9C%89%E7%89%B9%E5%AE%9A%E7%BB%84%E4%BB%B6%E7%9A%84%E5%AE%9E%E4%BD%93"><span class="nav-number">3.3.</span> <span class="nav-text">获取拥有特定组件的实体</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E5%AE%9E%E4%BD%93%E7%9A%84%E6%9F%90%E4%B8%AA%E7%BB%84%E4%BB%B6"><span class="nav-number">3.4.</span> <span class="nav-text">获取实体的某个组件</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jiaxin Shou"
+      src="https://drive.google.com/uc?export=view&id=1TclFU5uu2Ole6scPy9kTzGSTYvs_7mUY">
+  <p class="site-author-name" itemprop="name">Jiaxin Shou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/shoujiaxin" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;shoujiaxin" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:shoujiaxin@gmail.com" title="E-Mail → mailto:shoujiaxin@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Sjx_96" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Sjx_96" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://instagram.com/shoujiaxin" title="Instagram → https:&#x2F;&#x2F;instagram.com&#x2F;shoujiaxin" rel="noopener" target="_blank"><i class="fab fa-instagram fa-fw"></i>Instagram</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+  <a href="https://github.com/shoujiaxin" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://shoujiaxin.github.io/2021/06/12/%E6%90%AC%E7%A0%96%E7%AC%94%E8%AE%B0-1-%E2%80%94%E2%80%94-ECS-%E6%9E%B6%E6%9E%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://drive.google.com/uc?export=view&id=1TclFU5uu2Ole6scPy9kTzGSTYvs_7mUY">
+      <meta itemprop="name" content="Jiaxin Shou">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jiaxin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          搬砖笔记 (1) —— ECS 架构
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-06-12 15:58:00 / 修改时间：17:13:43" itemprop="dateCreated datePublished" datetime="2021-06-12T15:58:00+08:00">2021-06-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+        </span>
+    </span>
+
+  
+    <span id="/2021/06/12/%E6%90%AC%E7%A0%96%E7%AC%94%E8%AE%B0-1-%E2%80%94%E2%80%94-ECS-%E6%9E%B6%E6%9E%84/" class="post-meta-item leancloud_visitors" data-flag-title="搬砖笔记 (1) —— ECS 架构" title="阅读次数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span class="leancloud-visitors-count"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>打工人搬砖入门第一课 —— ECS 架构。</p>
+<span id="more"></span>
+<p>ECS (<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Entity_component_system">Entity-Component-System</a>) 即实体-组件-系统，是一种软件架构模式，遵循组合优于继承 (<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Composition_over_inheritance">Composition Over Inheritance</a>) 原则，主要用于游戏开发。在 ECS 架构中，场景内的每个对象（如敌人、子弹、车辆等）都是一个实体 (Entity)，每个实体都由一个或多个包含数据（状态）的组件 (Component) 组成，架构允许灵活地定义、添加和删除实体，避免了难以理解、维护和扩展的继承层次造成的模糊性问题。</p>
+<h2 id="组合优于继承">组合优于继承</h2>
+<p>要了解 ECS 架构的概念以及为什么要使用这种模式，首先要从组合优于继承原则讲起。</p>
+<p>面向对象程序设计 (OOP) 中的组合优于继承是指类应该倾向于通过组合，即包含实现所需功能的其他类的实例，而非从基类继承来实现多态行为和代码复用。</p>
+<p>定义表示系统所具有行为的接口 (Interface) 是实现组合优于继承的基础，接口实现多态行为，而实现指定接口的类根据需要被添加到业务领域类 (Business Domain Classes) 中。通常情况下，业务领域类都是基类，无需任何继承，系统行为的替代实现通过另一个实现所需行为的接口来完成。包含对接口引用的类可以将对该接口实现的选择推迟到运行时。</p>
+<p>以 C++ 为例，分别采用继承和组合的方式实现一个简单的系统，可以很容易地看出使用组合而非继承带来的好处。</p>
+<h3 id="继承">继承</h3>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Object</span> &#123;</span></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">draw</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">collide</span><span class="params">(Object objects[])</span> </span>&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Visible</span> :</span> <span class="keyword">public</span> Object &#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">draw</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">    <span class="comment">// draw</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Movable</span> :</span> <span class="keyword">public</span> Object &#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">    <span class="comment">// update</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>以上定义了系统的两个接口，此时，可定义实现对应接口的业务领域类，如：</p>
+<ul>
+<li>类 <code>Player</code>：是 <code>Visible</code> 且 <code>Movable</code>，即可见且可移动</li>
+<li>类 <code>Building</code>：是 <code>Visible</code> 但不是 <code>Movable</code>，即可见但不可移动</li>
+</ul>
+<p>C++ 虽然支持多重继承，但十分复杂，且使用多重继承是一个具有很大风险的行为，可能导致钻石问题 (<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Multiple_inheritance#The_diamond_problem">Diamond Problem</a>)。</p>
+<p>若要避免使用多重继承，则需要额外定义如 <code>VisibleAndMovable</code>、<code>VisibleButNotMovable</code> 等这样的组合接口。但是，当接口很多时，此类组合将会导致大量重复的代码，难以维护和扩展。</p>
+<h3 id="组合">组合</h3>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">VisibilityDelegate</span> &#123;</span></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">draw</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Visible</span> :</span> <span class="keyword">public</span> VisibilityDelegate &#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">draw</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">    <span class="comment">// draw</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NotVisible</span> :</span> <span class="keyword">public</span> VisibilityDelegate &#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">draw</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">    <span class="comment">// do nothing</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UpdateDelegate</span> &#123;</span></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Movable</span> :</span> <span class="keyword">public</span> UpdateDelegate &#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">    <span class="comment">// update</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NotMovable</span> :</span> <span class="keyword">public</span> UpdateDelegate &#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">    <span class="comment">// do nothing</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>利用以上定义的几个接口的组合，同样可以实现之前的系统：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Object</span> &#123;</span></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  Object(VisibilityDelegate* v, UpdateDelegate* u) : v_(v), u_(u) &#123;&#125;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">draw</span><span class="params">()</span> </span>&#123; v_-&gt;draw(); &#125;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">update</span><span class="params">()</span> </span>&#123; u_-&gt;update(); &#125;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  VisibilityDelegate* v_;</span><br><span class="line">  UpdateDelegate* u_;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Player</span> &#123;</span></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  Player() : Object(<span class="keyword">new</span> Visible(), <span class="keyword">new</span> Movable()) &#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Building</span> &#123;</span></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  Building() : Object(<span class="keyword">new</span> Visible(), <span class="keyword">new</span> NotMovable()) &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="优点">优点</h3>
+<ul>
+<li><p>赋予设计更高的灵活性</p></li>
+<li><p>通过组件组合类比寻找类的共性并建立继承关系更自然、简单</p></li>
+<li><p>组合一个对象的能力比扩展一个对象本身更好</p>
+<blockquote>
+<p>It is better to compose what an object can do (HAS-A) than extend what it is (IS-A)</p>
+</blockquote></li>
+<li><p>可以适应未来需求的变化，避免继承模型在需求变化时需要对业务领域类进行彻底重组</p></li>
+<li><p>组合关系更加灵活，可在运行时改变；继承关系是静态的，许多语言需要重新编译</p></li>
+</ul>
+<h3 id="缺点">缺点</h3>
+<ul>
+<li>继承模型中，派生类只需要实现（覆盖）于基类方法具有不同行为的方法；而 ECS 架构中，由单个组件提供的方法可能必须在派生类型中实现，即使只是转发方法</li>
+</ul>
+<h2 id="ecs-的基本概念">ECS 的基本概念</h2>
+<p>2007 年，制作 Operation Flashpoint: Dragon Rising 的团队尝试了 ECS 架构。此后，Adam Martin 写了一篇关于 ECS 设计的<a target="_blank" rel="noopener" href="https://www.notion.so/ECS-535a35842c404c888ff7c812e6030de4#1f69ee65f2d84e44ab0fab6256ad6660">详细说明</a>，包括核心术语和概念定义，特别提出了系统作为一等元素、实体作为 ID、组件作为原始数据、代码存储在系统而非组件或实体中等观点。</p>
+<p>2015 年，苹果公司推出了用于 iOS、macOS 和 tvOS 的游戏开发框架 GameplayKit，其中包含了 ECS 架构的实现。</p>
+<p><img src="https://drive.google.com/uc?export=view&id=1PFwRZ_Gvc3SgI9cB6q1a-8SfBBpCmpZ3" alt="ECS 架构"></p>
+<p>ECS 架构如上图所示，下面分别介绍实体、组件和系统的概念。</p>
+<h3 id="实体-entity">实体 (Entity)</h3>
+<p>实体是一个抽象的概念，用来表示通用的对象，是一系列表示该实体所具有能力的组件的集合。在代码实现中，实体通常使用一个整型 ID 来表示，该实体所具有的所有组件都会被这个 ID 标记，且在运行过程中，可以动态地为实体添加或删除组件。</p>
+<p>样例：</p>
+<ul>
+<li><code>Player(Sprite, Position, Velocity, Health)</code></li>
+<li><code>Tree(Sprite, Position)</code></li>
+</ul>
+<h3 id="组件-component">组件 (Component)</h3>
+<p>组件是对象某一个特性的原始数据（状态），拥有某个组件即表示实体具有这个特性或能力。在代码中通常使用结构体、类或关联数组实现。</p>
+<p>样例：</p>
+<ul>
+<li><code>Position(x, y)</code></li>
+<li><code>Velocity(x, y)</code></li>
+<li><code>Health(value)</code></li>
+</ul>
+<h3 id="系统-system">系统 (System)</h3>
+<p>系统是一个连续运行的、对拥有与该系统相同组件的每个实体执行全局操作的工具，通常只有行为（方法），不包含状态（数据）。</p>
+<p>样例：</p>
+<ul>
+<li><code>MoveSystem(Position, Velocity)</code></li>
+<li><code>RenderSystem(Sprite, Position)</code></li>
+</ul>
+<h2 id="实战-entityx">实战 —— <a target="_blank" rel="noopener" href="https://github.com/alecthomas/entityx">EntityX</a></h2>
+<h3 id="创建组件">创建组件</h3>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Position</span> &#123;</span></span><br><span class="line">  Position(<span class="keyword">double</span> x = <span class="number">0</span>, <span class="keyword">double</span> y = <span class="number">0</span>) : x(x), y(y) &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">double</span> x;</span><br><span class="line">  <span class="keyword">double</span> y;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="给实体添加组件">给实体添加组件</h3>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">entity.assign&lt;Position&gt;(<span class="number">1.0</span>, <span class="number">2.0</span>);</span><br></pre></td></tr></table></figure>
+<h3 id="获取拥有特定组件的实体">获取拥有特定组件的实体</h3>
+<p>函数式：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">entities.each&lt;Position, Direction&gt;([](Entity entity, Position &amp;position,</span><br><span class="line">                                      Direction &amp;direction) &#123;</span><br><span class="line">  <span class="comment">// Do things with entity, position and direction.</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>迭代器方式：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ComponentHandle&lt;Position&gt; position;</span><br><span class="line">ComponentHandle&lt;Direction&gt; direction;</span><br><span class="line"><span class="keyword">for</span> (Entity entity : entities.entities_with_components(position, direction)) &#123;</span><br><span class="line">  <span class="comment">// Do things with entity, position and direction.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="获取实体的某个组件">获取实体的某个组件</h3>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ComponentHandle&lt;Position&gt; position = entity.component&lt;Position&gt;();</span><br><span class="line"><span class="keyword">if</span> (position) &#123;</span><br><span class="line">  <span class="comment">// Do stuff with position</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="tag"><i class="fa fa-tag"></i> 学习笔记</a>
+              <a href="/tags/ECS/" rel="tag"><i class="fa fa-tag"></i> ECS</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/03/10/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%92%8C%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0-2-%E2%80%94%E2%80%94-%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" rel="prev" title="数据结构和算法笔记 (2) —— 排序算法">
+                  <i class="fa fa-chevron-left"></i> 数据结构和算法笔记 (2) —— 排序算法
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jiaxin Shou</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+  
+
+
+  <script class="next-config" data-name="leancloud_visitors" type="application/json">{&quot;enable&quot;:true,&quot;app_id&quot;:&quot;XbcFfHEXn1luNOnUrtizHfzW-MdYXbMMI&quot;,&quot;app_key&quot;:&quot;JbKohvPsKEYaHgjNSvRfcOIn&quot;,&quot;server_url&quot;:null,&quot;security&quot;:false}</script>
+  <script src="/js/third-party/statistics/lean-analytics.js"></script>
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{&quot;enable&quot;:true,&quot;tags&quot;:&quot;none&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;mathjax@3.1.4&#x2F;es5&#x2F;tex-mml-chtml.js&quot;,&quot;integrity&quot;:&quot;sha256-ncNI9OXOS5Ek4tzVYiOMmN&#x2F;KKCPZ6V0Cpv2P&#x2F;zHntiA&#x3D;&quot;}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

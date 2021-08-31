@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="viewport" content="width=device-width">
 <meta name="theme-color" content="#222">
 <meta name="generator" content="Hexo 5.4.0">
 
@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;shoujiaxin.github.io&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.5.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:true,&quot;bookmark&quot;:{&quot;enable&quot;:true,&quot;color&quot;:&quot;#EA6E39&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:true,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;},&quot;path&quot;:&quot;&#x2F;search.xml&quot;,&quot;localsearch&quot;:{&quot;enable&quot;:true,&quot;trigger&quot;:&quot;auto&quot;,&quot;top_n_per_article&quot;:1,&quot;unescape&quot;:false,&quot;preload&quot;:false}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"shoujiaxin.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.7.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":true,"color":"#EA6E39","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 <meta name="description" content="DH 建模法 DH 建模方法是由 Denavit 和 Hartenberg 提出的一种建模方法，主要用在机器人运动学上。此方法在机器人的每个连杆上建立一个坐标系，通过齐次坐标变换实现两个连杆上的坐标变换，建立多连杆串联系统中首末坐标系的变换关系。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="五自由度机械臂的建模 (2) —— DH 建模法">
@@ -32,7 +32,7 @@
 <meta property="og:image" content="https://drive.google.com/uc?export=view&id=1wSbJ4LteBvaAXjykoVqwe91GlwGkcuYD">
 <meta property="og:image" content="https://drive.google.com/uc?export=view&id=1nGTlKyJhLxSZSBxhsYxiTPvYqL3axcPZ">
 <meta property="article:published_time" content="2018-10-02T09:00:00.000Z">
-<meta property="article:modified_time" content="2021-06-12T09:13:43.479Z">
+<meta property="article:modified_time" content="2021-08-31T16:20:09.311Z">
 <meta property="article:author" content="Jiaxin Shou">
 <meta property="article:tag" content="机器人">
 <meta property="article:tag" content="DH 建模法">
@@ -44,13 +44,13 @@
 
 
 
-<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;shoujiaxin.github.io&#x2F;2018&#x2F;10&#x2F;02&#x2F;%E4%BA%94%E8%87%AA%E7%94%B1%E5%BA%A6%E6%9C%BA%E6%A2%B0%E8%87%82%E7%9A%84%E5%BB%BA%E6%A8%A1-2-%E2%80%94%E2%80%94-DH-%E5%BB%BA%E6%A8%A1%E6%B3%95&#x2F;&quot;,&quot;path&quot;:&quot;2018&#x2F;10&#x2F;02&#x2F;五自由度机械臂的建模-2-——-DH-建模法&#x2F;&quot;,&quot;title&quot;:&quot;五自由度机械臂的建模 (2) —— DH 建模法&quot;}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://shoujiaxin.github.io/2018/10/02/%E4%BA%94%E8%87%AA%E7%94%B1%E5%BA%A6%E6%9C%BA%E6%A2%B0%E8%87%82%E7%9A%84%E5%BB%BA%E6%A8%A1-2-%E2%80%94%E2%80%94-DH-%E5%BB%BA%E6%A8%A1%E6%B3%95/","path":"2018/10/02/五自由度机械臂的建模-2-——-DH-建模法/","title":"五自由度机械臂的建模 (2) —— DH 建模法"}</script>
 
-<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<script class="next-config" data-name="calendar" type="application/json">""</script>
 <title>五自由度机械臂的建模 (2) —— DH 建模法 | Jiaxin's Blog</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-127104980-1"></script>
-  <script class="next-config" data-name="google_analytics" type="application/json">{&quot;tracking_id&quot;:&quot;UA-127104980-1&quot;,&quot;only_pageview&quot;:false}</script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-127104980-1","only_pageview":false}</script>
   <script src="/js/third-party/analytics/google-analytics.js"></script>
 
 
@@ -160,7 +160,8 @@
         <!--/noindex-->
 
         <div class="site-overview-wrap sidebar-panel">
-          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <div class="site-overview">
+            <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image" alt="Jiaxin Shou"
       src="https://drive.google.com/uc?export=view&id=1TclFU5uu2Ole6scPy9kTzGSTYvs_7mUY">
   <p class="site-author-name" itemprop="name">Jiaxin Shou</p>
@@ -169,21 +170,18 @@
 <div class="site-state-wrap site-overview-item animated">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
-          <a href="/archives/">
-        
+        <a href="/archives/">
           <span class="site-state-item-count">13</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-            <a href="/categories/">
-          
+          <a href="/categories/">
         <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
-            <a href="/tags/">
-          
+          <a href="/tags/">
         <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
@@ -206,6 +204,7 @@
 
 
 
+          </div>
         </div>
       </div>
     </div>
@@ -272,7 +271,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-06-12 17:13:43" itemprop="dateModified" datetime="2021-06-12T17:13:43+08:00">2021-06-12</time>
+        <time title="修改时间：2021-09-01 00:20:09" itemprop="dateModified" datetime="2021-09-01T00:20:09+08:00">2021-09-01</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -340,9 +339,7 @@
 </tbody>
 </table>
 <h3 id="classic-dh">Classic DH</h3>
-<div data-align="center">
-<img src="https://drive.google.com/uc?export=view&id=1GYql9eMiNaknHYI69XB3dMeQubryIiPe" alt="Classic DH" width="40%"/>
-</div>
+<p><img src="https://drive.google.com/uc?export=view&id=1GYql9eMiNaknHYI69XB3dMeQubryIiPe" alt="Classic DH" width="40%"></p>
 <p>Classic DH 的关节和坐标系关系如图所示，其中各个参数的含义如下：</p>
 <ul>
 <li><span class="math inline">\(\theta_{i}\)</span>：<span class="math inline">\(X_{i-1}\)</span> 到 <span class="math inline">\(X_{i}\)</span> 绕 <span class="math inline">\(Z_{i-1}\)</span> 旋转的角度</li>
@@ -361,9 +358,7 @@ _{i}^{i-1}T =
 \end{bmatrix}
 \]</span></p>
 <h3 id="modified-dh">Modified DH</h3>
-<div data-align="center">
-<img src="https://upload.wikimedia.org/wikipedia/commons/d/d8/DHParameter.png" alt="Modified DH" width="40%"/>
-</div>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/d/d8/DHParameter.png" alt="Modified DH" width="40%"></p>
 <p>Modified DH 的关节和坐标系关系如图所示，其中各个参数的含义如下：</p>
 <ul>
 <li><span class="math inline">\(\alpha_{i-1}\)</span>：<span class="math inline">\(Z_{i-1}\)</span> 到 <span class="math inline">\(Z_{i}\)</span> 绕 <span class="math inline">\(X_{i-1}\)</span> 旋转的角度</li>
@@ -392,14 +387,10 @@ _{i}^{i-1}T =
 <li>确定基坐标系 <span class="math inline">\(\{0\}\)</span>：为了简化问题，<span class="math inline">\(Z_0\)</span> 通常与关节 1 的轴线方向重合，且当关节变量 1 为 0 时，坐标系 <span class="math inline">\(\{0\}\)</span> 与 <span class="math inline">\(\{1\}\)</span> 重合</li>
 <li>确定末端坐标系 <span class="math inline">\(\{n\}\)</span>：对于转动关节，<span class="math inline">\(\theta_n = 0\)</span> 时，<span class="math inline">\(X_n\)</span> 与 <span class="math inline">\(X_{n-1}\)</span> 方向相同，选取原点使 <span class="math inline">\(d_n = 0\)</span>；对于移动关节，取 <span class="math inline">\(X_n\)</span> 方向使 <span class="math inline">\(\theta_n = 0\)</span>，当 <span class="math inline">\(d_n = 0\)</span> 时，取 <span class="math inline">\(X_{n-1}\)</span> 与 <span class="math inline">\(X_n\)</span> 的交点为原点</li>
 </ol>
-<div data-align="center">
-<img src="https://drive.google.com/uc?export=view&id=1wSbJ4LteBvaAXjykoVqwe91GlwGkcuYD" alt="机械臂" width="40%"/>
-</div>
+<p><img src="https://drive.google.com/uc?export=view&id=1wSbJ4LteBvaAXjykoVqwe91GlwGkcuYD" alt="机械臂" width="40%"></p>
 <p>这里我使用的 5 自由度机械臂的实物如上图所示，根据如上所述的步骤建立坐标系，结果如下图所示。</p>
 <p><a name="坐标系"></a></p>
-<div data-align="center">
-<img src="https://drive.google.com/uc?export=view&id=1nGTlKyJhLxSZSBxhsYxiTPvYqL3axcPZ" alt="坐标系 1" width="50%"/>
-</div>
+<p><img src="https://drive.google.com/uc?export=view&id=1nGTlKyJhLxSZSBxhsYxiTPvYqL3axcPZ" alt="坐标系 1" width="50%"></p>
 <h2 id="dh-参数表">DH 参数表</h2>
 <p>根据机械臂各个连杆间坐标系的关系，采用 Modified DH 形式，得到的参数表如下。</p>
 <table>
@@ -561,18 +552,16 @@ p_{z} = &amp; \ -a_{2} s_{2} - a_{3} c_{2} s_{3} - a_{3} c_{3} s_{2}
 
 
 
-
-
   
 
 
-  <script class="next-config" data-name="leancloud_visitors" type="application/json">{&quot;enable&quot;:true,&quot;app_id&quot;:&quot;XbcFfHEXn1luNOnUrtizHfzW-MdYXbMMI&quot;,&quot;app_key&quot;:&quot;JbKohvPsKEYaHgjNSvRfcOIn&quot;,&quot;server_url&quot;:null,&quot;security&quot;:false}</script>
+  <script class="next-config" data-name="leancloud_visitors" type="application/json">{"enable":true,"app_id":"XbcFfHEXn1luNOnUrtizHfzW-MdYXbMMI","app_key":"JbKohvPsKEYaHgjNSvRfcOIn","server_url":null,"security":false}</script>
   <script src="/js/third-party/statistics/lean-analytics.js"></script>
 
 
   
 
-  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{&quot;enable&quot;:true,&quot;tags&quot;:&quot;none&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;mathjax@3.1.4&#x2F;es5&#x2F;tex-mml-chtml.js&quot;,&quot;integrity&quot;:&quot;sha256-ncNI9OXOS5Ek4tzVYiOMmN&#x2F;KKCPZ6V0Cpv2P&#x2F;zHntiA&#x3D;&quot;}}</script>
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
 <script src="/js/third-party/math/mathjax.js"></script>
 
 

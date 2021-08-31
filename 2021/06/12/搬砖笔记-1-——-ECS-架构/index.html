@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="viewport" content="width=device-width">
 <meta name="theme-color" content="#222">
 <meta name="generator" content="Hexo 5.4.0">
 
@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;shoujiaxin.github.io&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.5.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:true,&quot;bookmark&quot;:{&quot;enable&quot;:true,&quot;color&quot;:&quot;#EA6E39&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:true,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;},&quot;path&quot;:&quot;&#x2F;search.xml&quot;,&quot;localsearch&quot;:{&quot;enable&quot;:true,&quot;trigger&quot;:&quot;auto&quot;,&quot;top_n_per_article&quot;:1,&quot;unescape&quot;:false,&quot;preload&quot;:false}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"shoujiaxin.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.7.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":true,"color":"#EA6E39","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 <meta name="description" content="打工人搬砖入门第一课 —— ECS 架构。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="搬砖笔记 (1) —— ECS 架构">
@@ -29,7 +29,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://drive.google.com/uc?export=view&id=1PFwRZ_Gvc3SgI9cB6q1a-8SfBBpCmpZ3">
 <meta property="article:published_time" content="2021-06-12T07:58:00.000Z">
-<meta property="article:modified_time" content="2021-06-12T09:13:43.479Z">
+<meta property="article:modified_time" content="2021-08-31T16:20:09.311Z">
 <meta property="article:author" content="Jiaxin Shou">
 <meta property="article:tag" content="学习笔记">
 <meta property="article:tag" content="ECS">
@@ -41,13 +41,13 @@
 
 
 
-<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;shoujiaxin.github.io&#x2F;2021&#x2F;06&#x2F;12&#x2F;%E6%90%AC%E7%A0%96%E7%AC%94%E8%AE%B0-1-%E2%80%94%E2%80%94-ECS-%E6%9E%B6%E6%9E%84&#x2F;&quot;,&quot;path&quot;:&quot;2021&#x2F;06&#x2F;12&#x2F;搬砖笔记-1-——-ECS-架构&#x2F;&quot;,&quot;title&quot;:&quot;搬砖笔记 (1) —— ECS 架构&quot;}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://shoujiaxin.github.io/2021/06/12/%E6%90%AC%E7%A0%96%E7%AC%94%E8%AE%B0-1-%E2%80%94%E2%80%94-ECS-%E6%9E%B6%E6%9E%84/","path":"2021/06/12/搬砖笔记-1-——-ECS-架构/","title":"搬砖笔记 (1) —— ECS 架构"}</script>
 
-<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<script class="next-config" data-name="calendar" type="application/json">""</script>
 <title>搬砖笔记 (1) —— ECS 架构 | Jiaxin's Blog</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-127104980-1"></script>
-  <script class="next-config" data-name="google_analytics" type="application/json">{&quot;tracking_id&quot;:&quot;UA-127104980-1&quot;,&quot;only_pageview&quot;:false}</script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-127104980-1","only_pageview":false}</script>
   <script src="/js/third-party/analytics/google-analytics.js"></script>
 
 
@@ -157,7 +157,8 @@
         <!--/noindex-->
 
         <div class="site-overview-wrap sidebar-panel">
-          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <div class="site-overview">
+            <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image" alt="Jiaxin Shou"
       src="https://drive.google.com/uc?export=view&id=1TclFU5uu2Ole6scPy9kTzGSTYvs_7mUY">
   <p class="site-author-name" itemprop="name">Jiaxin Shou</p>
@@ -166,21 +167,18 @@
 <div class="site-state-wrap site-overview-item animated">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
-          <a href="/archives/">
-        
+        <a href="/archives/">
           <span class="site-state-item-count">13</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-            <a href="/categories/">
-          
+          <a href="/categories/">
         <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
-            <a href="/tags/">
-          
+          <a href="/tags/">
         <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
@@ -203,6 +201,7 @@
 
 
 
+          </div>
         </div>
       </div>
     </div>
@@ -261,10 +260,16 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2021-06-12 15:58:00 / 修改时间：17:13:43" itemprop="dateCreated datePublished" datetime="2021-06-12T15:58:00+08:00">2021-06-12</time>
+      <time title="创建时间：2021-06-12 15:58:00" itemprop="dateCreated datePublished" datetime="2021-06-12T15:58:00+08:00">2021-06-12</time>
     </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-09-01 00:20:09" itemprop="dateModified" datetime="2021-09-01T00:20:09+08:00">2021-09-01</time>
+      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
@@ -312,7 +317,7 @@
 <h3 id="组合">组合</h3>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">VisibilityDelegate</span> &#123;</span></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">draw</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Visible</span> :</span> <span class="keyword">public</span> VisibilityDelegate &#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">draw</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">    <span class="comment">// draw</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NotVisible</span> :</span> <span class="keyword">public</span> VisibilityDelegate &#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">draw</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">    <span class="comment">// do nothing</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UpdateDelegate</span> &#123;</span></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Movable</span> :</span> <span class="keyword">public</span> UpdateDelegate &#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">    <span class="comment">// update</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NotMovable</span> :</span> <span class="keyword">public</span> UpdateDelegate &#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">    <span class="comment">// do nothing</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 <p>利用以上定义的几个接口的组合，同样可以实现之前的系统：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Object</span> &#123;</span></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  Object(VisibilityDelegate* v, UpdateDelegate* u) : v_(v), u_(u) &#123;&#125;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">draw</span><span class="params">()</span> </span>&#123; v_-&gt;draw(); &#125;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">update</span><span class="params">()</span> </span>&#123; u_-&gt;update(); &#125;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  VisibilityDelegate* v_;</span><br><span class="line">  UpdateDelegate* u_;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Player</span> &#123;</span></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  Player() : Object(<span class="keyword">new</span> Visible(), <span class="keyword">new</span> Movable()) &#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Building</span> &#123;</span></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  Building() : Object(<span class="keyword">new</span> Visible(), <span class="keyword">new</span> NotMovable()) &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Object</span> &#123;</span></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="built_in">Object</span>(VisibilityDelegate* v, UpdateDelegate* u) : <span class="built_in">v_</span>(v), <span class="built_in">u_</span>(u) &#123;&#125;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">draw</span><span class="params">()</span> </span>&#123; v_-&gt;<span class="built_in">draw</span>(); &#125;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">update</span><span class="params">()</span> </span>&#123; u_-&gt;<span class="built_in">update</span>(); &#125;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  VisibilityDelegate* v_;</span><br><span class="line">  UpdateDelegate* u_;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Player</span> &#123;</span></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="built_in">Player</span>() : <span class="built_in">Object</span>(<span class="keyword">new</span> <span class="built_in">Visible</span>(), <span class="keyword">new</span> <span class="built_in">Movable</span>()) &#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Building</span> &#123;</span></span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  <span class="built_in">Building</span>() : <span class="built_in">Object</span>(<span class="keyword">new</span> <span class="built_in">Visible</span>(), <span class="keyword">new</span> <span class="built_in">NotMovable</span>()) &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="优点">优点</h3>
 <ul>
 <li><p>赋予设计更高的灵活性</p></li>
@@ -331,7 +336,7 @@
 <h2 id="ecs-的基本概念">ECS 的基本概念</h2>
 <p>2007 年，制作 Operation Flashpoint: Dragon Rising 的团队尝试了 ECS 架构。此后，Adam Martin 写了一篇关于 ECS 设计的<a target="_blank" rel="noopener" href="https://www.notion.so/ECS-535a35842c404c888ff7c812e6030de4#1f69ee65f2d84e44ab0fab6256ad6660">详细说明</a>，包括核心术语和概念定义，特别提出了系统作为一等元素、实体作为 ID、组件作为原始数据、代码存储在系统而非组件或实体中等观点。</p>
 <p>2015 年，苹果公司推出了用于 iOS、macOS 和 tvOS 的游戏开发框架 GameplayKit，其中包含了 ECS 架构的实现。</p>
-<p><img src="https://drive.google.com/uc?export=view&id=1PFwRZ_Gvc3SgI9cB6q1a-8SfBBpCmpZ3" alt="ECS 架构"></p>
+<p><img src="https://drive.google.com/uc?export=view&id=1PFwRZ_Gvc3SgI9cB6q1a-8SfBBpCmpZ3" alt="ECS 架构" style="background-color:white;padding:20px;"></p>
 <p>ECS 架构如上图所示，下面分别介绍实体、组件和系统的概念。</p>
 <h3 id="实体-entity">实体 (Entity)</h3>
 <p>实体是一个抽象的概念，用来表示通用的对象，是一系列表示该实体所具有能力的组件的集合。在代码实现中，实体通常使用一个整型 ID 来表示，该实体所具有的所有组件都会被这个 ID 标记，且在运行过程中，可以动态地为实体添加或删除组件。</p>
@@ -357,14 +362,14 @@
 </ul>
 <h2 id="实战-entityx">实战 —— <a target="_blank" rel="noopener" href="https://github.com/alecthomas/entityx">EntityX</a></h2>
 <h3 id="创建组件">创建组件</h3>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Position</span> &#123;</span></span><br><span class="line">  Position(<span class="keyword">double</span> x = <span class="number">0</span>, <span class="keyword">double</span> y = <span class="number">0</span>) : x(x), y(y) &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">double</span> x;</span><br><span class="line">  <span class="keyword">double</span> y;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Position</span> &#123;</span></span><br><span class="line">  <span class="built_in">Position</span>(<span class="keyword">double</span> x = <span class="number">0</span>, <span class="keyword">double</span> y = <span class="number">0</span>) : <span class="built_in">x</span>(x), <span class="built_in">y</span>(y) &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">double</span> x;</span><br><span class="line">  <span class="keyword">double</span> y;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 <h3 id="给实体添加组件">给实体添加组件</h3>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">entity.assign&lt;Position&gt;(<span class="number">1.0</span>, <span class="number">2.0</span>);</span><br></pre></td></tr></table></figure>
 <h3 id="获取拥有特定组件的实体">获取拥有特定组件的实体</h3>
 <p>函数式：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">entities.each&lt;Position, Direction&gt;([](Entity entity, Position &amp;position,</span><br><span class="line">                                      Direction &amp;direction) &#123;</span><br><span class="line">  <span class="comment">// Do things with entity, position and direction.</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 <p>迭代器方式：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ComponentHandle&lt;Position&gt; position;</span><br><span class="line">ComponentHandle&lt;Direction&gt; direction;</span><br><span class="line"><span class="keyword">for</span> (Entity entity : entities.entities_with_components(position, direction)) &#123;</span><br><span class="line">  <span class="comment">// Do things with entity, position and direction.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ComponentHandle&lt;Position&gt; position;</span><br><span class="line">ComponentHandle&lt;Direction&gt; direction;</span><br><span class="line"><span class="keyword">for</span> (Entity entity : entities.<span class="built_in">entities_with_components</span>(position, direction)) &#123;</span><br><span class="line">  <span class="comment">// Do things with entity, position and direction.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="获取实体的某个组件">获取实体的某个组件</h3>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ComponentHandle&lt;Position&gt; position = entity.component&lt;Position&gt;();</span><br><span class="line"><span class="keyword">if</span> (position) &#123;</span><br><span class="line">  <span class="comment">// Do stuff with position</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -432,18 +437,16 @@
 
 
 
-
-
   
 
 
-  <script class="next-config" data-name="leancloud_visitors" type="application/json">{&quot;enable&quot;:true,&quot;app_id&quot;:&quot;XbcFfHEXn1luNOnUrtizHfzW-MdYXbMMI&quot;,&quot;app_key&quot;:&quot;JbKohvPsKEYaHgjNSvRfcOIn&quot;,&quot;server_url&quot;:null,&quot;security&quot;:false}</script>
+  <script class="next-config" data-name="leancloud_visitors" type="application/json">{"enable":true,"app_id":"XbcFfHEXn1luNOnUrtizHfzW-MdYXbMMI","app_key":"JbKohvPsKEYaHgjNSvRfcOIn","server_url":null,"security":false}</script>
   <script src="/js/third-party/statistics/lean-analytics.js"></script>
 
 
   
 
-  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{&quot;enable&quot;:true,&quot;tags&quot;:&quot;none&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;mathjax@3.1.4&#x2F;es5&#x2F;tex-mml-chtml.js&quot;,&quot;integrity&quot;:&quot;sha256-ncNI9OXOS5Ek4tzVYiOMmN&#x2F;KKCPZ6V0Cpv2P&#x2F;zHntiA&#x3D;&quot;}}</script>
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
 <script src="/js/third-party/math/mathjax.js"></script>
 
 

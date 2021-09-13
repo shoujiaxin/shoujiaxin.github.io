@@ -1252,6 +1252,235 @@ z &amp; = \cos{\frac{\alpha}{2}} \cos{\frac{\beta}{2}} \sin{\frac{\gamma}{2}} + 
       </tags>
   </entry>
   <entry>
+    <title>搬砖笔记 (2) —— OpenGL 投影矩阵</title>
+    <url>/2021/08/31/%E6%90%AC%E7%A0%96%E7%AC%94%E8%AE%B0-2-%E2%80%94%E2%80%94-OpenGL-%E6%8A%95%E5%BD%B1%E7%9F%A9%E9%98%B5/</url>
+    <content><![CDATA[<p>本文翻译自 <a href="http://www.songho.ca/opengl/gl_projectionmatrix_mathml.html">OpenGL Projection Matrix</a>，仅用于个人学习记录。</p>
+<h2 id="概述">概述</h2>
+<p>计算机显示器是一个 2D 表面。由 OpenGL 渲染的 3D 场景必须被投影为计算机屏幕上的 2D 图像。<code>GL_PROJECTION</code> 矩阵被用于这个投影变换。首先，它将所有顶点数据从<strong>视觉坐标</strong> (Eye Coordinates) 转换到<strong>裁剪坐标</strong> (Clip Coordinates)。然后，将这些裁剪坐标分别除以裁剪坐标的 <span class="math inline">\(w\)</span> 分量，转换为<strong>标准化设备坐标</strong> (Normalized Device Coordinate, NDC)。</p>
+<span id="more"></span>
+<p>因此，<code>GL_PROJECTION</code> 矩阵包含了裁剪（平截头体剔除 (Frustum Culling)）和标准化设备坐标变换。下面描述如何用左 (<em>left</em>)、右 (<em>right</em>)、底 (<em>bottom</em>)、顶 (<em>top</em>)、近 (<em>near</em>) 和远 (<em>far</em>) 的边界值这 6 个参数来建立投影矩阵。</p>
+<p><img src="https://drive.google.com/uc?export=view&id=1_UiJHz4S65rL0eyI_5wJON9ApzkTJ0BA" alt="被裁剪的三角形" width="40%" style="background-color:white;padding:12px;"></p>
+<p>需要注意的是，裁剪发生在裁剪坐标中，且在除以 <span class="math inline">\({w}_{c}\)</span> 之前。裁剪坐标 <span class="math inline">\({x}_{c}\)</span>、<span class="math inline">\({y}_{c}\)</span> 和 <span class="math inline">\({z}_{c}\)</span> 与 <span class="math inline">\({w}_{c}\)</span> 进行比较：如果任何裁剪坐标小于 <span class="math inline">\(-{w}_{c}\)</span> 或大于 <span class="math inline">\({w}_{c}\)</span>，则该顶点被丢弃。</p>
+<p><span class="math display">\[
+-{w}_{c} &lt; {x}_{c},\ {y}_{c},\ {z}_{c} &lt; {w}_{c}
+\]</span></p>
+<p>之后，OpenGL 将重建被裁剪的多边形的边缘。</p>
+<h2 id="透视投影-perspective-projection">透视投影 (Perspective Projection)</h2>
+<p>在透视投影中，平截头体（视觉坐标）中的一个 3D 点被映射到标准化设备坐标。<span class="math inline">\(x\)</span>、<span class="math inline">\(y\)</span>、<span class="math inline">\(z\)</span> 坐标的取值范围分别从 <span class="math inline">\(\left[l,\ r\right]\)</span>、<span class="math inline">\(\left[b,\ t\right]\)</span>、<span class="math inline">\(\left[-n,\ -f\right]\)</span> 被映射到 <span class="math inline">\(\left[-1,\ 1\right]\)</span></p>
+<p><img src="https://drive.google.com/uc?export=view&id=1KIjj4u-bw4MSnwFwCe1u5KP0-WK4fHnI" alt="透视平截头体和标准化设备坐标" width="70%" style="background-color:white;padding:16px;"></p>
+<p>视觉坐标是在右手坐标系中定义的，但是标准化设备坐标使用的是左手坐标系。因此，原点的相机在视觉空间中是看向 <span class="math inline">\(Z\)</span> 轴负方向 (<span class="math inline">\(-Z\)</span>) 的，而在标准化设备坐标中是看向 <span class="math inline">\(Z\)</span> 轴正方向 (<span class="math inline">\(+Z\)</span>) 的。</p>
+<p><code>glFrustum()</code> 只接受 <code>near</code> 和 <code>far</code> 距离的正值，因为需要在构建 <code>GL_PROJECTION</code> 矩阵时取其相反数。</p>
+<p>在 OpenGL 中，一个视觉空间中的 3D 点被投影到近平面（投影平面）。下图展示了视觉空间中的一点 <span class="math inline">\(\left({x}_{e},\ {y}_{e},\ {z}_{e}\right)\)</span> 是如何被投影到近平面上点 <span class="math inline">\(\left({x}_{p},\ {y}_{p},\ {z}_{p}\right)\)</span> 的。</p>
+<figure style="display:flex">
+<img src="https://drive.google.com/uc?export=view&id=11n9pWfOj5gW0sbvUb8IitrNgH1RI0WP8" alt="平截头体的俯视图" width="40%" style="background-color:white;padding:16px;"> <img src="https://drive.google.com/uc?export=view&id=1c8xtyzS4S-DqC82suLX4Uc_JJ9qAoJID" alt="平截头体的侧视图" width="40%" style="background-color:white;padding:16px;">
+</figure>
+<p>如上左图所示为平截头体的俯视图，通过计算相似三角形的比例，视觉空间的 <span class="math inline">\(x\)</span> 坐标 <span class="math inline">\({x}_{e}\)</span> 被映射到 <span class="math inline">\({x}_{p}\)</span>：</p>
+<p><span class="math display">\[
+\frac{x_p}{x_e} = \frac{-n}{z_e} \Rightarrow x_p = \frac{n \cdot x_e}{-z_e}
+\]</span></p>
+<p>如上右图所示为平截头体的测试图，同样可以计算 <span class="math inline">\(y\)</span> 坐标的映射：</p>
+<p><span class="math display">\[
+\frac{y_p}{y_e} = \frac{-n}{z_e} \Rightarrow y_p = \frac{n \cdot y_e}{-z_e}
+\]</span></p>
+<p>注意 <span class="math inline">\({x}_{p}\)</span> 和 <span class="math inline">\({y}_{p}\)</span> 都依赖于 <span class="math inline">\({z}_{e}\)</span>，它们都与 <span class="math inline">\(-{z}_{e}\)</span> 成反比关系。换句话说，它们都被 <span class="math inline">\(-{z}_{e}\)</span> 所除。这是构建 <code>GL_PROJECTION</code> 矩阵的第一条线索。将视觉坐标通过乘以 <code>GL_PROJECTION</code> 矩阵进行转换后，得到的裁剪坐标仍然是一个<a href="http://www.songho.ca/math/homogeneous/homogeneous.html">齐次坐标</a>。通过除以裁剪坐标的 <span class="math inline">\(w\)</span> 分量，它最终被转换为标准化设备坐标（更多细节见 <a href="http://www.songho.ca/opengl/gl_transform.html">OpenGL 变换</a>）。</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+{x}_{clip} \\
+{y}_{clip} \\
+{z}_{clip} \\
+{w}_{clip}
+\end{bmatrix}
+= {M}_{projection} \cdot
+\begin{bmatrix}
+{x}_{eye} \\
+{y}_{eye} \\
+{z}_{eye} \\
+{w}_{eye}
+\end{bmatrix}
+,\
+\begin{bmatrix}
+{x}_{ndc} \\
+{y}_{ndc} \\
+{z}_{ndc}
+\end{bmatrix}
+=
+\begin{bmatrix}
+\dfrac{x_{clip}}{w_{clip}} \\
+\dfrac{y_{clip}}{w_{clip}} \\
+\dfrac{z_{clip}}{w_{clip}}
+\end{bmatrix}
+\]</span></p>
+<p>因此，我们可以把裁剪坐标的 <span class="math inline">\(w\)</span> 分量设为 <span class="math inline">\(-{z}_{e}\)</span>，则 <code>GL_PROJECTION</code> 矩阵的第四行变为 <span class="math inline">\(\begin{bmatrix}0 &amp; 0 &amp; -1 &amp; 0\end{bmatrix}\)</span>：</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+{x}_{c} \\
+{y}_{c} \\
+{z}_{c} \\
+{w}_{c}
+\end{bmatrix}
+=
+\begin{bmatrix}
+       &amp;        &amp;        &amp;        \\
+\vdots &amp; \vdots &amp; \vdots &amp; \vdots \\
+       &amp;        &amp;        &amp;        \\
+0      &amp; 0      &amp; -1     &amp; 0
+\end{bmatrix}
+\begin{bmatrix}
+{x}_{e} \\
+{y}_{e} \\
+{z}_{e} \\
+{w}_{e}
+\end{bmatrix}
+,\
+\therefore {w}_{c} = -{z}_{e}
+\]</span></p>
+<p>下一步，我们以线性关系把 <span class="math inline">\({x}_{p}\)</span> 和 <span class="math inline">\({y}_{p}\)</span> 映射到标准化设备坐标的 <span class="math inline">\({x}_{n}\)</span> 和 <span class="math inline">\({y}_{n}\)</span>：<span class="math inline">\(\left[l,\ r\right] \Rightarrow \left[-1,\ 1\right]\)</span> 以及 <span class="math inline">\(\left[b,\ t\right] \Rightarrow \left[-1,\ 1\right]\)</span>。</p>
+<p><img src="https://drive.google.com/uc?export=view&id=1L1UsMaESrfxh9L_I61kimgDWBHeKyqHn" alt="x_p 映射到 x_n" width="30%" style="background-color:white;padding:12px;"></p>
+<p><span class="math display">\[
+\begin{aligned}
+{x}_{n}            &amp; = \dfrac{1 - (-1)}{r - l} \cdot {x}_{p} + \beta \text{（代入}{x}_{p} = r,\ {x}_{n} = 1\text{）} \\
+\Rightarrow \beta  &amp; = -\dfrac{r + l}{r - l}                                                                        \\
+\therefore {x}_{n} &amp; = \dfrac{2 x_p}{r - l} - \dfrac{r + l}{r - l}
+\end{aligned}
+\]</span></p>
+<p><img src="https://drive.google.com/uc?export=view&id=1w2vrBOJsk2dZj7s_92gWB-86jjS2jgwd" alt="y_p 映射到 y_n" width="30%" style="background-color:white;padding:12px;"></p>
+<p><span class="math display">\[
+\begin{aligned}
+{y}_{n}            &amp; = \dfrac{1 - (-1)}{t - b} \cdot {y}_{p} + \beta \text{（代入}{y}_{p} = t,\ {y}_{n} = 1\text{）} \\
+\Rightarrow \beta  &amp; = -\dfrac{t + b}{t - b}                                                                        \\
+\therefore {y}_{n} &amp; = \dfrac{2 y_p}{t - b} - \dfrac{t + b}{t - b}
+\end{aligned}
+\]</span></p>
+<p>然后，我们将 <span class="math inline">\({x}_{p} = \dfrac{n x_e}{-z_e}\)</span> 和 <span class="math inline">\({y}_{p} = \dfrac{n y_e}{-z_e}\)</span> 代入上式：</p>
+<p><span class="math display">\[
+\begin{aligned}
+{x}_{n} &amp; = \dfrac{\frac{2 n}{r - l} \cdot x_e + \frac{r + l}{r - l} \cdot z_e}{-z_e} = \dfrac{x_c}{-z_e} \\
+{y}_{n} &amp; = \dfrac{\frac{2 n}{t - b} \cdot y_e + \frac{t + b}{t - b} \cdot z_e}{-z_e} = \dfrac{y_c}{-z_e}
+\end{aligned}
+\]</span></p>
+<p>注意我们让上式中的每项都除以 <span class="math inline">\(- {z}_{e}\)</span> 以进行透视除法 (<span class="math inline">\(\frac{x_c}{w_c},\ \frac{y_c}{w_c}\)</span>)。并且我们之前令 <span class="math inline">\({w}_{c} = -{z}_{e}\)</span>，则上式中的分子分别变为裁剪坐标 <span class="math inline">\({x}_{c}\)</span> 和 <span class="math inline">\({y}_{c}\)</span>。</p>
+<p>由这些方程，我们可以得到 <code>GL_PROJECTION</code> 矩阵的第一行和第二行：</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+{x}_{c} \\
+{y}_{c} \\
+{z}_{c} \\
+{w}_{c}
+\end{bmatrix}
+=
+\begin{bmatrix}
+\frac{2 n}{r - l} &amp; 0                 &amp; \frac{r + l}{r - l} &amp; 0      \\
+0                 &amp; \frac{2 n}{t - b} &amp; \frac{t + b}{t - b} &amp; 0      \\
+\vdots            &amp; \vdots            &amp; \vdots              &amp; \vdots \\
+0                 &amp; 0                 &amp; -1                  &amp; 0
+\end{bmatrix}
+\begin{bmatrix}
+{x}_{e} \\
+{y}_{e} \\
+{z}_{e} \\
+{w}_{e}
+\end{bmatrix}
+\]</span></p>
+<p>现在，我们只剩 <code>GL_PROJECTION</code> 矩阵的第三行需要求解。计算 <span class="math inline">\({z}_{n}\)</span> 和其他的略有区别，因为视觉空间的 <span class="math inline">\({z}_{e}\)</span> 总是投影到近平面上的 <span class="math inline">\(-n\)</span>，但是我们需要唯一的 <span class="math inline">\(z\)</span> 值来进行裁剪和深度测试。此外，我们应该能够反投影（逆变换）它。由于我们知道 <span class="math inline">\(z\)</span> 不依赖于 <span class="math inline">\(x\)</span> 和 <span class="math inline">\(y\)</span> 的值，我们借用 <span class="math inline">\(w\)</span> 分量来寻找 <span class="math inline">\({z}_{n}\)</span> 和 <span class="math inline">\({z}_{e}\)</span> 的关系。因此，我们令 <code>GL_PROJECTION</code> 矩阵的第三行形如 <span class="math inline">\(\begin{bmatrix}0 &amp; 0 &amp; A &amp; B\end{bmatrix}\)</span>，则有</p>
+<p><span class="math display">\[
+{z}_{n} = \dfrac{z_c}{w_c} = \dfrac{A z_e + B w_e}{-z_e}
+\]</span></p>
+<p>在视觉空间中，<span class="math inline">\({w}_{e} = 1\)</span>，因此，方程变为</p>
+<p><span class="math display">\[
+{z}_{n} = \dfrac{A z_e + B}{-z_e}
+\]</span></p>
+<p>为了计算系数 <span class="math inline">\(A\)</span> 和 <span class="math inline">\(B\)</span>，我们将 <span class="math inline">\({z}_{e} = -n,\ {z}_{n} = -1\)</span> 和 <span class="math inline">\({z}_{e} = -f,\ {z}_{n} = 1\)</span> 代入上式</p>
+<p><span class="math display">\[
+\begin{cases}
+\dfrac{-A n + B}{n} &amp; = -1 \\
+\dfrac{-A f + B}{f} &amp; = 1
+\end{cases}
+\Rightarrow
+\begin{cases}
+A &amp; = -\dfrac{f + n}{f - n} \\
+B &amp; = -\dfrac{2 f n}{f - n}
+\end{cases}
+\]</span></p>
+<p>我们得到了 <span class="math inline">\(A\)</span> 和 <span class="math inline">\(B\)</span>，因此 <span class="math inline">\({z}_{e}\)</span> 和 <span class="math inline">\({z}_{n}\)</span> 的关系变为</p>
+<p><span class="math display">\[
+{z}_{n} = \dfrac{-\frac{f + n}{f - n} z_e - \frac{2 f n}{f - n}}{-z_e}
+\]</span></p>
+<p>最终我们得到了 <code>GL_PROJECTION</code> 矩阵所有的元素，完整的投影矩阵为</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+\frac{2 n}{r - l} &amp; 0                 &amp; \frac{r + l}{r - l}  &amp; 0                    \\
+0                 &amp; \frac{2 n}{t - b} &amp; \frac{t + b}{t - b}  &amp; 0                    \\
+0                 &amp; 0                 &amp; -\frac{f + n}{f - n} &amp; \frac{-2 f n}{f - n} \\
+0                 &amp; 0                 &amp; -1                   &amp; 0
+\end{bmatrix}
+\]</span></p>
+<p>这个投影矩阵是针对一般平截头体的，如果视觉体积 (Viewing Volume) 是对称的，即 <span class="math inline">\(r = -l,\ t = -b\)</span>，则矩阵可以简化为</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+\frac{n}{r} &amp; 0           &amp; 0                    &amp; 0                    \\
+0           &amp; \frac{n}{t} &amp; 0                    &amp; 0                    \\
+0           &amp; 0           &amp; -\frac{f + n}{f - n} &amp; \frac{-2 f n}{f - n} \\
+0           &amp; 0           &amp; -1                   &amp; 0
+\end{bmatrix}
+\]</span></p>
+<p>在我们继续之前，请在此看看 <span class="math inline">\({z}_{e}\)</span> 和 <span class="math inline">\({z}_{n}\)</span> 之间的关系。注意它是一个有理函数，并且是 <span class="math inline">\({z}_{e}\)</span> 和 <span class="math inline">\({z}_{n}\)</span> 之间的非线性关系。这意味着在近平面 (near) 有非常高的京精度，但在远平面 (far) 精度非常低。如果范围 <span class="math inline">\(\left[-n,\ -f\right]\)</span> 变大，就会引起深度的精度问题 (Z-fighting)：远平面附近 <span class="math inline">\({z}_{e}\)</span> 微小的变化不会影响 <span class="math inline">\({z}_{n}\)</span> 的值。<span class="math inline">\(n\)</span> 和 <span class="math inline">\(f\)</span> 之间的距离应该尽可能地短，以减少深度缓冲的精度问题。</p>
+<p><img src="https://drive.google.com/uc?export=view&id=1wtXuqT8BVYMk_vaTx74Dx42noBWTCWiR" alt="深度精度的比较" width="70%" style="background-color:white;padding:16px;"></p>
+<h2 id="正射投影-orthographic-projection">正射投影 (Orthographic Projection)</h2>
+<p>构建正射投影的 <code>GL_PROJECTION</code> 矩阵比透视投影简单得多。</p>
+<p><img src="https://drive.google.com/uc?export=view&id=1LLnnuvRKXy5q1Zmr08Khv-HFx7DoMMiL" alt="正射体积和标准化设备坐标" width="70%" style="background-color:white;padding:16px;"></p>
+<p>视觉空间的所有 <span class="math inline">\({x}_{e}\)</span>、<span class="math inline">\({y}_{e}\)</span> 和 <span class="math inline">\({z}_{e}\)</span> 分量都被线性地映射到标准化设备坐标，我们只需要将一个长方体缩放到一个立方体，然后将其移动到原点。让我们用线性关系找出 <code>GL_PROJECTION</code> 矩阵的元素。</p>
+<p><img src="https://drive.google.com/uc?export=view&id=1KwbloCag8JB_GHW7fdVaFVrfonOnQjbc" alt="x_e 映射到 x_n" width="30%" style="background-color:white;padding:12px;"></p>
+<p><span class="math display">\[
+\begin{aligned}
+{x}_{n}            &amp; = \dfrac{1 - (-1)}{r - l} \cdot {x}_{e} + \beta \text{（代入}{x}_{e} = r,\ {x}_{n} = 1\text{）} \\
+\Rightarrow \beta  &amp; = -\dfrac{r + l}{r - l}                                                                        \\
+\therefore {x}_{n} &amp; = \dfrac{2 x_e}{r - l} - \dfrac{r + l}{r - l}
+\end{aligned}
+\]</span></p>
+<p><img src="https://drive.google.com/uc?export=view&id=1Vuy7b78xdAslKXgiSzsf6ArIRaUruu8l" alt="y_e 映射到 y_n" width="30%" style="background-color:white;padding:12px;"></p>
+<p><span class="math display">\[
+\begin{aligned}
+{y}_{n}            &amp; = \dfrac{1 - (-1)}{t - b} \cdot {y}_{e} + \beta \text{（代入}{y}_{e} = t,\ {y}_{n} = 1\text{）} \\
+\Rightarrow \beta  &amp; = -\dfrac{t + b}{t - b}                                                                        \\
+\therefore {y}_{n} &amp; = \dfrac{2 y_e}{t - b} - \dfrac{t + b}{t - b}
+\end{aligned}
+\]</span></p>
+<p><img src="https://drive.google.com/uc?export=view&id=1OW2_wK_UowK-PDs3SI0rg-ymi2_jZwmT" alt="z_e 映射到 z_n" width="30%" style="background-color:white;padding:12px;"></p>
+<p><span class="math display">\[
+\begin{aligned}
+{z}_{n}            &amp; = \dfrac{1 - (-1)}{-f - (-n)} \cdot {z}_{e} + \beta \text{（代入}{z}_{e} = -f,\ {z}_{n} = 1\text{）} \\
+\Rightarrow \beta  &amp; = -\dfrac{f + n}{f - n}                                                                             \\
+\therefore {z}_{n} &amp; = \dfrac{-2 z_e}{f - n} - \dfrac{f + n}{f - n}
+\end{aligned}
+\]</span></p>
+<p>由于 <span class="math inline">\(w\)</span> 分量对于正射投影是不必要的，故 <code>GL_PROJECTION</code> 矩阵的第四行为 <span class="math inline">\(\begin{bmatrix}0 &amp; 0 &amp; 0 &amp; 1\end{bmatrix}\)</span>。因此，完整的正射投影 <code>GL_PROJECTION</code> 矩阵为</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+\frac{2}{r - l} &amp; 0               &amp; 0                &amp; -\frac{r + l}{r - l} \\
+0               &amp; \frac{2}{t - b} &amp; 0                &amp; -\frac{t + b}{t - b} \\
+0               &amp; 0               &amp; \frac{-2}{f - n} &amp; -\frac{f + n}{f - n} \\
+0               &amp; 0               &amp; 0                &amp; 1
+\end{bmatrix}
+\]</span></p>
+<p>如果视觉体积是对称的，即 <span class="math inline">\(r = -l,\ t = -b\)</span>，则它可以被进一步简化为</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+\frac{1}{r} &amp; 0           &amp; 0                &amp; 0                    \\
+0           &amp; \frac{1}{t} &amp; 0                &amp; 0                    \\
+0           &amp; 0           &amp; \frac{-2}{f - n} &amp; -\frac{f + n}{f - n} \\
+0           &amp; 0           &amp; 0                &amp; 1
+\end{bmatrix}
+\]</span></p>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+      </categories>
+      <tags>
+        <tag>学习笔记</tag>
+        <tag>OpenGL</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>操作系统笔记 (1) —— 进程和线程</title>
     <url>/2020/03/04/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AC%94%E8%AE%B0-1-%E2%80%94%E2%80%94-%E8%BF%9B%E7%A8%8B%E5%92%8C%E7%BA%BF%E7%A8%8B/</url>
     <content><![CDATA[<h2 id="进程-process">进程 (Process)</h2>

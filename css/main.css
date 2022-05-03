@@ -1817,12 +1817,12 @@ pre code {
 .reading-progress-bar {
   --progress: 0;
   background: #ea6e39;
-  height: 2px;
+  height: 3px;
   position: fixed;
   z-index: 50;
   width: var(--progress);
   left: 0;
-  top: 0;
+  bottom: 0;
 }
 .rtl.post-body p,
 .rtl.post-body a,
